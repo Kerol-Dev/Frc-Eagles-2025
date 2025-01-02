@@ -9,7 +9,6 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -59,7 +58,7 @@ public class SwerveModule {
 
     // Configure the driving motor
     m_drivingMotor = new TalonFX(drivingCANId);
-    m_drivingMotor.setNeutralMode(NeutralModeValue.Brake);
+    m_drivingMotor.setNeutralMode(ModuleConstants.kDrivingMotorIdleMode);
     TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
     talonFXConfiguration.MotorOutput.Inverted = drivingMotorReversed ? InvertedValue.Clockwise_Positive
         : InvertedValue.CounterClockwise_Positive;
