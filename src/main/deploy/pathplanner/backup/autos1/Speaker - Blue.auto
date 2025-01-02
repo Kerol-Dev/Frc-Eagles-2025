@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.55,
+      "y": 5.57
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Speaker Blue - 1"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Speaker Blue - 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Speaker Blue - 3"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
