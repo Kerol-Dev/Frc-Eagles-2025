@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -75,6 +77,8 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter m_magXLimiter = new SlewRateLimiter(DriveConstants.kMaxAcceleration);
   private SlewRateLimiter m_magYLimiter = new SlewRateLimiter(DriveConstants.kMaxAcceleration);
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kMaxAngularAcceleration);
+
+  VisionSubsystem visionSubsystem = new VisionSubsystem();
 
   /**
    * Constructs the DriveSubsystem and configures autonomous settings.
@@ -151,7 +155,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The robot's pose.
    */
   public Pose2d getPose() {
-    return null;
+    return visionSubsystem.GetRobotPoseEstimated();
   }
 
   /**
@@ -169,7 +173,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param pose The new pose.
    */
   public void resetOdometry(Pose2d pose) {
-
+    visionSubsystem.resetOdometry(pose);
   }
 
   /**
@@ -228,8 +232,18 @@ public class DriveSubsystem extends SubsystemBase {
    * 
    * @return The current heading as a Rotation2d.
    */
-  public Rotation2d getHeading() {
+  public static Rotation2d getHeading() {
     return m_gyro.getRotation2d();
+  }
+
+  public static SwerveModulePosition[] getModulePositions()
+  {
+    SwerveModulePosition[] positions = new SwerveModulePosition[4];
+    positions[0] = m_frontRight.getPosition();
+    positions[1] = m_frontLeft.getPosition();
+    positions[2] = m_rearRight.getPosition();
+    positions[3] = m_rearLeft.getPosition();
+    return positions;
   }
 
   /**
