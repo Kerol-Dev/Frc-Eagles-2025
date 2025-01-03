@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -95,7 +94,7 @@ public final class Constants {
     public static final double kTurningMaxOutput = 1;
 
     // Motor idle modes
-    public static final NeutralModeValue kDrivingMotorIdleMode = NeutralModeValue.Brake;
+    public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
     public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
     // Current limits for motors

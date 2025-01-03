@@ -5,16 +5,14 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
@@ -25,8 +23,8 @@ import frc.robot.Constants.ModuleConstants;
 public class SwerveModule {
 
   // Motor controllers for driving and turning
-  public final TalonFX m_drivingMotor;
-  public final SparkMax m_turningSparkMax;
+  public final SparkFlex m_drivingMotor;
+  public final SparkFlex m_turningMotor;
 
   // CANcoder for absolute encoder feedback
   public final CANcoder m_canEncoder;
@@ -57,19 +55,15 @@ public class SwerveModule {
     this.encoderOffset = encoderOffset;
 
     // Configure the driving motor
-    m_drivingMotor = new TalonFX(drivingCANId);
-    m_drivingMotor.setNeutralMode(ModuleConstants.kDrivingMotorIdleMode);
-    TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
-    talonFXConfiguration.MotorOutput.Inverted = drivingMotorReversed ? InvertedValue.Clockwise_Positive
-        : InvertedValue.CounterClockwise_Positive;
-    talonFXConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
-    talonFXConfiguration.CurrentLimits.StatorCurrentLimitEnable = true;
-    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = ModuleConstants.kDrivingMotorCurrentLimit;
-    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = ModuleConstants.kDrivingMotorStallCurrentLimit;
-    m_drivingMotor.getConfigurator().apply(talonFXConfiguration);
-
+    m_drivingMotor = new SparkFlex(drivingCANId, MotorType.kBrushless);
+    SparkFlexConfig configDrive = new SparkFlexConfig();
+    configDrive.inverted(drivingMotorReversed);
+    configDrive.idleMode(ModuleConstants.kDrivingMotorIdleMode);
+    configDrive.smartCurrentLimit(ModuleConstants.kDrivingMotorStallCurrentLimit, ModuleConstants.kDrivingMotorCurrentLimit);
+    m_drivingMotor.configure(configDrive, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  
     // Configure the turning motor
-    m_turningSparkMax = new SparkMax(turningCANId, MotorType.kBrushless);
+    m_turningMotor = new SparkFlex(turningCANId, MotorType.kBrushless);
 
     // Configure the CANcoder
     m_canEncoder = new CANcoder(cancoderID);
@@ -79,8 +73,8 @@ public class SwerveModule {
     m_canEncoder.getConfigurator().apply(caNcoderConfiguration);
 
     // Configure SparkMax for turning
-    SparkMaxConfig config = new SparkMaxConfig();
-    config.inverted(true);
+    SparkFlexConfig config = new SparkFlexConfig();
+    config.inverted(turningMotorReversed);
     config.encoder.positionConversionFactor(ModuleConstants.kTurningEncoderPositionFactor);
     config.encoder.velocityConversionFactor(ModuleConstants.kTurningEncoderVelocityFactor);
     config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
@@ -93,7 +87,7 @@ public class SwerveModule {
     config.closedLoop.outputRange(ModuleConstants.kTurningMinOutput, ModuleConstants.kTurningMaxOutput);
     config.idleMode(ModuleConstants.kTurningMotorIdleMode);
     config.smartCurrentLimit(ModuleConstants.kTurningMotorStallCurrentLimit, ModuleConstants.kTurningMotorCurrentLimit);
-    m_turningSparkMax.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_turningMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     m_desiredState.angle = new Rotation2d(0);
   }
@@ -104,7 +98,7 @@ public class SwerveModule {
    * @return The current state of the module
    */
   public SwerveModuleState getState() {
-    return new SwerveModuleState(m_drivingMotor.getVelocity().getValueAsDouble() * 60, getAngle());
+    return new SwerveModuleState(m_drivingMotor.getEncoder().getVelocity(), getAngle());
   }
 
   /**
@@ -122,7 +116,7 @@ public class SwerveModule {
    * @return The current angle
    */
   private Rotation2d getAngle() {
-    return Rotation2d.fromRadians(m_turningSparkMax.getEncoder().getPosition() - m_chassisAngularOffset);
+    return Rotation2d.fromRadians(m_turningMotor.getEncoder().getPosition() - m_chassisAngularOffset);
   }
 
   /**
@@ -131,7 +125,7 @@ public class SwerveModule {
    * @return The position of the motor
    */
   private double getMotorPosition() {
-    return m_drivingMotor.getPosition().getValueAsDouble() * ModuleConstants.kDrivingEncoderPositionFactor;
+    return m_drivingMotor.getEncoder().getPosition() * ModuleConstants.kDrivingEncoderPositionFactor;
   }
 
   /**
@@ -139,8 +133,8 @@ public class SwerveModule {
    */
   public void updateSmartDashboard() {
     SmartDashboard.putNumber("Cancoder " + m_canEncoder.getDeviceID(), getCanCoder().getDegrees());
-    SmartDashboard.putNumber("NeoAngle " + m_canEncoder.getDeviceID(),
-        Math.toDegrees((Math.abs(m_turningSparkMax.getEncoder().getPosition()) % (2.0 * Math.PI))));
+    SmartDashboard.putNumber("Vortex Angle " + m_canEncoder.getDeviceID(),
+        Math.toDegrees((Math.abs(m_turningMotor.getEncoder().getPosition()) % (2.0 * Math.PI))));
   }
 
   /**
@@ -155,12 +149,12 @@ public class SwerveModule {
 
     @SuppressWarnings("deprecation")
     SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState,
-        new Rotation2d(m_turningSparkMax.getEncoder().getPosition()));
+        new Rotation2d(m_turningMotor.getEncoder().getPosition()));
 
     m_drivingMotor.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
     if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.006)
       m_drivingMotor.stopMotor();
-    m_turningSparkMax.getClosedLoopController().setReference(optimizedDesiredState.angle.getRadians(),
+    m_turningMotor.getClosedLoopController().setReference(optimizedDesiredState.angle.getRadians(),
         SparkMax.ControlType.kPosition);
 
     m_desiredState = desiredState;
@@ -179,7 +173,7 @@ public class SwerveModule {
    * Resets the driving motor encoder.
    */
   public void resetEncoders() {
-    m_drivingMotor.setPosition(0);
+    m_drivingMotor.getEncoder().setPosition(0);
   }
 
   /**
@@ -196,7 +190,7 @@ public class SwerveModule {
    */
   public void resetToAbsolute() {
     double absolutePosition = getCanCoder().getRadians() - encoderOffset2d.getRadians();
-    m_turningSparkMax.getEncoder().setPosition(absolutePosition);
+    m_turningMotor.getEncoder().setPosition(absolutePosition);
     resetEncoders();
   }
 
@@ -205,7 +199,7 @@ public class SwerveModule {
    */
   public void stop() {
     m_drivingMotor.set(0);
-    m_turningSparkMax.set(0);
+    m_turningMotor.set(0);
   }
 
   /**
