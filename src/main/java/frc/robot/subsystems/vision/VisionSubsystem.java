@@ -48,7 +48,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     private void InitializeCameras() {
-        // Forward, Right, Upwards, Roll, Pitch, Angle
+        // Forward, (inverted)Right, Upwards, Roll, Pitch, (inverted)Angle
         cameras.add(new Camera("FrontRight", new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)));
         cameras.add(new Camera("FrontLeft", new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)));
         cameras.add(new Camera("RearRight", new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)));

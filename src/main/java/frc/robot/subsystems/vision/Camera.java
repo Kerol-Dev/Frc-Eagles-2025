@@ -8,11 +8,13 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Camera {
     public String cameraName = "photon_camera";
@@ -30,8 +32,11 @@ public class Camera {
                 poseStrategy, robotToCamPos);
     }
 
-    public EstimatedRobotPose update()
-    {
+    public EstimatedRobotPose update() {
+        // Update Camera Robot Pose
+        SmartDashboard.putString(cameraName + " Pose 3D", DriveSubsystem.getRPose3d().plus(robotToCamPos).toString());
+
+        // Update Pose Estimation Per Camera
         List<PhotonPipelineResult> results = cameraObject.getAllUnreadResults();
         return poseEstimator.update(results.get(results.size() - 1)).get();
     }

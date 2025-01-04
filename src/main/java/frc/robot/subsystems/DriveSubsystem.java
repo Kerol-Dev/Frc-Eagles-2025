@@ -9,6 +9,7 @@ import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -78,7 +79,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter m_magYLimiter = new SlewRateLimiter(DriveConstants.kMaxAcceleration);
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kMaxAngularAcceleration);
 
-  VisionSubsystem visionSubsystem = new VisionSubsystem();
+  static VisionSubsystem visionSubsystem = new VisionSubsystem();
 
   /**
    * Constructs the DriveSubsystem and configures autonomous settings.
@@ -156,6 +157,11 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public Pose2d getPose() {
     return visionSubsystem.GetRobotPoseEstimated();
+  }
+
+  public static Pose3d getRPose3d()
+  {
+    return new Pose3d(visionSubsystem.GetRobotPoseEstimated());
   }
 
   /**
