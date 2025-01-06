@@ -153,26 +153,19 @@ public class SwerveModule {
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
     correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
 
-    @SuppressWarnings("deprecation")
-    SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState,
+    SwerveModuleState optimizedDesiredState = optimize(correctedDesiredState,
         new Rotation2d(m_turningSparkMax.getEncoder().getPosition()));
 
     m_drivingMotor.set(optimizedDesiredState.speedMetersPerSecond / DriveConstants.kMaxSpeedMetersPerSecond);
-    if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.006)
+
+    if (Math.abs(optimizedDesiredState.speedMetersPerSecond) < 0.006) {
       m_drivingMotor.stopMotor();
+    }
+
     m_turningSparkMax.getClosedLoopController().setReference(optimizedDesiredState.angle.getRadians(),
         SparkMax.ControlType.kPosition);
 
     m_desiredState = desiredState;
-  }
-
-  /**
-   * Gets the desired state of the swerve module.
-   * 
-   * @return The desired state
-   */
-  public SwerveModuleState getDesiredState() {
-    return m_desiredState;
   }
 
   /**
@@ -217,45 +210,12 @@ public class SwerveModule {
    */
   public static SwerveModuleState optimize(
       SwerveModuleState desiredState, Rotation2d currentAngle) {
-    double targetAngle = placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
-    double targetSpeed = desiredState.speedMetersPerSecond;
-    double delta = targetAngle - currentAngle.getDegrees();
-    if (Math.abs(delta) > 90) {
-      targetSpeed = -targetSpeed;
-      targetAngle = delta > 90 ? (targetAngle -= 180) : (targetAngle += 180);
-    }
-    return new SwerveModuleState(targetSpeed, Rotation2d.fromDegrees(targetAngle));
-  }
-
-  /**
-   * Places the angle in the appropriate 0 to 360 scope relative to a reference.
-   * 
-   * @param scopeReference The reference angle
-   * @param newAngle       The new angle to place
-   * @return The adjusted angle
-   */
-  private static double placeInAppropriate0To360Scope(double scopeReference, double newAngle) {
-    double lowerBound;
-    double upperBound;
-    double lowerOffset = scopeReference % 360;
-    if (lowerOffset >= 0) {
-      lowerBound = scopeReference - lowerOffset;
-      upperBound = scopeReference + (360 - lowerOffset);
+    var delta = desiredState.angle.minus(currentAngle);
+    if (Math.abs(delta.getDegrees()) > 90.0) {
+      return new SwerveModuleState(
+          -desiredState.speedMetersPerSecond, desiredState.angle.rotateBy(Rotation2d.kPi));
     } else {
-      upperBound = scopeReference - lowerOffset;
-      lowerBound = scopeReference - (360 + lowerOffset);
+      return new SwerveModuleState(desiredState.speedMetersPerSecond, desiredState.angle);
     }
-    while (newAngle < lowerBound) {
-      newAngle += 360;
-    }
-    while (newAngle > upperBound) {
-      newAngle -= 360;
-    }
-    if (newAngle - scopeReference > 180) {
-      newAngle -= 360;
-    } else if (newAngle - scopeReference < -180) {
-      newAngle += 360;
-    }
-    return newAngle;
   }
 }

@@ -23,6 +23,11 @@ public final class Constants {
     public static final double kMaxAngularSpeed = Math.PI; // Maximum angular velocity (rad/s)
     public static final double kMaxAngularAcceleration = 3; // Maximum angular acceleration
 
+    public static final double kMaxSpeedMetersPerSecondPathfind = 4.8; // Maximum robot speed
+    public static final double kMaxAccelerationPathfind = 4; // Maximum linear acceleration
+    public static final double kMaxAngularSpeedPathfind = Math.PI; // Maximum angular velocity (rad/s)
+    public static final double kMaxAngularAccelerationPathfind = 3; // Maximum angular acceleration
+
     public static final double kTrackWidth = 0.679; // Distance between left and right wheels (meters)
     public static final double kWheelBase = 0.519; // Distance between front and back wheels (meters)
 

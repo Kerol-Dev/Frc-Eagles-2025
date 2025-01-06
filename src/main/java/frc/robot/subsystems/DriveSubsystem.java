@@ -4,6 +4,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.PathConstraints;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -22,12 +23,16 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.subsystems.pathfind.FieldPositions;
+import frc.robot.subsystems.pathfind.PathfindType;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
  * The DriveSubsystem class manages the swerve drive system of the robot.
- * It controls the four swerve modules and handles field-relative and robot-relative driving.
+ * It controls the four swerve modules and handles field-relative and
+ * robot-relative driving.
  */
 public class DriveSubsystem extends SubsystemBase {
 
@@ -80,6 +85,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kMaxAngularAcceleration);
 
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
+  FieldPositions fieldPositions = new FieldPositions();
 
   /**
    * Constructs the DriveSubsystem and configures autonomous settings.
@@ -89,8 +95,8 @@ public class DriveSubsystem extends SubsystemBase {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
               new PIDConstants(5.0, 0.0, 0.0),
-              new PIDConstants(5.0, 0.0, 0.0)
-          ), RobotConfig.fromGUISettings(), () -> {
+              new PIDConstants(5.0, 0.0, 0.0)),
+          RobotConfig.fromGUISettings(), () -> {
             var alliance = DriverStation.getAlliance().get();
             return alliance == DriverStation.Alliance.Red;
           },
@@ -100,7 +106,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     publisher = NetworkTableInstance.getDefault()
-      .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
+        .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
   }
 
   /**
@@ -143,10 +149,10 @@ public class DriveSubsystem extends SubsystemBase {
 
     // Periodically send a set of module states
     publisher.set(new SwerveModuleState[] {
-      m_frontLeft.getState(),
-      m_frontRight.getState(),
-      m_rearLeft.getState(),
-      m_rearRight.getState()
+        m_frontLeft.getState(),
+        m_frontRight.getState(),
+        m_rearLeft.getState(),
+        m_rearRight.getState()
     });
   }
 
@@ -159,8 +165,7 @@ public class DriveSubsystem extends SubsystemBase {
     return visionSubsystem.GetRobotPoseEstimated();
   }
 
-  public static Pose3d getRPose3d()
-  {
+  public static Pose3d getRPose3d() {
     return new Pose3d(visionSubsystem.GetRobotPoseEstimated());
   }
 
@@ -226,6 +231,54 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(desiredStates[3]);
   }
 
+  public static void lockSwerve() {
+    m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+    m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+  }
+
+  public Command goToPosePathfind(PathfindType pathfindType) {
+    Pose2d pose = new Pose2d();
+    switch (pathfindType) {
+      case Reef:
+        pose = fieldPositions.getClosestReefPose(getPose());
+        break;
+
+      case Human:
+        pose = fieldPositions.getClosestHumanPose(getPose());
+        break;
+
+      case Processor:
+        pose = fieldPositions.getPose("processor");
+        break;
+
+      case Shoot:
+        pose = fieldPositions.getPose("shoot");
+        break;
+
+      default:
+        break;
+    }
+
+    try {
+      if(pose.getX() == 0)
+      {
+        throw new Exception("No valid pose found");
+      }
+
+      PathConstraints constraints = new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecondPathfind,
+          DriveConstants.kMaxAccelerationPathfind,
+          DriveConstants.kMaxAngularSpeedPathfind,
+          DriveConstants.kMaxAngularAccelerationPathfind);
+
+      return AutoBuilder.pathfindToPose(pose, constraints, 0);
+    } catch (Exception e) {
+      DriverStation.reportError(e.getMessage(), true);
+      return null;
+    }
+  }
+
   /**
    * Resets the gyro heading to zero.
    */
@@ -242,8 +295,7 @@ public class DriveSubsystem extends SubsystemBase {
     return m_gyro.getRotation2d();
   }
 
-  public static SwerveModulePosition[] getModulePositions()
-  {
+  public static SwerveModulePosition[] getModulePositions() {
     SwerveModulePosition[] positions = new SwerveModulePosition[4];
     positions[0] = m_frontRight.getPosition();
     positions[1] = m_frontLeft.getPosition();

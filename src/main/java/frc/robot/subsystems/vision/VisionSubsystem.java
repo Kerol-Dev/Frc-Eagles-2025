@@ -1,8 +1,12 @@
 package frc.robot.subsystems.vision;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -14,11 +18,13 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Detector;
+import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Fiducial;
 
 public class VisionSubsystem extends SubsystemBase {
     AprilTagFieldLayout reefScapeLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
@@ -37,6 +43,8 @@ public class VisionSubsystem extends SubsystemBase {
     SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
             DriveSubsystem.getHeading(), DriveSubsystem.getModulePositions(), new Pose2d());
 
+    private Set<String> visibleAprilTags = new HashSet<>();
+
     public VisionSubsystem() {
         poseEstimator.setVisionMeasurementStdDevs(visionMeasurementStdDevs);
         InitializeCameras();
@@ -44,7 +52,19 @@ public class VisionSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        visibleAprilTags.clear();
+
+        if (LimelightHelpers.getTV("")) {
+            LimelightTarget_Fiducial[] targets = LimelightHelpers.getLatestResults("").targets_Fiducials;
+
+            for (LimelightTarget_Fiducial target_Fiducial : targets) {
+                visibleAprilTags.add(String.valueOf(target_Fiducial.fiducialID));
+            }
+        }
+
         UpdatePoseEstimation();
+
+        SmartDashboard.putString("Visible AprilTags", visibleAprilTags.toString());
     }
 
     private void InitializeCameras() {
@@ -60,6 +80,11 @@ public class VisionSubsystem extends SubsystemBase {
 
         for (Camera camera : cameras) {
             EstimatedRobotPose robotPose = camera.update();
+
+            for (PhotonTrackedTarget target : robotPose.targetsUsed) {
+                visibleAprilTags.add(String.valueOf(target.fiducialId));
+            }
+
             poseEstimator.addVisionMeasurement(robotPose.estimatedPose.toPose2d(), robotPose.timestampSeconds);
         }
     }
@@ -72,16 +97,24 @@ public class VisionSubsystem extends SubsystemBase {
         poseEstimator.resetPosition(DriveSubsystem.getHeading(), DriveSubsystem.getModulePositions(), pose2d);
     }
 
-    public static LimelightResults GetLimelightTarget(String limelightName, int ID) {
+    public boolean isAprilTagVisible(int id) {
+        return visibleAprilTags.contains(String.valueOf(id));
+    }
+
+    public double getDistanceBetweenPose(Pose2d pose) {
+        return PhotonUtils.getDistanceToPose(poseEstimator.getEstimatedPosition(), pose);
+    }
+
+    public static LimelightTarget_Detector GetLimelightTarget(String limelightName, int ID) {
         if (LimelightHelpers.getTV(limelightName)) {
             LimelightResults result = LimelightHelpers.getLatestResults(limelightName);
 
             if (ID == -1)
-                return result;
+                return result.targets_Detector[0];
 
             for (LimelightTarget_Detector detector : result.targets_Detector) {
                 if (detector.classID == ID) {
-                    return result;
+                    return detector;
                 }
             }
         }
