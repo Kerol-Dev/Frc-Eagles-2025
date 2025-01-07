@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.photonvision.PhotonUtils;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -238,6 +240,19 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
   }
 
+  public Pose2d getClosestPose(Pose2d... poses) {
+        Pose2d closestPose = null;
+        double closestDistance = Double.MAX_VALUE;
+        for (Pose2d pose2d: poses) {
+          double distance = PhotonUtils.getDistanceToPose(getPose(), pose2d);
+          if (distance < closestDistance) {
+              closestDistance = distance;
+              closestPose = pose2d;
+          }
+        }
+        return closestPose;
+    }
+
   public Command goToPosePathfind(PathfindType pathfindType) {
     Pose2d pose = new Pose2d();
     switch (pathfindType) {
@@ -252,9 +267,9 @@ public class DriveSubsystem extends SubsystemBase {
       case Processor:
         pose = fieldPositions.getPose("processor");
         break;
-
-      case Shoot:
-        pose = fieldPositions.getPose("shoot");
+      
+      case Closest:
+        pose = getClosestPose(fieldPositions.getPose("processor"), fieldPositions.getClosestHumanPose(getPose()), fieldPositions.getClosestReefPose(getPose()));
         break;
 
       default:

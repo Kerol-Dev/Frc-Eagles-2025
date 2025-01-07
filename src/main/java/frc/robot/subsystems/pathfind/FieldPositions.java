@@ -90,6 +90,5 @@ public class FieldPositions {
         addFieldPosition(new Pose2d(0, 0, new Rotation2d()), "human_left");
         addFieldPosition(new Pose2d(0, 0, new Rotation2d()), "reef_a");
         addFieldPosition(new Pose2d(0, 0, new Rotation2d()), "processor");
-        addFieldPosition(new Pose2d(0, 0, new Rotation2d()), "shoot");
     }
 }

@@ -4,5 +4,5 @@ public enum PathfindType {
     Reef,
     Human,
     Processor,
-    Shoot
+    Closest,
 }
