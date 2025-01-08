@@ -122,10 +122,10 @@ public final class Constants {
     public static final boolean kGroundIntakeRotationMotor2EncoderInverted = false;
     public static final boolean kGroundIntakeFeedMotorInverted = false;
 
-    public static final double kGroundIntakeRotationMotor2Reduction = 5.0;
+    public static final double kGroundIntakeRotationMotor2Reduction = 10.0;
 
     public static final double kGroundIntakeClosedAngle = 0;
-    public static final double kGroundIntakeOpenedAngle = 160;
+    public static final double kGroundIntakeOpenedAngle = 90;
 
     public static final double kGroundIntakeRotationP = 1;
     public static final double kGroundIntakeRotationI = 0;
@@ -140,18 +140,17 @@ public final class Constants {
     public static final boolean kElevatorMotorInverted = false;
     public static final boolean kElevatorMotorEncoderInverted = false;
 
-    public static final double kElevatorMotorForwardSoftLimit = 1000;
+    public static final double kElevatorMotorForwardSoftLimit = 250;
     public static final double kElevatorMotorReverseSoftLimit = 0;
 
-    public static final double kElevatorMotorSensorToMechRatio = 100.0;
-    public static final double kElevatorMotorAcceleration = 80;
-    public static final double kElevatorMotorCruiseVelocity = 140;
+    public static final double kElevatorMotorSensorToMechRatio = (1.27 * 28) / 100; // Teeth Pitch * Teeth Count / Gear Ratio
+    public static final double kElevatorMotorAcceleration = 4800; // RPM
+    public static final double kElevatorMotorCruiseVelocity = 8400; // RPM
 
 
     public static final double kElevatorMotorP = 1;
     public static final double kElevatorMotorI = 0;
     public static final double kElevatorMotorD = 0;
-    public static final double kElevatorMotorMaxSpeed = 1;
   }
 
   public static final class ArmConstants
@@ -161,18 +160,17 @@ public final class Constants {
     public static final boolean kArmMotorInverted = false;
     public static final boolean kArmMotorEncoderInverted = false;
 
-    public static final double kArmMotorForwardSoftLimit = 1000;
-    public static final double kArmMotorReverseSoftLimit = 0;
+    public static final double kArmMotorForwardSoftLimit = 90;
+    public static final double kArmMotorReverseSoftLimit = -90;
 
-    public static final double kArmMotorSensorToMechRatio = 100.0;
-    public static final double kArmMotorAcceleration = 80;
-    public static final double kArmMotorCruiseVelocity = 140;
+    public static final double kArmMotorSensorToMechRatio = 360 / 10; // 360 / Gear Ratio
+    public static final double kArmMotorAcceleration = 4800;
+    public static final double kArmMotorCruiseVelocity = 6400;
 
 
     public static final double kArmMotorP = 1;
     public static final double kArmMotorI = 0;
     public static final double kArmMotorD = 0;
-    public static final double kArmMotorMaxSpeed = 1;
   }
 
   public static final class CoralArmIntakeConstants

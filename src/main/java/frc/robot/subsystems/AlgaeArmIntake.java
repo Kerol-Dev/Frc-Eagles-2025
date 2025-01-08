@@ -15,7 +15,7 @@ import frc.robot.Constants.AlgaeArmIntakeConstants;
 public class AlgaeArmIntake extends SubsystemBase {
     private final SparkMax AlgaeArmIntakeMotor = new SparkMax(AlgaeArmIntakeConstants.kAlgaeArmIntakeMotorCanID,
             MotorType.kBrushless);
-    private final DigitalInput AlgaeArmIntakeSensor = new DigitalInput(
+    public static final DigitalInput AlgaeArmIntakeSensor = new DigitalInput(
             AlgaeArmIntakeConstants.kAlgaeArmIntakeSensorPort);
 
     public AlgaeArmIntake() {

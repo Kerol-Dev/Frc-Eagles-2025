@@ -8,6 +8,7 @@ public enum ElevatorPosition {
     processor,
     idle,
     source,
+    grab_from_intake,
     grab_algea_1,
     grab_algea_2
 }

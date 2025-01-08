@@ -43,10 +43,23 @@ public class Robot extends TimedRobot{
     }
   }
 
+  boolean slowSpeedEnabledAutomatically = false;
+
   @Override
   public void teleopPeriodic() {
     m_robotContainer.placeCoralCommand.executeIfDebounced();
-    m_robotContainer.grabAlgeaCommand.executeIfDebounced();
+    m_robotContainer.grabAlgaeCommand.executeIfDebounced();
+    
+    if(m_robotContainer.m_elevator.elevatorMotor.getPosition().getValueAsDouble() > 100)
+    {
+      slowSpeedEnabledAutomatically = true;
+      m_robotContainer.slowSpeedEnabled = true;
+    }
+    else if(slowSpeedEnabledAutomatically)
+    {
+      slowSpeedEnabledAutomatically = false;
+      m_robotContainer.slowSpeedEnabled = false;
+    }
   }
 
   @Override

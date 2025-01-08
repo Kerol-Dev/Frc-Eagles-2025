@@ -13,7 +13,7 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.misc.ElevatorPosition;
 
 public class ElevatorSubsystem extends SubsystemBase {
-    private final TalonFX elevatorMotor = new TalonFX(ElevatorConstants.kElevatorMotorCanID);
+    public final TalonFX elevatorMotor = new TalonFX(ElevatorConstants.kElevatorMotorCanID);
     private double elevatorGoalPosition = 0;
 
     public ElevatorSubsystem() {
@@ -30,8 +30,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ElevatorConstants.kElevatorMotorForwardSoftLimit;
         talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = ElevatorConstants.kElevatorMotorReverseSoftLimit;
-        talonFXConfiguration.MotionMagic.MotionMagicAcceleration = ElevatorConstants.kElevatorMotorAcceleration;
-        talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.kElevatorMotorCruiseVelocity;
+        talonFXConfiguration.MotionMagic.MotionMagicAcceleration = ElevatorConstants.kElevatorMotorAcceleration / 60;
+        talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.kElevatorMotorCruiseVelocity / 60;
         talonFXConfiguration.Feedback.SensorToMechanismRatio = ElevatorConstants.kElevatorMotorSensorToMechRatio;
         talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         talonFXConfiguration.MotorOutput.Inverted = ElevatorConstants.kElevatorMotorInverted
@@ -56,35 +56,20 @@ public class ElevatorSubsystem extends SubsystemBase {
         };
     }
 
-    public Command lowerElevatorToPlace() {
-        elevatorGoalPosition = elevatorGoalPosition - 1000;
-        return new Command() {
-            @Override
-            public void initialize() {
-                setElevatorPosition(elevatorGoalPosition);
-            }
-
-            @Override
-            public boolean isFinished() {
-                return isElevatorAtPosition();
-            }
-        };
-    }
-
     private double getElevatorPositionValue(ElevatorPosition position) {
         switch (position) {
             case coral_L4:
                 return 0;
             case coral_L3:
-                return 100;
+                return 50;
             case coral_L2:
-                return 200;
+                return 70;
             case coral_L1:
-                return 300;
+                return 90;
             case processor:
-                return 400;
+                return 110;
             case idle:
-                return 600;
+                return 130;
             default:
                 return 0;
         }

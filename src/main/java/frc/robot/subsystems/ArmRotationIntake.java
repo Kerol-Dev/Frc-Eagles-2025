@@ -31,8 +31,8 @@ public class ArmRotationIntake extends SubsystemBase {
         talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ArmConstants.kArmMotorForwardSoftLimit;
         talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = ArmConstants.kArmMotorReverseSoftLimit;
-        talonFXConfiguration.MotionMagic.MotionMagicAcceleration = ArmConstants.kArmMotorAcceleration;
-        talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = ArmConstants.kArmMotorCruiseVelocity;
+        talonFXConfiguration.MotionMagic.MotionMagicAcceleration = ArmConstants.kArmMotorAcceleration / 60;
+        talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = ArmConstants.kArmMotorCruiseVelocity / 60;
         talonFXConfiguration.Feedback.SensorToMechanismRatio = ArmConstants.kArmMotorSensorToMechRatio;
         talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         talonFXConfiguration.MotorOutput.Inverted = ArmConstants.kArmMotorInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
