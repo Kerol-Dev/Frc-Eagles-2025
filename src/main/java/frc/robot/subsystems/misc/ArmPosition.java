@@ -4,8 +4,6 @@ public enum ArmPosition {
     coral_L4,
     coral_L23,
     coral_L1,
-    processor,
-    idle,
     grab,
-    grab_algea
+    idle
 }

@@ -85,6 +85,22 @@ public class FieldPositions {
         return closestHumanPose;
     }
 
+    public Pose2d getClosestAlgeaPose(Pose2d robotPose)
+    {
+        Pose2d closestAlgeaPose = null;
+        double closestDistance = Double.MAX_VALUE;
+        for (FieldPosition fieldPosition : fieldPositions) {
+            if (fieldPosition.name.contains("algea")) {
+                double distance = PhotonUtils.getDistanceToPose(robotPose, getPose(fieldPosition));
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestAlgeaPose = fieldPosition.pose;
+                }
+            }
+        }
+        return closestAlgeaPose;
+    }
+
     public FieldPositions() {
         addFieldPosition(new Pose2d(0, 0, new Rotation2d()), "human_right");
         addFieldPosition(new Pose2d(0, 0, new Rotation2d()), "human_left");

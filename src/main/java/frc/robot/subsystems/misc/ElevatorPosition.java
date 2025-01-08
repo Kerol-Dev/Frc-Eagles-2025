@@ -7,6 +7,7 @@ public enum ElevatorPosition {
     coral_L1,
     processor,
     idle,
+    source,
     grab_algea_1,
     grab_algea_2
 }

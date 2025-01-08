@@ -13,11 +13,11 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.misc.ArmPosition;
 
-public class ArmSubsystem extends SubsystemBase {
+public class ArmRotationIntake extends SubsystemBase {
     private final TalonFX armMotor = new TalonFX(ElevatorConstants.kElevatorMotorCanID);
     private double armGoalPosition = 0;
 
-    public ArmSubsystem() {
+    public ArmRotationIntake() {
         TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
         // set slot 0 gains
         var slot0Configs = talonFXConfiguration.Slot0;
@@ -59,15 +59,13 @@ public class ArmSubsystem extends SubsystemBase {
     {
         switch (position) {
             case coral_L4:
-                return 0;
+                return 150;
             case coral_L23:
-                return 200;
+                return 135;
             case coral_L1:
-                return 300;
-            case processor:
-                return 400;
+                return 90;
             case idle:
-                return 600;
+                return 0;
             default:
                 return 0;
         }

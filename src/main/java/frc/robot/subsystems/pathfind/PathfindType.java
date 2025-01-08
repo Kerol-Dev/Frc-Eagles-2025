@@ -5,4 +5,5 @@ public enum PathfindType {
     Human,
     Processor,
     Closest,
+    Algea,
 }

@@ -7,13 +7,13 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.AlgaeArmIntake;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ArmRotationIntake;
 import frc.robot.subsystems.CoralArmIntake;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.GroundIntakeSubsystem;
 import frc.robot.subsystems.misc.ArmPosition;
 import frc.robot.subsystems.misc.ElevatorPosition;
+import frc.robot.subsystems.misc.PressCountCommandHandler;
 import frc.robot.subsystems.pathfind.PathfindType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -32,17 +32,26 @@ public class RobotContainer {
 
   // Drive subsystem for controlling the robot's drivetrain
   public final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  public final GroundIntakeSubsystem m_groundIntake = new GroundIntakeSubsystem();
   public final CoralArmIntake m_coralArmIntake = new CoralArmIntake();
   public final AlgaeArmIntake m_algaeArmIntake = new AlgaeArmIntake();
   public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
-  public final ArmSubsystem m_arm = new ArmSubsystem();
+  public final ArmRotationIntake m_arm = new ArmRotationIntake();
 
   // Autonomous command chooser for selecting autonomous routines
   public static SendableChooser<Command> autoChooser = new SendableChooser<>();
 
   // Flag to toggle slow speed mode
   private boolean slowSpeedEnabled = false;
+
+  public final PressCountCommandHandler placeCoralCommand = new PressCountCommandHandler(idleSystems(),0.25,
+      placeReefCoral(ElevatorPosition.coral_L1, ArmPosition.coral_L1),
+      placeReefCoral(ElevatorPosition.coral_L2, ArmPosition.coral_L23),
+      placeReefCoral(ElevatorPosition.coral_L3, ArmPosition.coral_L23),
+      placeReefCoral(ElevatorPosition.coral_L4, ArmPosition.coral_L4));
+
+  public final PressCountCommandHandler grabAlgeaCommand = new PressCountCommandHandler(idleSystems(),0.25,
+      grabAlgeaReef(ElevatorPosition.grab_algea_1),
+      grabAlgeaReef(ElevatorPosition.grab_algea_2));
 
   /**
    * Constructor for the RobotContainer.
@@ -87,17 +96,43 @@ public class RobotContainer {
     // Bind "Left Bumper" button to toggle slow speed mode
     driverController.leftBumper().onTrue(new InstantCommand(() -> slowSpeedEnabled = !slowSpeedEnabled));
 
-    driverController.leftTrigger().whileTrue(grabGroundCoral().andThen(idleAllSubsystems())).onFalse(cleanUpInterrupted().andThen(idleAllSubsystems()));
+    driverController.rightTrigger().whileTrue(pathfindToReef().andThen(new InstantCommand(() -> placeCoralCommand.recordPress())));
+    driverController.rightBumper().whileTrue(pathFindToAlgea().andThen(new InstantCommand(() -> grabAlgeaCommand.recordPress())));
+    driverController.leftTrigger().whileTrue(pathfindToHuman().andThen(intakeSourceGrab())).onFalse(idleSystems());
+    driverController.leftBumper().whileTrue(pathfindToProcessor().andThen(dropAlgeaProcessor())).onFalse(idleSystems());
   }
 
-  private Command grabGroundCoral() {
-    return m_elevator.setElevatorPositionCommand(ElevatorPosition.idle)
-        .alongWith(m_arm.setArmPositionCommand(ArmPosition.grab))
-        .andThen(m_groundIntake.setIntakePositionCommand(true)).andThen(m_groundIntake.grabCoral())
-        .andThen(new InstantCommand(() -> triggerRumble(0.5)))
-        .andThen(m_groundIntake.setIntakePositionCommand(false))
-        .andThen(m_coralArmIntake.grabCommand().alongWith(m_groundIntake.spitCoral()))
+  private Command placeReefCoral(ElevatorPosition elevatorPosition, ArmPosition armPosition) {
+    return m_elevator.setElevatorPositionCommand(elevatorPosition).alongWith(m_arm.setArmPositionCommand(armPosition))
+        .andThen(m_coralArmIntake.releaseCommand())
         .andThen(new InstantCommand(() -> triggerRumble(0.5)));
+  }
+
+  private Command grabAlgeaReef(ElevatorPosition position) {
+    return m_elevator.setElevatorPositionCommand(position).andThen(m_algaeArmIntake.grabCommand())
+        .andThen(new InstantCommand(() -> triggerRumble(0.5)));
+  }
+
+  private Command dropAlgeaProcessor()
+  {
+    return m_elevator.setElevatorPositionCommand(ElevatorPosition.processor)
+        .andThen(m_algaeArmIntake.releaseCommand())
+        .andThen(new InstantCommand(() -> triggerRumble(0.5)));
+  }
+
+  private Command intakeSourceGrab() {
+    return m_arm.setArmPositionCommand(ArmPosition.grab)
+        .alongWith(m_elevator.setElevatorPositionCommand(ElevatorPosition.source))
+        .andThen(m_coralArmIntake.grabCommand())
+        .andThen(new InstantCommand(() -> triggerRumble(0.5)));
+  }
+
+  private Command idleSystems()
+  {
+    return m_elevator.setElevatorPositionCommand(ElevatorPosition.idle)
+        .alongWith(m_arm.setArmPositionCommand(ArmPosition.idle))
+        .andThen(m_coralArmIntake.stopMotors())
+        .andThen(m_algaeArmIntake.stopMotors());
   }
 
   private void triggerRumble(double durationSeconds) {
@@ -113,44 +148,24 @@ public class RobotContainer {
     }).start();
   }
 
-  private Command cleanUpInterrupted() {
-    return new InstantCommand(() -> {
-      m_groundIntake.setIntakePosition(false);
-      m_groundIntake.stopMotors();
-      m_coralArmIntake.stopMotors();
-    });
-  }
-
-  private Command placeCoral(ElevatorPosition ePosition, ArmPosition aPosition) {
-    return m_elevator.setElevatorPositionCommand(ePosition).andThen(m_arm.setArmPositionCommand(aPosition))
-        .andThen(m_elevator.lowerElevatorToPlace())
-        .andThen(m_coralArmIntake.releaseCommand())
-        .andThen(new InstantCommand(() -> triggerRumble(0.5)));
-  }
-
-  private Command pathfindToClosest() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Closest);
-  }
-
-  // private Command pathfindToReef()
-  // {
-  // return m_robotDrive.goToPosePathfind(PathfindType.Reef);
+  // private Command pathfindToClosest() {
+  //   return m_robotDrive.goToPosePathfind(PathfindType.Closest);
   // }
 
-  // private Command pathfindToHuman()
-  // {
-  // return m_robotDrive.goToPosePathfind(PathfindType.Human);
-  // }
+  private Command pathfindToHuman() {
+    return m_robotDrive.goToPosePathfind(PathfindType.Human);
+  }
 
-  // private Command pathfindToProcessor()
-  // {
-  // return m_robotDrive.goToPosePathfind(PathfindType.Processor);
-  // }
+  private Command pathfindToReef() {
+    return m_robotDrive.goToPosePathfind(PathfindType.Reef);
+  }
 
-  private Command idleAllSubsystems() {
-    return m_elevator.setElevatorPositionCommand(ElevatorPosition.idle)
-        .alongWith(m_arm
-            .setArmPositionCommand(m_coralArmIntake.getCoralArmIntakeSensor() ? ArmPosition.idle : ArmPosition.grab));
+  private Command pathFindToAlgea() { 
+    return m_robotDrive.goToPosePathfind(PathfindType.Algea);
+  }
+
+  private Command pathfindToProcessor() {
+    return m_robotDrive.goToPosePathfind(PathfindType.Processor);
   }
 
   /**

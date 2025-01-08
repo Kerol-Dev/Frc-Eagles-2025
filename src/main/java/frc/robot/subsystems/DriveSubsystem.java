@@ -264,6 +264,10 @@ public class DriveSubsystem extends SubsystemBase {
         pose = fieldPositions.getClosestHumanPose(getPose());
         break;
 
+      case Algea:
+        pose = fieldPositions.getPose("algea");
+        break;
+
       case Processor:
         pose = fieldPositions.getPose("processor");
         break;

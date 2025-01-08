@@ -9,10 +9,12 @@ public class PressCountCommandHandler {
     private double lastPressTime = 0.0; // Tracks the time of the last button press
     private final double debounceTime; // Debounce time in seconds
     private final Command[] commands; // Array of commands for each press count
+    private final Command lastCommand;
 
-    public PressCountCommandHandler(double debounceTime, Command... commands) {
+    public PressCountCommandHandler(Command lastCommand, double debounceTime, Command... commands) {
         this.debounceTime = debounceTime;
         this.commands = commands;
+        this.lastCommand = lastCommand;
     }
 
     public void recordPress() {
@@ -27,11 +29,12 @@ public class PressCountCommandHandler {
             if (pressCount <= commands.length) {
                 CommandScheduler.getInstance().schedule(commands[pressCount - 1]);
             } else {
-                System.out.println("No command mapped for press count: " + pressCount);
+                CommandScheduler.getInstance().schedule(commands[commands.length - 1]);
             }
 
             // Reset the press count
             pressCount = 0;
+            lastCommand.schedule();
         }
     }
 }
