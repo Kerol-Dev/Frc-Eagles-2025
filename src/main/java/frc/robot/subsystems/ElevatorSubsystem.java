@@ -1,7 +1,7 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -26,6 +26,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         talonFXConfiguration.Slot0.kP = ElevatorConstants.kElevatorMotorP;
         talonFXConfiguration.Slot0.kI = ElevatorConstants.kElevatorMotorI;
         talonFXConfiguration.Slot0.kD = ElevatorConstants.kElevatorMotorD;
+        talonFXConfiguration.MotorOutput.PeakForwardDutyCycle = ElevatorConstants.kElevatorMaxSpeed;
+        talonFXConfiguration.MotorOutput.PeakReverseDutyCycle = -ElevatorConstants.kElevatorMaxSpeed;
         talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ElevatorConstants.kElevatorMotorForwardSoftLimit;
         talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
@@ -76,11 +78,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setElevatorPosition(double position) {
-        elevatorMotor.setControl(new MotionMagicVoltage(position).withEnableFOC(true));
+        elevatorMotor.setControl(new MotionMagicDutyCycle(position).withEnableFOC(true));
     }
 
     public void setElevatorPosition(ElevatorPosition position) {
-        elevatorMotor.setControl(new MotionMagicVoltage(getElevatorPositionValue(position)).withEnableFOC(true));
+        elevatorMotor.setControl(new MotionMagicDutyCycle(getElevatorPositionValue(position)).withEnableFOC(true));
     }
 
     public boolean isElevatorAtPosition() {

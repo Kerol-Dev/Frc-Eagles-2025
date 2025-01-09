@@ -1,10 +1,13 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -14,30 +17,23 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.misc.ArmPosition;
 
 public class ArmRotationIntake extends SubsystemBase {
-    private final TalonFX armMotor = new TalonFX(ElevatorConstants.kElevatorMotorCanID);
+    private final SparkMax armMotor = new SparkMax(ElevatorConstants.kElevatorMotorCanID, MotorType.kBrushless);
     private double armGoalPosition = 0;
 
     public ArmRotationIntake() {
-        TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
-        // set slot 0 gains
-        var slot0Configs = talonFXConfiguration.Slot0;
-        slot0Configs.kS = 0.25; // Add 0.25 V output to overcome static friction
-        slot0Configs.kV = 0.12; // A velocity target of 1 rps results in 0.12 V output
-        slot0Configs.kA = 0.01; // An acceleration of 1 rps/s requires 0.01 V output
-        talonFXConfiguration.Slot0.kP = ArmConstants.kArmMotorP;
-        talonFXConfiguration.Slot0.kI = ArmConstants.kArmMotorI;
-        talonFXConfiguration.Slot0.kD = ArmConstants.kArmMotorD;
-        talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ArmConstants.kArmMotorForwardSoftLimit;
-        talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = ArmConstants.kArmMotorReverseSoftLimit;
-        talonFXConfiguration.MotionMagic.MotionMagicAcceleration = ArmConstants.kArmMotorAcceleration / 60;
-        talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = ArmConstants.kArmMotorCruiseVelocity / 60;
-        talonFXConfiguration.Feedback.SensorToMechanismRatio = ArmConstants.kArmMotorSensorToMechRatio;
-        talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        talonFXConfiguration.MotorOutput.Inverted = ArmConstants.kArmMotorInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
 
-        armMotor.getConfigurator().apply(talonFXConfiguration);
+        sparkMaxConfig.idleMode(IdleMode.kBrake);
+        sparkMaxConfig.inverted(ArmConstants.kArmMotorInverted);
+        sparkMaxConfig.encoder
+                .positionConversionFactor(ArmConstants.kArmMotorSensorToMechRatio);
+        sparkMaxConfig.closedLoop.pid(ArmConstants.kArmMotorP,
+                ArmConstants.kArmMotorI, ArmConstants.kArmMotorD);
+        sparkMaxConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        sparkMaxConfig.closedLoop.outputRange(-ArmConstants.kArmMotorMaxSpeed,
+                ArmConstants.kArmMotorMaxSpeed);
+        armMotor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters,
+                PersistMode.kPersistParameters);
     }
 
     public Command setArmPositionCommand(ArmPosition positionSelection) {
@@ -55,8 +51,7 @@ public class ArmRotationIntake extends SubsystemBase {
         };
     }
 
-    private double getArmPositionValue(ArmPosition position)
-    {
+    private double getArmPositionValue(ArmPosition position) {
         switch (position) {
             case coral_L4:
                 return 150;
@@ -72,14 +67,14 @@ public class ArmRotationIntake extends SubsystemBase {
     }
 
     public void setArmPosition(double position) {
-        armMotor.setControl(new MotionMagicVoltage(position).withEnableFOC(true));
+        armMotor.getClosedLoopController().setReference(position, ControlType.kPosition);
     }
 
     public void setArmPosition(ArmPosition position) {
-        armMotor.setControl(new MotionMagicVoltage(getArmPositionValue(position)).withEnableFOC(true));
+        armMotor.getClosedLoopController().setReference(getArmPositionValue(position), ControlType.kPosition);
     }
 
     public boolean isArmAtPosition() {
-        return MathUtil.isNear(armGoalPosition, armMotor.getPosition().getValueAsDouble(), 10);
+        return MathUtil.isNear(armGoalPosition, armMotor.getEncoder().getPosition(), 10);
     }
 }

@@ -1,12 +1,15 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
@@ -17,39 +20,36 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.GroundIntakeConstants;
 
 public class GroundIntakeSubsystem extends SubsystemBase {
-    private final SparkMax groundIntakeRotationMotor_1 = new SparkMax(
-            GroundIntakeConstants.kGroundIntakeRotationMotor1CanId, MotorType.kBrushless);
-    private final SparkMax groundIntakeRotationMotor_2 = new SparkMax(
-            GroundIntakeConstants.kGroundIntakeRotationMotor2CanId, MotorType.kBrushless);
+    private final TalonFX groundIntakeRotationMotor = new TalonFX(
+            GroundIntakeConstants.kGroundIntakeRotationMotorCanId);
     private final SparkMax groundIntakeFeedMotor = new SparkMax(GroundIntakeConstants.kGroundIntakeFeedMotorCanId,
             MotorType.kBrushless);
 
     private final DigitalInput groundIntakeSensor = new DigitalInput(GroundIntakeConstants.kGroundIntakeSensorPort);
 
     public GroundIntakeSubsystem() {
-        SparkMaxConfig groundIntakeRotationMotor1Config = new SparkMaxConfig();
-        groundIntakeRotationMotor1Config.idleMode(IdleMode.kBrake);
-        groundIntakeRotationMotor1Config.inverted(GroundIntakeConstants.kGroundIntakeRotationMotor1Inverted);
-        groundIntakeRotationMotor1Config.follow(groundIntakeRotationMotor_2);
-        groundIntakeRotationMotor_1.configure(groundIntakeRotationMotor1Config, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+        TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
 
-        SparkMaxConfig groundIntakeRotationMotor2Config = new SparkMaxConfig();
-        groundIntakeRotationMotor2Config.idleMode(IdleMode.kBrake);
-        groundIntakeRotationMotor2Config.inverted(GroundIntakeConstants.kGroundIntakeRotationMotor1Inverted);
-        groundIntakeRotationMotor2Config.encoder
-                .positionConversionFactor(360 / GroundIntakeConstants.kGroundIntakeRotationMotor2Reduction);
-        groundIntakeRotationMotor2Config.closedLoop.pid(GroundIntakeConstants.kGroundIntakeRotationP,
-                GroundIntakeConstants.kGroundIntakeRotationI, GroundIntakeConstants.kGroundIntakeRotationD);
-        groundIntakeRotationMotor2Config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-        groundIntakeRotationMotor2Config.closedLoop.outputRange(-GroundIntakeConstants.kGroundIntakeRotationMaxSpeed,
-                GroundIntakeConstants.kGroundIntakeRotationMaxSpeed);
-        groundIntakeRotationMotor_2.configure(groundIntakeRotationMotor2Config, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+        talonFXConfiguration.Slot0.kP = GroundIntakeConstants.kGroundIntakeRotationP;
+        talonFXConfiguration.Slot0.kI = GroundIntakeConstants.kGroundIntakeRotationI;
+        talonFXConfiguration.Slot0.kD = GroundIntakeConstants.kGroundIntakeRotationD;
+        talonFXConfiguration.MotorOutput.PeakForwardDutyCycle = GroundIntakeConstants.kGroundIntakeRotationMaxSpeed;
+        talonFXConfiguration.MotorOutput.PeakReverseDutyCycle = -GroundIntakeConstants.kGroundIntakeRotationMaxSpeed;
+        talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = GroundIntakeConstants.kGroundIntakeOpenedAngle;
+        talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = GroundIntakeConstants.kGroundIntakeClosedAngle;
+        talonFXConfiguration.Feedback.SensorToMechanismRatio = GroundIntakeConstants.kGroundIntakeRotationMotorReduction;
+        talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        talonFXConfiguration.MotorOutput.Inverted = GroundIntakeConstants.kGroundIntakeRotationMotorInverted
+                ? InvertedValue.Clockwise_Positive
+                : InvertedValue.CounterClockwise_Positive;
+
+        groundIntakeRotationMotor.getConfigurator().apply(talonFXConfiguration);
 
         SparkMaxConfig groundIntakeFeedMotorConfig = new SparkMaxConfig();
         groundIntakeFeedMotorConfig.idleMode(IdleMode.kBrake);
-        groundIntakeFeedMotorConfig.inverted(GroundIntakeConstants.kGroundIntakeRotationMotor1Inverted);
+        groundIntakeFeedMotorConfig.inverted(GroundIntakeConstants.kGroundIntakeFeedMotorInverted);
         groundIntakeFeedMotor.configure(groundIntakeFeedMotorConfig, ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
     }
@@ -69,16 +69,15 @@ public class GroundIntakeSubsystem extends SubsystemBase {
     }
 
     public void setIntakePosition(boolean open) {
-        groundIntakeRotationMotor_2.getClosedLoopController().setReference(
-                open ? GroundIntakeConstants.kGroundIntakeClosedAngle : GroundIntakeConstants.kGroundIntakeOpenedAngle,
-                ControlType.kPosition);
+        groundIntakeRotationMotor.setControl(new PositionDutyCycle(open ? GroundIntakeConstants.kGroundIntakeOpenedAngle
+        : GroundIntakeConstants.kGroundIntakeClosedAngle).withEnableFOC(true));
     }
 
     public boolean isIntakeReady(boolean goalOpen) {
         return MathUtil.isNear(
                 goalOpen ? GroundIntakeConstants.kGroundIntakeOpenedAngle
                         : GroundIntakeConstants.kGroundIntakeClosedAngle,
-                groundIntakeRotationMotor_2.getEncoder().getPosition(),
+                groundIntakeRotationMotor.getPosition().getValueAsDouble(),
                 1);
     }
 
