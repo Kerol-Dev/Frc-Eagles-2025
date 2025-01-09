@@ -7,25 +7,19 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CoralArmIntakeConstants;
 
-public class CoralArmIntake extends SubsystemBase{
+public class CoralIntake extends SubsystemBase{
     private final SparkMax coralArmIntakeMotor = new SparkMax(CoralArmIntakeConstants.kCoralArmIntakeMotorCanID, MotorType.kBrushless);
     private final DigitalInput coralArmIntakeSensor = new DigitalInput(CoralArmIntakeConstants.kCoralArmIntakeSensorPort);
 
-    public CoralArmIntake(){
+    public CoralIntake(){
         SparkMaxConfig coralArmIntakeMotorConfig = new SparkMaxConfig();
         coralArmIntakeMotorConfig.inverted(CoralArmIntakeConstants.kCoralArmIntakeMotorInverted);
         coralArmIntakeMotor.configure(coralArmIntakeMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    }
-
-    @Override
-    public void periodic() {
-        SmartDashboard.putBoolean("Coral Sensor", getCoralArmIntakeSensor());
     }
 
     public Command grabCommand(){
@@ -42,7 +36,7 @@ public class CoralArmIntake extends SubsystemBase{
 
             @Override
             public boolean isFinished(){
-                return getCoralArmIntakeSensor();
+                return getCoralIntakeSensor();
             }
         };
     }
@@ -61,7 +55,7 @@ public class CoralArmIntake extends SubsystemBase{
 
             @Override
             public boolean isFinished(){
-                return !getCoralArmIntakeSensor();
+                return !getCoralIntakeSensor();
             }
         };
     }
@@ -74,7 +68,7 @@ public class CoralArmIntake extends SubsystemBase{
         coralArmIntakeMotor.set(speed);
     }
 
-    public boolean getCoralArmIntakeSensor(){
+    public boolean getCoralIntakeSensor(){
         return !coralArmIntakeSensor.get();
     }
 }

@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.AlgaeArmIntake;
+import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.ArmRotationIntake;
-import frc.robot.subsystems.CoralArmIntake;
+import frc.robot.subsystems.CoralIntake;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.GroundIntakeSubsystem;
@@ -37,8 +37,8 @@ public class RobotContainer {
 
   // Subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final CoralArmIntake m_coralArmIntake = new CoralArmIntake();
-  private final AlgaeArmIntake m_algaeArmIntake = new AlgaeArmIntake();
+  private final CoralIntake m_coralArmIntake = new CoralIntake();
+  private final AlgaeIntake m_algaeArmIntake = new AlgaeIntake();
   public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
   private final ArmRotationIntake m_arm = new ArmRotationIntake();
   private final GroundIntakeSubsystem m_groundIntake = new GroundIntakeSubsystem();
