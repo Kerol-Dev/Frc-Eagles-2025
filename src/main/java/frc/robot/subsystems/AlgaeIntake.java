@@ -12,13 +12,13 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.AlgaeArmIntakeConstants;
 
-public class AlgaeArmIntake extends SubsystemBase {
+public class AlgaeIntake extends SubsystemBase {
     private final SparkMax AlgaeArmIntakeMotor = new SparkMax(AlgaeArmIntakeConstants.kAlgaeArmIntakeMotorCanID,
             MotorType.kBrushless);
     public static final DigitalInput AlgaeArmIntakeSensor = new DigitalInput(
             AlgaeArmIntakeConstants.kAlgaeArmIntakeSensorPort);
 
-    public AlgaeArmIntake() {
+    public AlgaeIntake() {
         SparkMaxConfig AlgaeArmIntakeMotorConfig = new SparkMaxConfig();
         AlgaeArmIntakeMotorConfig.inverted(AlgaeArmIntakeConstants.kAlgaeArmIntakeMotorInverted);
         AlgaeArmIntakeMotor.configure(AlgaeArmIntakeMotorConfig, ResetMode.kResetSafeParameters,

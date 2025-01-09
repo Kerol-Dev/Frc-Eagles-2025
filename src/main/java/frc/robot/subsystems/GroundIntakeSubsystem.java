@@ -123,7 +123,7 @@ public class GroundIntakeSubsystem extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return !AlgaeArmIntake.AlgaeArmIntakeSensor.get();
+                return !AlgaeIntake.AlgaeArmIntakeSensor.get();
             }
         };
     }

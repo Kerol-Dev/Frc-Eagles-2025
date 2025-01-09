@@ -3,6 +3,7 @@ package frc.robot.subsystems.vision;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.photonvision.EstimatedRobotPose;
@@ -27,7 +28,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Detector;
-import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Fiducial;
 
 public class VisionSubsystem extends SubsystemBase {
     AprilTagFieldLayout reefScapeLayout;
@@ -35,16 +35,16 @@ public class VisionSubsystem extends SubsystemBase {
     // Photon Vision Cameras
     public ArrayList<Camera> cameras = new ArrayList<>();
 
-    StructPublisher<Pose3d> tag5 = NetworkTableInstance.getDefault().getTable("TagPoses")
-  .getStructTopic("Tag_5", Pose3d.struct).publish();
-  StructPublisher<Pose3d> tag11 = NetworkTableInstance.getDefault().getTable("TagPoses")
-  .getStructTopic("Tag_11", Pose3d.struct).publish();
-  StructPublisher<Pose3d> tag6 = NetworkTableInstance.getDefault().getTable("TagPoses")
-  .getStructTopic("Tag_6", Pose3d.struct).publish();
-  StructPublisher<Pose3d> tag1 = NetworkTableInstance.getDefault().getTable("TagPoses")
-  .getStructTopic("Tag_1", Pose3d.struct).publish();
-  StructPublisher<Pose3d> tag7 = NetworkTableInstance.getDefault().getTable("TagPoses")
-  .getStructTopic("Tag_7", Pose3d.struct).publish();
+    private static final int NUM_TAGS = 22;
+    private List<StructPublisher<Pose3d>> tagPublishers = new ArrayList<>();
+
+    {
+        for (int i = 1; i <= NUM_TAGS; i++) {
+            tagPublishers.add(NetworkTableInstance.getDefault().getTable("TagPoses")
+                .getStructTopic("Tag_" + i, Pose3d.struct).publish());
+        }
+    }
+
 
     /**
      * Standard deviations of the vision measurements. Increase these numbers to
@@ -75,22 +75,18 @@ public class VisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         visibleAprilTags.clear();
-
-        tag5.set(reefScapeLayout.getTagPose(5).get());
-        tag11.set(reefScapeLayout.getTagPose(11).get());
-        tag6.set(reefScapeLayout.getTagPose(6).get());
-        tag1.set(reefScapeLayout.getTagPose(1).get());
-        tag7.set(reefScapeLayout.getTagPose(7).get());
-
-
-        if (LimelightHelpers.getTV("")) {
-            LimelightTarget_Fiducial[] targets = LimelightHelpers.getLatestResults("").targets_Fiducials;
-
-            for (LimelightTarget_Fiducial target_Fiducial : targets) {
-                visibleAprilTags.add(String.valueOf(target_Fiducial.fiducialID));
+        for (int i = 1; i <= NUM_TAGS; i++) {
+            if (visibleAprilTags.contains(String.valueOf(i))) {
+            Pose3d pose = reefScapeLayout.getTagPose(i).orElse(null);
+            if (pose != null) {
+                tagPublishers.get(i - 1).set(pose);
+            }
+            }
+            else
+            {
+                tagPublishers.get(i - 1).set(new Pose3d(GetRobotPoseEstimated()));
             }
         }
-
         UpdatePoseEstimation();
 
         SmartDashboard.putString("Visible AprilTags", visibleAprilTags.toString());

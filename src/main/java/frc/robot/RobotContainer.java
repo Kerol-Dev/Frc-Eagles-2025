@@ -94,12 +94,12 @@ public class RobotContainer {
     NamedCommands.registerCommand("InitializeForSource",
         IntakeSourceInitCommand().onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()));
     NamedCommands.registerCommand("GrabFromSource", IntakeSourceGrabCommand()
-        .onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.4)));
+        .onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.6)));
     NamedCommands.registerCommand("PlaceL4Init",
         PlaceReefCoralInitCommand(ElevatorPosition.coral_L4, ArmPosition.coral_L4)
             .onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()));
     NamedCommands.registerCommand("PlaceL4", PlaceReefCoralCommand(ElevatorPosition.coral_L4, ArmPosition.coral_L4)
-        .onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.4)));
+        .onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(1)));
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData(autoChooser);
   }
