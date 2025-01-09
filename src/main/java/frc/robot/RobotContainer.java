@@ -90,10 +90,10 @@ public class RobotContainer {
    * Configures PathPlanner autonomous routines.
    */
   private void configurePathPlanner() {
-    NamedCommands.registerCommand("InitializeForSource", IntakeSourceInitCommand().onlyIf(() -> m_coralArmIntake.getCoralArmIntakeSensor()));
-    NamedCommands.registerCommand("GrabFromSource", IntakeSourceGrabCommand().onlyIf(() -> m_coralArmIntake.getCoralArmIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.4)));
-    NamedCommands.registerCommand("PlaceL4Init", PlaceReefCoralInitCommand(ElevatorPosition.coral_L4, ArmPosition.coral_L4).onlyIf(() -> m_coralArmIntake.getCoralArmIntakeSensor()));
-    NamedCommands.registerCommand("PlaceL4", PlaceReefCoralCommand(ElevatorPosition.coral_L4, ArmPosition.coral_L4).onlyIf(() -> m_coralArmIntake.getCoralArmIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.4)));
+    NamedCommands.registerCommand("InitializeForSource", IntakeSourceInitCommand().onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()));
+    NamedCommands.registerCommand("GrabFromSource", IntakeSourceGrabCommand().onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.4)));
+    NamedCommands.registerCommand("PlaceL4Init", PlaceReefCoralInitCommand(ElevatorPosition.coral_L4, ArmPosition.coral_L4).onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()));
+    NamedCommands.registerCommand("PlaceL4", PlaceReefCoralCommand(ElevatorPosition.coral_L4, ArmPosition.coral_L4).onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.4)));
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData(autoChooser);
   }
