@@ -20,6 +20,7 @@ import frc.robot.subsystems.misc.ArmPosition;
 import frc.robot.subsystems.misc.ElevatorPosition;
 import frc.robot.subsystems.misc.PressCountCommandHandler;
 import frc.robot.subsystems.pathfind.PathfindType;
+import frc.robot.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -90,10 +91,15 @@ public class RobotContainer {
    * Configures PathPlanner autonomous routines.
    */
   private void configurePathPlanner() {
-    NamedCommands.registerCommand("InitializeForSource", IntakeSourceInitCommand().onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()));
-    NamedCommands.registerCommand("GrabFromSource", IntakeSourceGrabCommand().onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.4)));
-    NamedCommands.registerCommand("PlaceL4Init", PlaceReefCoralInitCommand(ElevatorPosition.coral_L4, ArmPosition.coral_L4).onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()));
-    NamedCommands.registerCommand("PlaceL4", PlaceReefCoralCommand(ElevatorPosition.coral_L4, ArmPosition.coral_L4).onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.4)));
+    NamedCommands.registerCommand("InitializeForSource",
+        IntakeSourceInitCommand().onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()));
+    NamedCommands.registerCommand("GrabFromSource", IntakeSourceGrabCommand()
+        .onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.4)));
+    NamedCommands.registerCommand("PlaceL4Init",
+        PlaceReefCoralInitCommand(ElevatorPosition.coral_L4, ArmPosition.coral_L4)
+            .onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()));
+    NamedCommands.registerCommand("PlaceL4", PlaceReefCoralCommand(ElevatorPosition.coral_L4, ArmPosition.coral_L4)
+        .onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.4)));
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData(autoChooser);
   }
@@ -105,8 +111,10 @@ public class RobotContainer {
     driverController.start().onTrue(new InstantCommand(m_robotDrive::zeroHeading));
     driverController.leftBumper().onTrue(new InstantCommand(() -> slowSpeedEnabled = !slowSpeedEnabled));
 
+    // driverController.rightTrigger()
+    //     .whileTrue(pathfindToReef().andThen(new InstantCommand(placeCoralCommand::recordPress)));
     driverController.rightTrigger()
-        .whileTrue(pathfindToReef().andThen(new InstantCommand(placeCoralCommand::recordPress)));
+        .whileTrue(pathfindToReef().andThen(PlaceAutomaticCoral().andThen(AutoReleaseCoral()).andThen(new InstantCommand(() -> triggerRumble(0.5)))));
     driverController.rightBumper()
         .whileTrue(pathFindToAlgae().andThen(new InstantCommand(grabAlgaeCommand::recordPress)));
     driverController.leftTrigger().whileTrue(pathfindToHuman().andThen(IntakeSourceGrabCommand()))
@@ -141,8 +149,59 @@ public class RobotContainer {
   private Command PlaceReefCoralCommand(ElevatorPosition elevatorPosition, ArmPosition armPosition) {
     return m_elevator.setElevatorPositionCommand(elevatorPosition)
         .alongWith(m_arm.setArmPositionCommand(armPosition))
-        .andThen(m_coralArmIntake.releaseCommand())
+        .andThen(AutoReleaseCoral());
+  }
+
+  private Command AutoReleaseCoral() {
+    return m_coralArmIntake.releaseCommand()
         .andThen(new InstantCommand(() -> triggerRumble(0.5)));
+  }
+
+  private Command PlaceAutomaticCoral() {
+    return new Command() {
+      int currentLevel = 4;
+      Command currentCommand = PlaceReefCoralInitCommand(ElevatorPosition.coral_L4, ArmPosition.coral_L4);
+      boolean isFinished = false;
+
+      @Override
+      public void initialize() {
+        currentCommand.schedule();
+      }
+
+      @Override
+      public void execute() {
+        if (currentCommand.isFinished()) {
+          if (VisionSubsystem.getLimelightObjectTarget()) {
+            currentLevel--;
+          }
+          else
+          {
+            isFinished = true;
+            return;
+          }
+
+          switch (currentLevel) {
+            case 3:
+              currentCommand = PlaceReefCoralInitCommand(ElevatorPosition.coral_L3, ArmPosition.coral_L23);
+              break;
+            case 2:
+              currentCommand = PlaceReefCoralInitCommand(ElevatorPosition.coral_L2, ArmPosition.coral_L23);
+              break;
+            case 1:
+              currentCommand = PlaceReefCoralInitCommand(ElevatorPosition.coral_L1, ArmPosition.coral_L1);
+            default:
+              isFinished = true;
+              break;
+          }
+          currentCommand.schedule();
+        }
+      }
+
+      @Override
+      public boolean isFinished() {
+        return isFinished;
+      }
+    };
   }
 
   private Command PlaceReefCoralInitCommand(ElevatorPosition elevatorPosition, ArmPosition armPosition) {

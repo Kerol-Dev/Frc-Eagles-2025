@@ -104,6 +104,11 @@ public class VisionSubsystem extends SubsystemBase {
         cameras.add(new Camera("RearLeft", new Translation3d(0.0, 0.0, 0.0), new Rotation3d(0.0, 0.0, 0.0)));
     }
 
+    public static boolean getLimelightObjectTarget()
+    {
+        return LimelightHelpers.getTV("limelight");
+    }
+
     private void UpdatePoseEstimation() {
         poseEstimator.update(DriveSubsystem.getHeading(), DriveSubsystem.getModulePositions());
 
