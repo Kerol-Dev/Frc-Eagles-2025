@@ -38,6 +38,9 @@ public class Camera {
 
         // Update Pose Estimation Per Camera
         List<PhotonPipelineResult> results = cameraObject.getAllUnreadResults();
+        if(results.size() < 1) {
+            return null;
+        }
         return poseEstimator.update(results.get(results.size() - 1)).get();
     }
 }

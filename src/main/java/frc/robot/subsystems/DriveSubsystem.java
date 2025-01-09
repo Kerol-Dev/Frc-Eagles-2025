@@ -75,6 +75,8 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearRightcanCoderOffset,
       true);
 
+  
+
   private final StructArrayPublisher<SwerveModuleState> publisher;
 
   // Field visualization and gyro
@@ -88,7 +90,6 @@ public class DriveSubsystem extends SubsystemBase {
 
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
   FieldPositions fieldPositions = new FieldPositions();
-
   /**
    * Constructs the DriveSubsystem and configures autonomous settings.
    */
@@ -254,6 +255,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
   public Command goToPosePathfind(PathfindType pathfindType) {
+    pathfindType = PathfindType.Processor;
     Pose2d pose = new Pose2d();
     switch (pathfindType) {
       case Reef:

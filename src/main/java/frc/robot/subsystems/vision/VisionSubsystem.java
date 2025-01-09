@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -9,15 +10,17 @@ import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -27,10 +30,21 @@ import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Detector;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Fiducial;
 
 public class VisionSubsystem extends SubsystemBase {
-    AprilTagFieldLayout reefScapeLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2024Crescendo);
+    AprilTagFieldLayout reefScapeLayout;
 
     // Photon Vision Cameras
     public ArrayList<Camera> cameras = new ArrayList<>();
+
+    StructPublisher<Pose3d> tag5 = NetworkTableInstance.getDefault().getTable("TagPoses")
+  .getStructTopic("Tag_5", Pose3d.struct).publish();
+  StructPublisher<Pose3d> tag11 = NetworkTableInstance.getDefault().getTable("TagPoses")
+  .getStructTopic("Tag_11", Pose3d.struct).publish();
+  StructPublisher<Pose3d> tag6 = NetworkTableInstance.getDefault().getTable("TagPoses")
+  .getStructTopic("Tag_6", Pose3d.struct).publish();
+  StructPublisher<Pose3d> tag1 = NetworkTableInstance.getDefault().getTable("TagPoses")
+  .getStructTopic("Tag_1", Pose3d.struct).publish();
+  StructPublisher<Pose3d> tag7 = NetworkTableInstance.getDefault().getTable("TagPoses")
+  .getStructTopic("Tag_7", Pose3d.struct).publish();
 
     /**
      * Standard deviations of the vision measurements. Increase these numbers to
@@ -46,6 +60,14 @@ public class VisionSubsystem extends SubsystemBase {
     private Set<String> visibleAprilTags = new HashSet<>();
 
     public VisionSubsystem() {
+        try {
+            reefScapeLayout = new AprilTagFieldLayout(
+                Path.of("src/main/deploy/2025-reefscape.json")
+            );
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         poseEstimator.setVisionMeasurementStdDevs(visionMeasurementStdDevs);
         InitializeCameras();
     }
@@ -53,6 +75,13 @@ public class VisionSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         visibleAprilTags.clear();
+
+        tag5.set(reefScapeLayout.getTagPose(5).get());
+        tag11.set(reefScapeLayout.getTagPose(11).get());
+        tag6.set(reefScapeLayout.getTagPose(6).get());
+        tag1.set(reefScapeLayout.getTagPose(1).get());
+        tag7.set(reefScapeLayout.getTagPose(7).get());
+
 
         if (LimelightHelpers.getTV("")) {
             LimelightTarget_Fiducial[] targets = LimelightHelpers.getLatestResults("").targets_Fiducials;
@@ -80,6 +109,9 @@ public class VisionSubsystem extends SubsystemBase {
 
         for (Camera camera : cameras) {
             EstimatedRobotPose robotPose = camera.update();
+
+            if (robotPose == null)
+                continue;
 
             for (PhotonTrackedTarget target : robotPose.targetsUsed) {
                 visibleAprilTags.add(String.valueOf(target.fiducialId));

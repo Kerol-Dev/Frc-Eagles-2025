@@ -1,0 +1,1005 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x0000000177c80858, pid=16859, tid=52739
+#
+# JRE version: OpenJDK Runtime Environment Temurin-17.0.12+7 (17.0.12+7) (build 17.0.12+7)
+# Java VM: OpenJDK 64-Bit Server VM Temurin-17.0.12+7 (17.0.12+7, mixed mode, tiered, compressed oops, compressed class ptrs, g1 gc, bsd-aarch64)
+# Problematic frame:
+# C  [libCTRE_PhoenixTools_Sim.dylib+0x10858]
+#
+# No core dump will be written. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# If you would like to submit a bug report, please visit:
+#   https://github.com/adoptium/adoptium-support/issues
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=localhost:60820 -Djava.library.path=/Users/kerol/Documents/GitHub/Frc-Eagles-2025/build/jni/release -XX:+ShowCodeDetailsInExceptionMessages frc.robot.Main
+
+Host: "Mac14,9" arm64, 10 cores, 16G, Darwin 24.2.0, macOS 15.2 (24C5057p)
+Time: Thu Jan  9 11:50:36 2025 +03 elapsed time: 51.858053 seconds (0d 0h 0m 51s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x000000013c8de200):  JavaThread "robot main" daemon [_thread_in_native, id=52739, stack(0x0000000171c04000,0x0000000171e07000)]
+
+Stack: [0x0000000171c04000,0x0000000171e07000],  sp=0x0000000171e05cc0,  free space=2055k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [libCTRE_PhoenixTools_Sim.dylib+0x10858]
+C  [libCTRE_PhoenixTools_Sim.dylib+0x16458]
+C  [libCTRE_PhoenixTools_Sim.dylib+0x1ecb6c]
+j  com.ctre.phoenix6.controls.jni.ControlJNI.JNI_RequestControlDutyCycleOut(Ljava/lang/String;IDDZZZZZZ)I+0
+J 2557 c2 com.ctre.phoenix6.controls.DutyCycleOut.sendRequest(Ljava/lang/String;I)Lcom/ctre/phoenix6/StatusCode; (41 bytes) @ 0x0000000119738928 [0x00000001197388c0+0x0000000000000068]
+J 2555 c2 frc.robot.subsystems.SwerveModule.setDesiredState(Ledu/wpi/first/math/kinematics/SwerveModuleState;)V (121 bytes) @ 0x00000001197320f8 [0x0000000119731740+0x00000000000009b8]
+J 2497 c1 frc.robot.subsystems.DriveSubsystem.setModuleStates([Ledu/wpi/first/math/kinematics/SwerveModuleState;)V (44 bytes) @ 0x0000000111fa5c88 [0x0000000111fa5b80+0x0000000000000108]
+J 2504 c1 frc.robot.subsystems.DriveSubsystem.drive(DDDZZ)V (180 bytes) @ 0x0000000111fa7234 [0x0000000111fa6640+0x0000000000000bf4]
+J 2496 c1 frc.robot.RobotContainer.lambda$0()V (55 bytes) @ 0x0000000111fa50e8 [0x0000000111fa4a40+0x00000000000006a8]
+J 2495 c1 frc.robot.RobotContainer$$Lambda$100+0x00000008001bc290.run()V (8 bytes) @ 0x0000000111fa456c [0x0000000111fa44c0+0x00000000000000ac]
+J 2464 c1 edu.wpi.first.wpilibj2.command.FunctionalCommand.execute()V (10 bytes) @ 0x0000000111fa1100 [0x0000000111fa0fc0+0x0000000000000140]
+J 2501 c2 edu.wpi.first.wpilibj2.command.CommandScheduler.run()V (603 bytes) @ 0x00000001196fe5cc [0x00000001196fd200+0x00000000000013cc]
+J 2326 c1 frc.robot.Robot.robotPeriodic()V (7 bytes) @ 0x0000000111f5d0c4 [0x0000000111f5ce80+0x0000000000000244]
+J 2252 c1 edu.wpi.first.wpilibj.IterativeRobotBase.loopFunc()V (552 bytes) @ 0x0000000111f40950 [0x0000000111f3e600+0x0000000000002350]
+J 2251 c1 edu.wpi.first.wpilibj.TimedRobot$$Lambda$10+0x0000000800095cd8.run()V (8 bytes) @ 0x0000000111f3d774 [0x0000000111f3d640+0x0000000000000134]
+j  edu.wpi.first.wpilibj.TimedRobot.startCompetition()V+75
+j  edu.wpi.first.wpilibj.RobotBase.runRobot(Ljava/util/function/Supplier;)V+259
+j  edu.wpi.first.wpilibj.RobotBase.lambda$startRobot$1(Ljava/util/function/Supplier;)V+1
+j  edu.wpi.first.wpilibj.RobotBase$$Lambda$2+0x0000000800089b58.run()V+4
+j  java.lang.Thread.run()V+11 java.base@17.0.12
+v  ~StubRoutines::call_stub
+V  [libjvm.dylib+0x45e0f4]  JavaCalls::call_helper(JavaValue*, methodHandle const&, JavaCallArguments*, JavaThread*)+0x3d8
+V  [libjvm.dylib+0x45d074]  JavaCalls::call_virtual(JavaValue*, Klass*, Symbol*, Symbol*, JavaCallArguments*, JavaThread*)+0x11c
+V  [libjvm.dylib+0x45d140]  JavaCalls::call_virtual(JavaValue*, Handle, Klass*, Symbol*, Symbol*, JavaThread*)+0x64
+V  [libjvm.dylib+0x515390]  thread_entry(JavaThread*, JavaThread*)+0xc4
+V  [libjvm.dylib+0x997268]  JavaThread::thread_main_inner()+0x148
+V  [libjvm.dylib+0x9958f0]  Thread::call_run()+0xcc
+V  [libjvm.dylib+0x7aaaf4]  thread_native_entry(Thread*)+0x158
+C  [libsystem_pthread.dylib+0x72e4]  _pthread_start+0x88
+
+Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  com.ctre.phoenix6.controls.jni.ControlJNI.JNI_RequestControlDutyCycleOut(Ljava/lang/String;IDDZZZZZZ)I+0
+J 2557 c2 com.ctre.phoenix6.controls.DutyCycleOut.sendRequest(Ljava/lang/String;I)Lcom/ctre/phoenix6/StatusCode; (41 bytes) @ 0x0000000119738928 [0x00000001197388c0+0x0000000000000068]
+J 2555 c2 frc.robot.subsystems.SwerveModule.setDesiredState(Ledu/wpi/first/math/kinematics/SwerveModuleState;)V (121 bytes) @ 0x00000001197320f8 [0x0000000119731740+0x00000000000009b8]
+J 2497 c1 frc.robot.subsystems.DriveSubsystem.setModuleStates([Ledu/wpi/first/math/kinematics/SwerveModuleState;)V (44 bytes) @ 0x0000000111fa5c88 [0x0000000111fa5b80+0x0000000000000108]
+J 2504 c1 frc.robot.subsystems.DriveSubsystem.drive(DDDZZ)V (180 bytes) @ 0x0000000111fa7234 [0x0000000111fa6640+0x0000000000000bf4]
+J 2496 c1 frc.robot.RobotContainer.lambda$0()V (55 bytes) @ 0x0000000111fa50e8 [0x0000000111fa4a40+0x00000000000006a8]
+J 2495 c1 frc.robot.RobotContainer$$Lambda$100+0x00000008001bc290.run()V (8 bytes) @ 0x0000000111fa456c [0x0000000111fa44c0+0x00000000000000ac]
+J 2464 c1 edu.wpi.first.wpilibj2.command.FunctionalCommand.execute()V (10 bytes) @ 0x0000000111fa1100 [0x0000000111fa0fc0+0x0000000000000140]
+J 2501 c2 edu.wpi.first.wpilibj2.command.CommandScheduler.run()V (603 bytes) @ 0x00000001196fe5cc [0x00000001196fd200+0x00000000000013cc]
+J 2326 c1 frc.robot.Robot.robotPeriodic()V (7 bytes) @ 0x0000000111f5d0c4 [0x0000000111f5ce80+0x0000000000000244]
+J 2252 c1 edu.wpi.first.wpilibj.IterativeRobotBase.loopFunc()V (552 bytes) @ 0x0000000111f40950 [0x0000000111f3e600+0x0000000000002350]
+J 2251 c1 edu.wpi.first.wpilibj.TimedRobot$$Lambda$10+0x0000000800095cd8.run()V (8 bytes) @ 0x0000000111f3d774 [0x0000000111f3d640+0x0000000000000134]
+j  edu.wpi.first.wpilibj.TimedRobot.startCompetition()V+75
+j  edu.wpi.first.wpilibj.RobotBase.runRobot(Ljava/util/function/Supplier;)V+259
+j  edu.wpi.first.wpilibj.RobotBase.lambda$startRobot$1(Ljava/util/function/Supplier;)V+1
+j  edu.wpi.first.wpilibj.RobotBase$$Lambda$2+0x0000000800089b58.run()V+4
+j  java.lang.Thread.run()V+11 java.base@17.0.12
+v  ~StubRoutines::call_stub
+
+siginfo: si_signo: 11 (SIGSEGV), si_code: 2 (SEGV_ACCERR), si_addr: 0x0000000000000000
+
+Registers:
+ x0=0x00000001718bc030  x1=0x000000013d950370  x2=0x0000000000000005  x3=0x0000000000000005
+ x4=0x0000000000000000  x5=0x0000000000000000  x6=0x0000000000000100  x7=0x0000000000000000
+ x8=0x0000000000000000  x9=0x00000001718bc030 x10=0x0000000000000001 x11=0x0000000000108000
+x12=0x0000000000108000 x13=0x0000000000108000 x14=0x00000000ffffffff x15=0x000000000042387b
+x16=0xd796000102b40080 x17=0x0000000000000000 x18=0x0000000000000000 x19=0x0000000171a73670
+x20=0x0000000171e05d70 x21=0x0000000171e05ce0 x22=0x000000013d950370 x23=0x00000001718bebe0
+x24=0x0000000177f272b8 x25=0x00000001718bc038 x26=0x00000001718bebf8 x27=0x7fffffffffffffef
+x28=0x0000000000000000  fp=0x0000000171e05d40  lr=0x0000000177c861c4  sp=0x0000000171e05cc0
+pc=0x0000000177c80858 cpsr=0x0000000080001000
+
+Register to memory mapping:
+
+ x0=0x00000001718bc030 points into unknown readable memory: 0x0000000000000000 | 00 00 00 00 00 00 00 00
+ x1=0x000000013d950370 points into unknown readable memory: 0x0000000000000000 | 00 00 00 00 00 00 00 00
+ x2=0x0000000000000005 is an unknown value
+ x3=0x0000000000000005 is an unknown value
+ x4=0x0 is NULL
+ x5=0x0 is NULL
+ x6=0x0000000000000100 is an unknown value
+ x7=0x0 is NULL
+ x8=0x0 is NULL
+ x9=0x00000001718bc030 points into unknown readable memory: 0x0000000000000000 | 00 00 00 00 00 00 00 00
+x10=0x0000000000000001 is an unknown value
+x11=1081344 is a compressed pointer to class: 0x0000000800108000
+com.revrobotics.spark.SparkBase$ResetMode {0x0000000800108000}
+ - instance size:     3
+ - klass size:        73
+ - access:            public final synchronized 
+ - state:             fully_initialized
+ - name:              'com/revrobotics/spark/SparkBase$ResetMode'
+ - super:             'java/lang/Enum'
+ - sub:               
+ - arrays:            'com/revrobotics/spark/SparkBase$ResetMode'[]
+ - methods:           Array<T>(0x00000001388b72f0)
+ - method ordering:   Array<T>(0x00000001388b7688)
+ - default_methods:   Array<T>(0x0000000000000000)
+ - local interfaces:  Array<T>(0x0000000138000058)
+ - trans. interfaces: Array<T>(0x00000001382a1098)
+ - constants:         constant pool [62] {0x00000001388b7058} for 'com/revrobotics/spark/SparkBase$ResetMode' cache=0x00000001388afea8
+ - class loader data:  loader data: 0x000000013c751790 for instance a 'jdk/internal/loader/ClassLoaders$AppClassLoader'{0x000000070d651540}
+ - source file:       'SparkBase.java'
+ - class annotations:       Array<T>(0x0000000000000000)
+ - class type annotations:  Array<T>(0x0000000000000000)
+ - field annotations:       Array<T>(0x0000000000000000)
+ - field type annotations:  Array<T>(0x0000000000000000)
+ - generic signature: 'Ljava/lang/Enum<Lcom/revrobotics/spark/SparkBase$ResetMode;>;'
+ - inner classes:     Array<T>(0x00000001388b7670)
+ - nest members:     Array<T>(0x0000000138000028)
+ - permitted subclasses:     Array<T>(0x0000000138000028)
+ - java mirror:       a 'java/lang/Class'{0x000000070d552ee8} = 'com/revrobotics/spark/SparkBase$ResetMode'
+ - vtable length      6  (start addr: 0x00000008001081d0)
+ - itable length      8 (start addr: 0x0000000800108200)
+ - ---- static fields (2 words):
+ - public static final 'kNoResetSafeParameters' 'Lcom/revrobotics/spark/SparkBase$ResetMode;' @112 
+ - public static final 'kResetSafeParameters' 'Lcom/revrobotics/spark/SparkBase$ResetMode;' @116 
+ - private static final synthetic '$VALUES' '[Lcom/revrobotics/spark/SparkBase$ResetMode;' @120 
+ - ---- non-static fields (3 words):
+ - private final 'ordinal' 'I' @12 
+ - private final 'name' 'Ljava/lang/String;' @16 
+ - public final 'value' 'I' @20 
+ - non-static oop maps: 16-16 
+x12=1081344 is a compressed pointer to class: 0x0000000800108000
+com.revrobotics.spark.SparkBase$ResetMode {0x0000000800108000}
+ - instance size:     3
+ - klass size:        73
+ - access:            public final synchronized 
+ - state:             fully_initialized
+ - name:              'com/revrobotics/spark/SparkBase$ResetMode'
+ - super:             'java/lang/Enum'
+ - sub:               
+ - arrays:            'com/revrobotics/spark/SparkBase$ResetMode'[]
+ - methods:           Array<T>(0x00000001388b72f0)
+ - method ordering:   Array<T>(0x00000001388b7688)
+ - default_methods:   Array<T>(0x0000000000000000)
+ - local interfaces:  Array<T>(0x0000000138000058)
+ - trans. interfaces: Array<T>(0x00000001382a1098)
+ - constants:         constant pool [62] {0x00000001388b7058} for 'com/revrobotics/spark/SparkBase$ResetMode' cache=0x00000001388afea8
+ - class loader data:  loader data: 0x000000013c751790 for instance a 'jdk/internal/loader/ClassLoaders$AppClassLoader'{0x000000070d651540}
+ - source file:       'SparkBase.java'
+ - class annotations:       Array<T>(0x0000000000000000)
+ - class type annotations:  Array<T>(0x0000000000000000)
+ - field annotations:       Array<T>(0x0000000000000000)
+ - field type annotations:  Array<T>(0x0000000000000000)
+ - generic signature: 'Ljava/lang/Enum<Lcom/revrobotics/spark/SparkBase$ResetMode;>;'
+ - inner classes:     Array<T>(0x00000001388b7670)
+ - nest members:     Array<T>(0x0000000138000028)
+ - permitted subclasses:     Array<T>(0x0000000138000028)
+ - java mirror:       a 'java/lang/Class'{0x000000070d552ee8} = 'com/revrobotics/spark/SparkBase$ResetMode'
+ - vtable length      6  (start addr: 0x00000008001081d0)
+ - itable length      8 (start addr: 0x0000000800108200)
+ - ---- static fields (2 words):
+ - public static final 'kNoResetSafeParameters' 'Lcom/revrobotics/spark/SparkBase$ResetMode;' @112 
+ - public static final 'kResetSafeParameters' 'Lcom/revrobotics/spark/SparkBase$ResetMode;' @116 
+ - private static final synthetic '$VALUES' '[Lcom/revrobotics/spark/SparkBase$ResetMode;' @120 
+ - ---- non-static fields (3 words):
+ - private final 'ordinal' 'I' @12 
+ - private final 'name' 'Ljava/lang/String;' @16 
+ - public final 'value' 'I' @20 
+ - non-static oop maps: 16-16 
+x13=1081344 is a compressed pointer to class: 0x0000000800108000
+com.revrobotics.spark.SparkBase$ResetMode {0x0000000800108000}
+ - instance size:     3
+ - klass size:        73
+ - access:            public final synchronized 
+ - state:             fully_initialized
+ - name:              'com/revrobotics/spark/SparkBase$ResetMode'
+ - super:             'java/lang/Enum'
+ - sub:               
+ - arrays:            'com/revrobotics/spark/SparkBase$ResetMode'[]
+ - methods:           Array<T>(0x00000001388b72f0)
+ - method ordering:   Array<T>(0x00000001388b7688)
+ - default_methods:   Array<T>(0x0000000000000000)
+ - local interfaces:  Array<T>(0x0000000138000058)
+ - trans. interfaces: Array<T>(0x00000001382a1098)
+ - constants:         constant pool [62] {0x00000001388b7058} for 'com/revrobotics/spark/SparkBase$ResetMode' cache=0x00000001388afea8
+ - class loader data:  loader data: 0x000000013c751790 for instance a 'jdk/internal/loader/ClassLoaders$AppClassLoader'{0x000000070d651540}
+ - source file:       'SparkBase.java'
+ - class annotations:       Array<T>(0x0000000000000000)
+ - class type annotations:  Array<T>(0x0000000000000000)
+ - field annotations:       Array<T>(0x0000000000000000)
+ - field type annotations:  Array<T>(0x0000000000000000)
+ - generic signature: 'Ljava/lang/Enum<Lcom/revrobotics/spark/SparkBase$ResetMode;>;'
+ - inner classes:     Array<T>(0x00000001388b7670)
+ - nest members:     Array<T>(0x0000000138000028)
+ - permitted subclasses:     Array<T>(0x0000000138000028)
+ - java mirror:       a 'java/lang/Class'{0x000000070d552ee8} = 'com/revrobotics/spark/SparkBase$ResetMode'
+ - vtable length      6  (start addr: 0x00000008001081d0)
+ - itable length      8 (start addr: 0x0000000800108200)
+ - ---- static fields (2 words):
+ - public static final 'kNoResetSafeParameters' 'Lcom/revrobotics/spark/SparkBase$ResetMode;' @112 
+ - public static final 'kResetSafeParameters' 'Lcom/revrobotics/spark/SparkBase$ResetMode;' @116 
+ - private static final synthetic '$VALUES' '[Lcom/revrobotics/spark/SparkBase$ResetMode;' @120 
+ - ---- non-static fields (3 words):
+ - private final 'ordinal' 'I' @12 
+ - private final 'name' 'Ljava/lang/String;' @16 
+ - public final 'value' 'I' @20 
+ - non-static oop maps: 16-16 
+x14=0x00000000ffffffff is an unknown value
+x15=0x000000000042387b is an unknown value
+x16=0xd796000102b40080 is an unknown value
+x17=0x0 is NULL
+x18=0x0 is NULL
+x19=0x0000000171a73670 points into unknown readable memory: 0x000000004d55545a | 5a 54 55 4d 00 00 00 00
+x20=0x0000000171e05d70 is pointing into the stack for thread: 0x000000013c8de200
+x21=0x0000000171e05ce0 is pointing into the stack for thread: 0x000000013c8de200
+x22=0x000000013d950370 points into unknown readable memory: 0x0000000000000000 | 00 00 00 00 00 00 00 00
+x23=0x00000001718bebe0 points into unknown readable memory: 0x0000000177f20aa8 | a8 0a f2 77 01 00 00 00
+x24=0x0000000177f272b8: <offset 0x2b72b8> in /Users/kerol/Documents/GitHub/Frc-Eagles-2025/build/jni/release/libCTRE_PhoenixTools_Sim.dylib at 0x0000000177c70000
+x25=0x00000001718bc038 points into unknown readable memory: 0x0000000000000000 | 00 00 00 00 00 00 00 00
+x26=0x00000001718bebf8 points into unknown readable memory: 0x0000000000000000 | 00 00 00 00 00 00 00 00
+x27=0x7fffffffffffffef is an unknown value
+x28=0x0 is NULL
+
+
+Top of Stack: (sp=0x0000000171e05cc0)
+0x0000000171e05cc0:   0000000000000000 0000000000000000
+0x0000000171e05cd0:   0000000000000000 0000000700000082
+0x0000000171e05ce0:   0000000000000000 0000000000000000
+0x0000000171e05cf0:   0000000000000000 00000001718bc030
+0x0000000171e05d00:   0000000000000001 0000000000000000
+0x0000000171e05d10:   0000000000000000 0000000171e05d58
+0x0000000171e05d20:   0000000000000082 0000000000000000
+0x0000000171e05d30:   00000001718b3e90 0000000000000000
+0x0000000171e05d40:   0000000171e05e60 0000000177c86458
+0x0000000171e05d50:   0000000109c59700 0000000000000000
+0x0000000171e05d60:   0000000000000008 0000000171e05db0
+0x0000000171e05d70:   0000000171e05da0 00000001097ae8b4
+0x0000000171e05d80:   0000000071e06008 0000000200000002
+0x0000000171e05d90:   0000000002043542 0000000000000000
+0x0000000171e05da0:   0000000000000000 0000000000000100
+0x0000000171e05db0:   0000000000000000 0000000000000000
+0x0000000171e05dc0:   0000000000000000 0000000000000000
+0x0000000171e05dd0:   0000000000000000 0000000000000000
+0x0000000171e05de0:   0000000000000000 0000000800000000
+0x0000000171e05df0:   0000000171e05e60 9183da21999a00d7
+0x0000000171e05e00:   4059000000000000 8000000000000000
+0x0000000171e05e10:   0000000000000000 0000000000000000
+0x0000000171e05e20:   00000001718b3e90 000000013c8de4b0
+0x0000000171e05e30:   0000000171e06008 0000000000000082
+0x0000000171e05e40:   0000000000000001 0000000000000000
+0x0000000171e05e50:   0000000000000000 0000000000000000
+0x0000000171e05e60:   0000000171e05ed0 0000000177e5cb6c
+0x0000000171e05e70:   4127a77470c2a455 8000000000000000
+0x0000000171e05e80:   000000013c8de200 000000070d600258
+0x0000000171e05e90:   0000000139277820 000000070d6f8fc0
+0x0000000171e05ea0:   0000000171e06008 000000070d6f98b8
+0x0000000171e05eb0:   0000000000000000 0000000708ce00b0 
+
+Instructions: (pc=0x0000000177c80858)
+0x0000000177c80758:   1f e0 00 39 1f 20 00 f9 1f 7c 00 a9 16 08 00 f9
+0x0000000177c80768:   e0 02 00 f9 68 02 40 f9 08 01 40 f9 e1 03 00 aa
+0x0000000177c80778:   68 00 00 b4 68 02 00 f9 e1 02 40 f9 60 06 40 f9
+0x0000000177c80788:   23 00 00 94 68 0a 40 f9 08 05 00 91 68 0a 00 f9
+0x0000000177c80798:   21 00 80 52 02 00 00 14 01 00 80 d2 e0 03 14 aa
+0x0000000177c807a8:   fd 7b 44 a9 f4 4f 43 a9 f6 57 42 a9 f8 5f 41 a9
+0x0000000177c807b8:   fa 67 c5 a8 c0 03 5f d6 f4 4f be a9 fd 7b 01 a9
+0x0000000177c807c8:   fd 43 00 91 f3 03 00 aa 14 00 40 f9 1f 00 00 f9
+0x0000000177c807d8:   74 01 00 b4 68 42 40 39 e8 00 00 34 80 e2 00 91
+0x0000000177c807e8:   c1 f1 ff 97 88 de c0 39 68 00 f8 36 80 12 40 f9
+0x0000000177c807f8:   14 55 08 94 e0 03 14 aa 12 55 08 94 e0 03 13 aa
+0x0000000177c80808:   fd 7b 41 a9 f4 4f c2 a8 c0 03 5f d6 3f 00 00 eb
+0x0000000177c80818:   e8 17 9f 1a 28 60 00 39 80 07 00 54 2a 00 80 52
+0x0000000177c80828:   08 00 00 14 2a 61 00 39 e1 03 08 aa 1f 01 00 eb
+0x0000000177c80838:   e9 17 9f 1a 09 61 00 39 6a 01 00 39 60 06 00 54
+0x0000000177c80848:   29 08 40 f9 28 61 40 39 08 06 00 35 28 09 40 f9
+0x0000000177c80858:   0b 01 40 f9 7f 01 09 eb a0 00 00 54 8b 05 00 b4
+0x0000000177c80868:   6c 8d 41 38 0c fe ff 34 29 00 00 14 0b 05 40 f9
+0x0000000177c80878:   6b 00 00 b4 6c 8d 41 38 6c fd ff 34 2a 01 40 f9
+0x0000000177c80888:   5f 01 01 eb e0 08 00 54 2a 05 40 f9 4b 01 40 f9
+0x0000000177c80898:   2b 05 00 f9 6b 00 00 b4 69 09 00 f9 28 09 40 f9
+0x0000000177c808a8:   48 09 00 f9 28 09 40 f9 0b 01 40 f9 7f 01 09 eb
+0x0000000177c808b8:   eb 07 9f 1a 0a 59 2b f8 49 01 00 f9 2a 09 00 f9
+0x0000000177c808c8:   48 09 40 f9 09 01 40 f9 2b 00 80 52 4b 61 00 39
+0x0000000177c808d8:   1f 61 00 39 2a 05 40 f9 0a 01 00 f9 4a 00 00 b4
+0x0000000177c808e8:   48 09 00 f9 0a 09 40 f9 2a 09 00 f9 0a 09 40 f9
+0x0000000177c808f8:   4b 01 40 f9 7f 01 08 eb eb 07 9f 1a 49 59 2b f8
+0x0000000177c80908:   28 05 00 f9 09 09 00 f9 c0 03 5f d6 2a 01 40 f9
+0x0000000177c80918:   5f 01 01 eb 60 00 00 54 e1 03 09 aa 0f 00 00 14
+0x0000000177c80928:   2a 04 40 f9 2a 01 00 f9 6a 00 00 b4 49 09 00 f9
+0x0000000177c80938:   28 09 40 f9 28 08 00 f9 28 09 40 f9 0a 01 40 f9
+0x0000000177c80948:   5f 01 09 eb ea 07 9f 1a 01 59 2a f8 29 04 00 f9 
+
+
+Stack slot to memory mapping:
+stack at sp + 0 slots: 0x0 is NULL
+stack at sp + 1 slots: 0x0 is NULL
+stack at sp + 2 slots: 0x0 is NULL
+stack at sp + 3 slots: 0x0000000700000082 points into unknown readable memory: 00 00 00 00 00 00
+stack at sp + 4 slots: 0x0 is NULL
+stack at sp + 5 slots: 0x0 is NULL
+stack at sp + 6 slots: 0x0 is NULL
+stack at sp + 7 slots: 0x00000001718bc030 points into unknown readable memory: 0x0000000000000000 | 00 00 00 00 00 00 00 00
+
+
+Compiled method (c2)   51865 2557       4       com.ctre.phoenix6.controls.DutyCycleOut::sendRequest (41 bytes)
+ total in heap  [0x0000000119738690,0x0000000119739218] = 2952
+ relocation     [0x00000001197387e8,0x00000001197388a0] = 184
+ main code      [0x00000001197388c0,0x0000000119738cc0] = 1024
+ stub code      [0x0000000119738cc0,0x0000000119738dd0] = 272
+ oops           [0x0000000119738dd0,0x0000000119738de8] = 24
+ metadata       [0x0000000119738de8,0x0000000119738e78] = 144
+ scopes data    [0x0000000119738e78,0x0000000119739080] = 520
+ scopes pcs     [0x0000000119739080,0x0000000119739190] = 272
+ dependencies   [0x0000000119739190,0x00000001197391b0] = 32
+ handler table  [0x00000001197391b0,0x00000001197391e0] = 48
+ nul chk table  [0x00000001197391e0,0x0000000119739218] = 56
+
+[Constant Pool (empty)]
+
+[MachCode]
+[Entry Point]
+  # {method} {0x00000001386a6058} 'sendRequest' '(Ljava/lang/String;I)Lcom/ctre/phoenix6/StatusCode;' in 'com/ctre/phoenix6/controls/DutyCycleOut'
+  # this:     c_rarg1:c_rarg1 
+                        = 'com/ctre/phoenix6/controls/DutyCycleOut'
+  # parm0:    c_rarg2:c_rarg2 
+                        = 'java/lang/String'
+  # parm1:    c_rarg3   = int
+  #           [sp+0x80]  (sp of caller)
+  0x00000001197388c0: 2808 40b9 | 3f01 086b | 4000 0054 
+
+  0x00000001197388cc: ;   {runtime_call ic_miss_stub}
+  0x00000001197388cc: cdc0 e417 
+[Verified Entry Point]
+  0x00000001197388d0: 1f20 03d5 | e953 40d1 | 3f01 00f9 | ff03 02d1 | fd7b 07a9 | 2108 40fd | 200c 40fd | e30f 00b9 
+  0x00000001197388f0: 2394 4039 | 2584 4039 | 2688 4039 | 278c 4039 | 2090 4039 | e10f 00f9 | 2480 4039 | e20b 00f9 
+  0x0000000119738910: e103 02aa 
+
+  0x0000000119738914: ;   {oop(a 'java/lang/Class'{0x000000070d6e83e8} = 'com/ctre/phoenix6/StatusCode')}
+  0x0000000119738914: 1d7d 90d2 | ddad a1f2 | fd00 c0f2 | e20f 40b9 
+
+  0x0000000119738924: ; ImmutableOopMap {rfp=Oop [16]=Oop [24]=Oop }
+                      ;*invokestatic JNI_RequestControlDutyCycleOut {reexecute=0 rethrow=0 return_oop=0}
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@34 (line 131)
+                      ;   {static_call}
+  0x0000000119738924: eb00 0094 | ac57 43b9 | 0a00 0211 | 8ef1 7dd3 | eb03 002a | 5f01 0471 | e301 0054 | 8d87 40f9 
+  0x0000000119738944: 8a8f 40f9 | ac41 0091 | 9f01 0aeb | 620f 0054 | ea03 40b2 | 8c87 00f9 | aa01 00f9 
+
+  0x0000000119738960: ;   {metadata('java/lang/Integer')}
+  0x0000000119738960: aa00 a0d2 | 0aea 8cf2 | aa09 00b9 | 90c1 80f9 | ab0d 00b9 | 0700 0014 
+
+  0x0000000119738978: ;   {oop(a 'java/lang/Integer'[256] {0x000000070d6e4ca0})}
+  0x0000000119738978: 0a94 89d2 | caad a1f2 | ea00 c0f2 | 4ac9 208b | 4a11 42b9 | ed0f 0a8b 
+
+  0x0000000119738990: ; implicit exception: dispatches to 0x0000000119738c10
+  0x0000000119738990: cc09 40b9 
+
+  0x0000000119738994: ;   {metadata('java/util/HashMap')}
+  0x0000000119738994: aa00 a0d2 | 0a38 9ff2 | 9f01 0a6b | 210e 0054 | ca25 40b9 | 50f1 7dd3 
+
+  0x00000001197389ac: ; implicit exception: dispatches to 0x0000000119738a8c
+  0x00000001197389ac: 110e 40b9 | 6a41 4b4a | 2f06 0051 | ec01 0a0a | 0cca 2c8b | 3f02 0071 | 090f 0054 | 8c11 40b9 
+  0x00000001197389cc: 82f1 7dd3 
+
+  0x00000001197389d0: ; implicit exception: dispatches to 0x0000000119738a94
+  0x00000001197389d0: 4f0c 40b9 | ff01 0a6b | e100 0054 | 4f10 40b9 | e0f1 7dd3 | 1f00 0deb | 0106 0054 | e003 02aa 
+  0x00000001197389f0: 1300 0014 | 4f18 40b9 | e0f1 7dd3 | 4c08 40b9 | c00b 00b4 
+
+  0x0000000119738a04: ;   {metadata('java/util/HashMap$TreeNode')}
+  0x0000000119738a04: c100 a0d2 | 01a1 82f2 | 9f01 016b | 800b 0054 | 1f20 03d5 | 1f20 03d5 | 1f20 03d5 | 0f0c 40b9 
+  0x0000000119738a24: ff01 0a6b | 4102 0054 | 0f10 40b9 | e1f1 7dd3 | 3f00 0deb | c105 0054 | 0c14 40b9 | 80f1 7dd3 
+  0x0000000119738a44: ; implicit exception: dispatches to 0x0000000119738a9c
+  0x0000000119738a44: 0a08 40b9 
+
+  0x0000000119738a48: ;   {metadata('com/ctre/phoenix6/StatusCode')}
+  0x0000000119738a48: 4d01 a0d2 | 0df9 9bf2 | 5f01 0d6b | 610d 0054 | fd7b 47a9 | ff03 0291 
+
+  0x0000000119738a60: ;   {poll_return}
+  0x0000000119738a60: 88a7 41f9 | ff63 28eb | a810 0054 | c003 5fd6 | 0f18 40b9 | 81ab 41f9 
+
+  0x0000000119738a78: ; ImmutableOopMap {r13=Oop r14=Oop r16=Oop c_rarg0=Oop c_rarg2=Oop [16]=Oop [24]=Oop }
+                      ;*ifnonnull {reexecute=1 rethrow=0 return_oop=0}
+                      ; - (reexecute) java.util.HashMap::getNode@145 (line 579)
+                      ; - java.util.HashMap::get@2 (line 556)
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@7 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+  0x0000000119738a78: e0f1 7dd3 
+
+  0x0000000119738a7c: ;   {poll}
+  0x0000000119738a7c: 3f00 40b9 | 00fd ffb5 | fd03 0b2a | 0600 0014 | fd03 0b2a | 0400 0014 | fd03 0b2a | 0200 0014 
+  0x0000000119738a9c: fd03 0b2a | 6101 8012 
+
+  0x0000000119738aa4: ; ImmutableOopMap {[16]=Oop [24]=Oop }
+                      ;*checkcast {reexecute=0 rethrow=0 return_oop=0}
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@10 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call UncommonTrapBlob}
+  0x0000000119738aa4: 77db e497 
+
+  0x0000000119738aa8: ; implicit exception: dispatches to 0x0000000119738c20
+  0x0000000119738aa8: 0f08 40b9 
+
+  0x0000000119738aac: ;   {metadata('java/lang/Integer')}
+  0x0000000119738aac: ac00 a0d2 | 0cea 8cf2 | ff01 0c6b | 2108 0054 | ec03 00aa | 9d0d 40b9 | 7f01 1d6b | 20f9 ff54 
+  0x0000000119738acc: e033 04a9 | e21f 00f9 | f10b 00b9 | edc3 02a9 | ee13 00f9 | eb07 00b9 | 4117 8012 | ea03 00b9 
+  0x0000000119738aec: ; ImmutableOopMap {[16]=Oop [24]=Oop [32]=Oop [40]=Oop [48]=Oop [56]=Oop [64]=Oop [72]=Oop }
+                      ;*if_icmpne {reexecute=1 rethrow=0 return_oop=0}
+                      ; - (reexecute) java.lang.Integer::equals@18 (line 1236)
+                      ; - java.util.HashMap::getNode@63 (line 570)
+                      ; - java.util.HashMap::get@2 (line 556)
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@7 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call UncommonTrapBlob}
+  0x0000000119738aec: 65db e497 
+
+  0x0000000119738af0: ; implicit exception: dispatches to 0x0000000119738c40
+  0x0000000119738af0: 2f08 40b9 
+
+  0x0000000119738af4: ;   {metadata('java/lang/Integer')}
+  0x0000000119738af4: ac00 a0d2 | 0cea 8cf2 | ff01 0c6b | e106 0054 | ec03 01aa | 9d0d 40b9 | 7f01 1d6b | 60f9 ff54 
+  0x0000000119738b14: e1b3 04a9 | e223 00f9 | f127 00b9 | ed43 03a9 | ee17 00f9 | eb23 00b9 | 4117 8012 | e003 00f9 
+  0x0000000119738b34: ea0b 00b9 
+
+  0x0000000119738b38: ; ImmutableOopMap {[0]=Oop [16]=Oop [24]=Oop [40]=Oop [48]=Oop [56]=Oop [64]=Oop [72]=Oop [80]=Oop }
+                      ;*if_icmpne {reexecute=1 rethrow=0 return_oop=0}
+                      ; - (reexecute) java.lang.Integer::equals@18 (line 1236)
+                      ; - java.util.HashMap::getNode@128 (line 577)
+                      ; - java.util.HashMap::get@2 (line 556)
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@7 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call UncommonTrapBlob}
+  0x0000000119738b38: 52db e497 | ee03 00f9 | fd03 002a 
+
+  0x0000000119738b44: ;   {metadata('java/lang/Integer')}
+  0x0000000119738b44: 01ea 8cd2 | a100 a0f2 | 0101 c0f2 
+
+  0x0000000119738b50: ; ImmutableOopMap {[0]=Oop [16]=Oop [24]=Oop }
+                      ;*new {reexecute=0 rethrow=0 return_oop=1}
+                      ; - java.lang.Integer::valueOf@23 (line 1081)
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@4 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call _new_instance_Java}
+  0x0000000119738b50: 3cc8 e797 | eb03 1d2a | ee03 40f9 | ed03 00aa | 84ff ff17 | ed13 00f9 | ee03 00f9 | fd03 0b2a 
+  0x0000000119738b70: 2104 8012 
+
+  0x0000000119738b74: ; ImmutableOopMap {[0]=Oop [16]=Oop [24]=Oop [32]=Oop }
+                      ;*invokevirtual get {reexecute=0 rethrow=0 return_oop=0}
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@7 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call UncommonTrapBlob}
+  0x0000000119738b74: 43db e497 | fd03 0b2a | c9ff ff17 | e21f 00f9 | f10b 00b9 | edc3 02a9 | ee13 00f9 | eb07 00b9 
+  0x0000000119738b94: 4117 8012 | fd03 00aa | ea03 00b9 
+
+  0x0000000119738ba0: ; ImmutableOopMap {rfp=Oop [16]=Oop [24]=Oop [32]=Oop [40]=Oop [48]=Oop [56]=Oop }
+                      ;*ifeq {reexecute=1 rethrow=0 return_oop=0}
+                      ; - (reexecute) java.util.HashMap::getNode@85 (line 573)
+                      ; - java.util.HashMap::get@2 (line 556)
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@7 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call UncommonTrapBlob}
+  0x0000000119738ba0: 38db e497 | f10b 00b9 | ed43 02a9 | ee03 00f9 | fd03 0b2a | 4117 8012 
+
+  0x0000000119738bb8: ; ImmutableOopMap {[0]=Oop [16]=Oop [24]=Oop [32]=Oop [40]=Oop }
+                      ;*ifle {reexecute=1 rethrow=0 return_oop=0}
+                      ; - (reexecute) java.util.HashMap::getNode@14 (line 567)
+                      ; - java.util.HashMap::get@2 (line 556)
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@7 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call UncommonTrapBlob}
+  0x0000000119738bb8: 32db e497 | e283 03a9 | f107 00b9 | edc3 02a9 | ee13 00f9 | eb03 00b9 | 2104 8012 | fd03 0a2a 
+  0x0000000119738bd8: ; ImmutableOopMap {[16]=Oop [24]=Oop [32]=Oop [40]=Oop [48]=Oop [56]=Oop [64]=Oop }
+                      ;*instanceof {reexecute=0 rethrow=0 return_oop=0}
+                      ; - java.lang.Integer::equals@1 (line 1235)
+                      ; - java.util.HashMap::getNode@63 (line 570)
+                      ; - java.util.HashMap::get@2 (line 556)
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@7 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call UncommonTrapBlob}
+  0x0000000119738bd8: 2adb e497 | e287 03a9 | f10b 00b9 | edc3 02a9 | ee13 00f9 | eb07 00b9 | 2104 8012 | fd03 00aa 
+  0x0000000119738bf8: ea03 00b9 
+
+  0x0000000119738bfc: ; ImmutableOopMap {rfp=Oop [16]=Oop [24]=Oop [32]=Oop [40]=Oop [48]=Oop [56]=Oop [64]=Oop }
+                      ;*instanceof {reexecute=0 rethrow=0 return_oop=0}
+                      ; - java.lang.Integer::equals@1 (line 1235)
+                      ; - java.util.HashMap::getNode@128 (line 577)
+                      ; - java.util.HashMap::get@2 (line 556)
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@7 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call UncommonTrapBlob}
+  0x0000000119738bfc: 21db e497 | e003 00f9 | fd03 0b2a | 2104 8012 
+
+  0x0000000119738c0c: ; ImmutableOopMap {[0]=Oop [16]=Oop [24]=Oop }
+                      ;*checkcast {reexecute=0 rethrow=0 return_oop=0}
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@10 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call UncommonTrapBlob}
+  0x0000000119738c0c: 1ddb e497 | ed03 00f9 | fd03 0b2a | 2101 8012 
+
+  0x0000000119738c1c: ; ImmutableOopMap {[0]=Oop [16]=Oop [24]=Oop }
+                      ;*invokevirtual get {reexecute=0 rethrow=0 return_oop=0}
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@7 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call UncommonTrapBlob}
+  0x0000000119738c1c: 19db e497 | e283 03a9 | f107 00b9 | edc3 02a9 | ee13 00f9 | eb03 00b9 | 6101 8012 | fd03 0a2a 
+  0x0000000119738c3c: ; ImmutableOopMap {[16]=Oop [24]=Oop [32]=Oop [40]=Oop [48]=Oop [56]=Oop [64]=Oop }
+                      ;*instanceof {reexecute=0 rethrow=0 return_oop=0}
+                      ; - java.lang.Integer::equals@1 (line 1235)
+                      ; - java.util.HashMap::getNode@63 (line 570)
+                      ; - java.util.HashMap::get@2 (line 556)
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@7 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call UncommonTrapBlob}
+  0x0000000119738c3c: 11db e497 | e287 03a9 | f10b 00b9 | edc3 02a9 | ee13 00f9 | eb07 00b9 | 6101 8012 | fd03 00aa 
+  0x0000000119738c5c: ea03 00b9 
+
+  0x0000000119738c60: ; ImmutableOopMap {rfp=Oop [16]=Oop [24]=Oop [32]=Oop [40]=Oop [48]=Oop [56]=Oop [64]=Oop }
+                      ;*instanceof {reexecute=0 rethrow=0 return_oop=0}
+                      ; - java.lang.Integer::equals@1 (line 1235)
+                      ; - java.util.HashMap::getNode@128 (line 577)
+                      ; - java.util.HashMap::get@2 (line 556)
+                      ; - com.ctre.phoenix6.StatusCode::valueOf@7 (line 817)
+                      ; - com.ctre.phoenix6.controls.DutyCycleOut::sendRequest@37 (line 131)
+                      ;   {runtime_call UncommonTrapBlob}
+  0x0000000119738c60: 08db e497 | e103 00aa | 0200 0014 | e103 00aa | fd7b 47a9 | ff03 0291 
+
+  0x0000000119738c78: ;   {runtime_call _rethrow_Java}
+  0x0000000119738c78: f2d2 e717 
+
+  0x0000000119738c7c: ;   {internal_word}
+  0x0000000119738c7c: 28ef ff10 | 88b3 01f9 
+
+  0x0000000119738c84: ;   {runtime_call SafepointBlob}
+  0x0000000119738c84: 5fd9 e417 | 0000 0000 | 0000 0000 | 0000 0000 | 0000 0000 | 0000 0000 | 0000 0000 | 0000 0000 
+  0x0000000119738ca4: 0000 0000 | 0000 0000 | 0000 0000 | 0000 0000 | 0000 0000 | 0000 0000 | 0000 0000 
+[Stub Code]
+  0x0000000119738cc0: ;   {no_reloc}
+  0x0000000119738cc0: 4800 0058 | 0001 1fd6 | d08c 7319 | 0100 0000 
+
+  0x0000000119738cd0: ;   {static_stub}
+  0x0000000119738cd0: df3f 03d5 
+
+  0x0000000119738cd4: ;   {metadata({method} {0x0000000139275318} 'JNI_RequestControlDutyCycleOut' '(Ljava/lang/String;IDDZZZZZZ)I' in 'com/ctre/phoenix6/controls/jni/ControlJNI')}
+  0x0000000119738cd4: 0c63 8ad2 | ec24 a7f2 | 2c00 c0f2 | 88fb 86d2 | c822 a3f2 | 2800 c0f2 | 0001 1fd6 
+
+  0x0000000119738cf0: ;   {trampoline_stub}
+  0x0000000119738cf0: 4800 0058 | 0001 1fd6 | 80f8 0619 | 0100 0000 
+
+  0x0000000119738d00: ;   {trampoline_stub}
+  0x0000000119738d00: 4800 0058 | 0001 1fd6 | 80f8 0619 | 0100 0000 
+
+  0x0000000119738d10: ;   {trampoline_stub}
+  0x0000000119738d10: 4800 0058 | 0001 1fd6 | 80f8 0619 | 0100 0000 
+
+  0x0000000119738d20: ;   {trampoline_stub}
+  0x0000000119738d20: 4800 0058 | 0001 1fd6 | 40ac 1219 | 0100 0000 
+
+  0x0000000119738d30: ;   {trampoline_stub}
+  0x0000000119738d30: 4800 0058 | 0001 1fd6 | 80f8 0619 | 0100 0000 
+
+  0x0000000119738d40: ;   {trampoline_stub}
+  0x0000000119738d40: 4800 0058 | 0001 1fd6 | 80f8 0619 | 0100 0000 
+
+  0x0000000119738d50: ;   {trampoline_stub}
+  0x0000000119738d50: 4800 0058 | 0001 1fd6 | 80f8 0619 | 0100 0000 
+
+  0x0000000119738d60: ;   {trampoline_stub}
+  0x0000000119738d60: 4800 0058 | 0001 1fd6 | 80f8 0619 | 0100 0000 
+
+  0x0000000119738d70: ;   {trampoline_stub}
+  0x0000000119738d70: 4800 0058 | 0001 1fd6 | 80f8 0619 | 0100 0000 
+
+  0x0000000119738d80: ;   {trampoline_stub}
+  0x0000000119738d80: 4800 0058 | 0001 1fd6 | 80f8 0619 | 0100 0000 
+
+  0x0000000119738d90: ;   {trampoline_stub}
+  0x0000000119738d90: 4800 0058 | 0001 1fd6 | 80f8 0619 | 0100 0000 
+
+  0x0000000119738da0: ;   {trampoline_stub}
+  0x0000000119738da0: 4800 0058 | 0001 1fd6 | 80f8 0619 | 0100 0000 
+
+  0x0000000119738db0: ;   {trampoline_stub}
+  0x0000000119738db0: 4800 0058 | 0001 1fd6 | 80f8 0619 | 0100 0000 
+[Exception Handler]
+  0x0000000119738dc0: ;   {runtime_call ExceptionBlob}
+  0x0000000119738dc0: f09d e717 
+[Deopt Handler Code]
+  0x0000000119738dc4: 1e00 0010 
+
+  0x0000000119738dc8: ;   {runtime_call DeoptimizationBlob}
+  0x0000000119738dc8: ded9 e417 | 0000 0000 
+[/MachCode]
+
+
+Compiled method (c2)   51871 2555       4       frc.robot.subsystems.SwerveModule::setDesiredState (121 bytes)
+ total in heap  [0x0000000119730f90,0x0000000119738660] = 30416
+ relocation     [0x00000001197310e8,0x00000001197316f0] = 1544
+ constants      [0x0000000119731700,0x0000000119731740] = 64
+ main code      [0x0000000119731740,0x0000000119734100] = 10688
+ stub code      [0x0000000119734100,0x0000000119734bb0] = 2736
+ oops           [0x0000000119734bb0,0x0000000119734bf8] = 72
+ metadata       [0x0000000119734bf8,0x0000000119734ea8] = 688
+ scopes data    [0x0000000119734ea8,0x00000001197379c0] = 11032
+ scopes pcs     [0x00000001197379c0,0x0000000119738200] = 2112
+ dependencies   [0x0000000119738200,0x0000000119738300] = 256
+ handler table  [0x0000000119738300,0x0000000119738570] = 624
+ nul chk table  [0x0000000119738570,0x0000000119738660] = 240
+
+
+[Constant Pool]
+             Address          hex4                    hex8      
+  0x0000000119731700:   0xa0b5ed8d      0x3eb0c6f7a0b5ed8d      
+  0x0000000119731704:   0x3eb0c6f7                              
+  0x0000000119731708:   0x1a63c1f8      0x404ca5dc1a63c1f8      
+  0x000000011973170c:   0x404ca5dc                              
+  0x0000000119731710:   0x00000000      0x4056800000000000      
+  0x0000000119731714:   0x40568000                              
+  0x0000000119731718:   0x33333333      0x4013333333333333      
+  0x000000011973171c:   0x40133333                              
+  0x0000000119731720:   0xbc6a7efa      0x3f789374bc6a7efa      
+  0x0000000119731724:   0x3f789374                              
+  0x0000000119731728:   0x00000000      0x0000000000000000      
+  0x000000011973172c:   0x00000000                              
+  0x0000000119731730:   0x00000000      0x0000000000000000      
+  0x0000000119731734:   0x00000000                              
+  0x0000000119731738:   0x00000000      0x0000000000000000      
+  0x000000011973173c:   0x00000000                              
+
+[MachCode]
+[Entry Point]
+  # {method} {0x00000001386417a8} 'setDesiredState' '(Ledu/wpi/first/math/kinematics/SwerveModuleState;)V' in 'frc/robot/subsystems/SwerveModule'
+  # this:     c_rarg1:c_rarg1 
+                        = 'frc/robot/subsystems/SwerveModule'
+  # parm0:    c_rarg2:c_rarg2 
+                        = 'edu/wpi/first/math/kinematics/SwerveModuleState'
+  #           [sp+0xd0]  (sp of caller)
+  0x0000000119731740: ;   {no_reloc}
+  0x0000000119731740: 2808 40b9 | 3f01 086b | 4000 0054 
+
+  0x000000011973174c: ;   {runtime_call ic_miss_stub}
+  0x000000011973174c: 2ddd e417 
+[Verified Entry Point]
+  0x0000000119731750: 1f20 03d5 | e953 40d1 | 3f01 00f9 | ff43 03d1 | fd7b 0ca9 | f403 01aa | 3008 40fd | f503 02aa 
+  0x0000000119731770: ; implicit exception: dispatches to 0x0000000119733c90
+  0x0000000119731770: 530c 40b9 | f003 00fd | 0042 601e 
+
+  0x000000011973177c: ;   {runtime_call StubRoutines (1)}
+  0x000000011973177c: 51dd e397 | e00b 00fd | e003 40fd 
+
+  0x0000000119731788: ;   {runtime_call StubRoutines (1)}
+  0x0000000119731788: 5edb e397 | b00a 40fd | 6df2 7dd3 | e00f 00fd | f013 00fd | 4dc6 00b4 | 9d87 40f9 | 8a47 41f9 
+  0x00000001197317a8: 8b8f 40f9 | aca3 0091 | 4e01 40f9 | 9f01 0beb | 42b9 0054 | ea03 40b2 | 8c87 00f9 | aa03 00f9 
+  0x00000001197317c8: ;   {metadata('edu/wpi/first/math/geometry/Rotation2d')}
+  0x00000001197317c8: 2a01 a0d2 | 0afe 9bf2 | aa7f 0129 | aa43 0091 | 90c1 80f9 | 5f01 00f9 | 5ffd 00a9 | f507 00f9 
+  0x00000001197317e8: f4b7 02a9 | ee1f 00f9 | ea1b 40f9 | 500d 40fd | 5111 40fd | f40f 40fd | 120a 741e | f30b 40fd 
+  0x0000000119731808: 100a 731e | 730a 711e | 310a 741e | 103a 711e | f027 00fd | 522a 731e 
+
+  0x0000000119731820: ;   {section_word}
+  0x0000000119731820: 10f7 ff5c | f223 00fd | f02b 00fd | e027 40fd | 4142 601e 
+
+  0x0000000119731834: ; ImmutableOopMap {rfp=Oop [8]=Oop [40]=Oop [48]=Oop [56]=Oop }
+                      ;*invokestatic compute {reexecute=0 rethrow=0 return_oop=0}
+                      ; - java.lang.StrictMath::hypot@2 (line 1719)
+                      ; - java.lang.Math::hypot@2 (line 2165)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::<init>@6 (line 118)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::rotateBy@42 (line 274)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::plus@2 (line 213)
+                      ; - frc.robot.subsystems.SwerveModule::setDesiredState@28 (line 154)
+                      ;   {static_call}
+  0x0000000119731834: 9394 fc97 | f22b 40fd | 0020 721e | 1510 6e1e | 16e4 002f | edb5 0054 | f323 40fd | 701a 601e 
+  0x0000000119731854: f427 40fd | 911a 601e | b013 00fd | b10f 00fd | f13b 00fd | f03f 00fd | e02f 00fd | f533 00fd 
+  0x0000000119731874: f637 00fd | e03f 40fd | e13b 40fd 
+
+  0x0000000119731880: ; ImmutableOopMap {rfp=Oop [8]=Oop [40]=Oop [48]=Oop [56]=Oop }
+                      ;*invokestatic atan2 {reexecute=0 rethrow=0 return_oop=0}
+                      ; - java.lang.Math::atan2@2 (line 587)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::<init>@69 (line 128)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::rotateBy@42 (line 274)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::plus@2 (line 213)
+                      ; - frc.robot.subsystems.SwerveModule::setDesiredState@28 (line 154)
+                      ;   {static_call}
+  0x0000000119731880: f444 fc97 | f417 40f9 | 8a22 40b9 | f303 1daa | a00b 00fd | 4ef1 7dd3 
+
+  0x0000000119731898: ; implicit exception: dispatches to 0x0000000119733c9c
+  0x0000000119731898: cb19 40b9 | 6df1 7dd3 | adbe 00b4 | ab31 0091 | 7dfd df88 | cc35 40b9 | 8ff1 7dd3 | bdf3 0035 
+  0x00000001197318b8: 4fbe 00b4 | edc3 0291 | ec01 40f9 | ac01 0837 | 8b01 40b2 | ab01 00f9 | ec03 0baa | edfd ecc8 
+  0x00000001197318d8: 9f01 0beb | 6002 0054 | e803 0091 | 8c01 08cb | ebcf 72b2 | 8b01 0bea | ab01 00f9 | 0d00 0014 
+  0x00000001197318f8: 8bf9 0091 | e803 1faa | 7cfd e8c8 | 1f01 1feb | eb07 40b2 | ab01 00f9 | c000 0054 | 1f01 1ceb 
+  0x0000000119731918: 8100 0054 | 8861 48f8 | 0805 0091 | 8861 08f8 | 81c8 0054 | d631 40b9 | 76a7 0034 | ecc3 0291 
+  0x0000000119731938: 8b01 40f9 | 7f01 1feb | 8002 0054 | ea01 40f9 | aa00 0837 | ea03 0caa | ebfd aac8 | 5f01 0ceb 
+  0x0000000119731958: 0e00 0014 | 4a09 00d1 | 4b45 40f9 | ab00 00b4 | 6b05 00d1 | 4b45 00f9 | 7f01 0beb | 0700 0014 
+  0x0000000119731978: 482d 49a9 | 0801 0baa | 1f01 1feb | 6800 00b5 | 4a01 0191 | 5ffd 9fc8 | e1c3 0054 | cdf2 7dd3 
+  0x0000000119731998: ; implicit exception: dispatches to 0x0000000119733ca8
+  0x0000000119731998: aa09 40b9 
+
+  0x000000011973199c: ;   {metadata('com/revrobotics/spark/SparkRelativeEncoder')}
+  0x000000011973199c: 4c02 a0d2 | 0cb6 86f2 | 5f01 0c6b | 41c6 0054 | ab0d 40b9 | 6cf1 7dd3 
+
+  0x00000001197319b4: ; implicit exception: dispatches to 0x0000000119733cb8
+  0x00000001197319b4: 8a19 40b9 | 4ef1 7dd3 | 8eb6 00b4 | ca31 0091 | 5dfd df88 | ab0d 40b9 | 6af1 7dd3 | 7deb 0035 
+  0x00000001197319d4: ; implicit exception: dispatches to 0x0000000119733cc8
+  0x00000001197319d4: 4109 40f9 | fd03 0daa | f30b 00f9 | f403 00f9 
+
+  0x00000001197319e4: ; ImmutableOopMap {rfp=Oop [0]=Oop [8]=Oop [16]=Oop [56]=Oop }
+                      ;*invokestatic c_Spark_GetEncoderPosition {reexecute=0 rethrow=0 return_oop=0}
+                      ; - com.revrobotics.spark.SparkRelativeEncoder::getPosition@14 (line 51)
+                      ; - frc.robot.subsystems.SwerveModule::setDesiredState@46 (line 157)
+                      ;   {static_call}
+  0x00000001197319e4: 9be7 fc97 | 10c0 221e | f053 00fd | 0042 601e 
+
+  0x00000001197319f4: ;   {runtime_call StubRoutines (1)}
+  0x00000001197319f4: b3dc e397 | e00f 00fd | e053 40fd 
+
+  0x0000000119731a00: ;   {runtime_call StubRoutines (1)}
+  0x0000000119731a00: c0da e397 | e017 00fd | f053 40fd | 0042 611e 
+
+  0x0000000119731a10: ;   {runtime_call StubRoutines (1)}
+  0x0000000119731a10: acdc e397 | e01b 00fd | f053 40fd | 0042 611e 
+
+  0x0000000119731a20: ;   {runtime_call StubRoutines (1)}
+  0x0000000119731a20: b8da e397 | ea0b 40f9 | 500d 40fd | 5111 40fd | 120a 601e | f31b 40fd | 100a 731e | 730a 711e 
+  0x0000000119731a40: 310a 601e | 103a 711e | f027 00fd | 502a 731e | f02f 00fd | 0142 601e | f053 40fd | e023 00fd 
+  0x0000000119731a60: 1042 611e | e027 40fd | f03b 00fd 
+
+  0x0000000119731a6c: ; ImmutableOopMap {[0]=Oop [8]=Oop [16]=Oop [56]=Oop }
+                      ;*invokestatic compute {reexecute=0 rethrow=0 return_oop=0}
+                      ; - java.lang.StrictMath::hypot@2 (line 1719)
+                      ; - java.lang.Math::hypot@2 (line 2165)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::<init>@6 (line 118)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::rotateBy@42 (line 274)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::minus@5 (line 226)
+                      ; - frc.robot.subsystems.SwerveModule::optimize@5 (line 213)
+                      ; - frc.robot.subsystems.SwerveModule::setDesiredState@54 (line 156)
+                      ;   {static_call}
+  0x0000000119731a6c: 0594 fc97 | f22b 40fd | 0020 721e | 8da6 0054 | f327 40fd | 701a 601e | f42f 40fd | 911a 601e 
+  0x0000000119731a8c: f043 00fd | f147 00fd | e03b 00fd 
+
+  0x0000000119731a98: ;   {section_word}
+  0x0000000119731a98: 90e3 ff5c | f04b 00fd 
+
+  0x0000000119731aa0: ;   {section_word}
+  0x0000000119731aa0: 90e3 ff5c | f04f 00fd | f053 40fd | 1042 611e | e047 40fd | e143 40fd | f03f 00fd 
+
+  0x0000000119731abc: ; ImmutableOopMap {[0]=Oop [8]=Oop [16]=Oop [56]=Oop }
+                      ;*invokestatic atan2 {reexecute=0 rethrow=0 return_oop=0}
+                      ; - java.lang.Math::atan2@2 (line 587)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::<init>@69 (line 128)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::rotateBy@42 (line 274)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::minus@5 (line 226)
+                      ; - frc.robot.subsystems.SwerveModule::optimize@5 (line 213)
+                      ; - frc.robot.subsystems.SwerveModule::setDesiredState@54 (line 156)
+                      ;   {static_call}
+  0x0000000119731abc: 6544 fc97 | f04b 40fd | 1008 701e | f14f 40fd | 10c2 601e | 0022 711e 
+
+  0x0000000119731ad4: ;   {metadata('edu/wpi/first/math/kinematics/SwerveModuleState')}
+  0x0000000119731ad4: 2a01 a0d2 | 0acd 99f2 | 0c07 0054 | 9587 40f9 | 8b8f 40f9 | ac62 0091 | 9f01 0beb | c2aa 0054 
+  0x0000000119731af4: eb03 40b2 | 8c87 00f9 | ab02 00f9 | aa0a 00b9 | 90c1 80f9 
+
+  0x0000000119731b08: ;   {oop(a 'edu/wpi/first/math/geometry/Rotation2d'{0x000000070d6bcbf0})}
+  0x0000000119731b08: aa35 bcd2 | ca2f 8ff2 | f213 40fd | aa0e 00b9 | b20a 00fd | 8be3 c039 | 8b96 0035 | fa0b 40f9 
+  0x0000000119731b28: ea03 15aa | eb03 1aaa | 6b01 0aca | 4cff 43d3 | 6bfd 55d3 | ac0e 00b9 | eb11 00b4 | 4afd 49d3 
+  0x0000000119731b48: 0ba0 a0d2 | 2b00 c0f2 | 6001 0a8b | 0b00 c039 | 7f11 0071 | 0011 0054 | 8a2b 40f9 | 8b23 40f9 
+  0x0000000119731b68: bf3b 03d5 | 0d00 c039 | 6d10 0034 | 1f00 0039 | 8b01 00b5 | 4842 601e | e103 1caa | c900 0010 
+  0x0000000119731b88: ;   {runtime_call G1BarrierSetRuntime::write_ref_field_post_entry(unsigned char volatile*, JavaThread*)}
+  0x0000000119731b88: 0880 91d2 | a826 a1f2 | 2800 c0f2 | ff27 bfa9 | 0001 3fd6 | ff43 0091 | 1241 601e | 7600 0014 
+  0x0000000119731ba8: 6c21 00d1 | 4a01 0b8b | 4081 1ff8 | 8c23 00f9 | 7100 0014 | 8d87 40f9 | 8b8f 40f9 | ac61 0091 
+  0x0000000119731bc8: 9f01 0beb | 429e 0054 | eb03 40b2 | 8c87 00f9 | ab01 00f9 | aa7d 0129 | 90c1 80f9 | bf09 00f9 
+  0x0000000119731be8: 9d87 40f9 | 8a8f 40f9 | aba3 0091 | 7f01 0aeb | e29d 0054 | ea03 40b2 | 8b87 00f9 | aa03 00f9 
+  0x0000000119731c08: ;   {metadata('edu/wpi/first/math/geometry/Rotation2d')}
+  0x0000000119731c08: 2a01 a0d2 | 0afe 9bf2 | 70c1 80f9 | aa0b 00b9 | aa43 0091 | bf0f 00b9 | 5f01 00f9 | 5ffd 00a9 
+  0x0000000119731c28: e01b 00fd | ed23 00f9 
+
+  0x0000000119731c30: ;   {oop(a 'edu/wpi/first/math/geometry/Rotation2d'{0x000000070d7a8600})}
+  0x0000000119731c30: 0ac0 90d2 | 4aaf a1f2 | ea00 c0f2 | eb0b 40f9 | 5211 40fd | 700d 40fd | 510d 40fd | 7311 40fd 
+  0x0000000119731c50: 140a 721e | 100a 711e | 720a 721e | 310a 731e | 103a 721e | f027 00fd | 902a 711e | f02f 00fd 
+  0x0000000119731c70: 0142 601e | f013 40fd | 1042 611e | e027 40fd | f03b 00fd 
+
+  0x0000000119731c84: ; ImmutableOopMap {rfp=Oop [0]=Oop [8]=Oop [16]=Oop [56]=Oop [64]=Oop }
+                      ;*invokestatic compute {reexecute=0 rethrow=0 return_oop=0}
+                      ; - java.lang.StrictMath::hypot@2 (line 1719)
+                      ; - java.lang.Math::hypot@2 (line 2165)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::<init>@6 (line 118)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::rotateBy@42 (line 274)
+                      ; - frc.robot.subsystems.SwerveModule::optimize@39 (line 216)
+                      ; - frc.robot.subsystems.SwerveModule::setDesiredState@54 (line 156)
+                      ;   {static_call}
+  0x0000000119731c84: 7f93 fc97 | f02b 40fd | 0020 701e | 8d9a 0054 | f22f 40fd | 501a 601e | f327 40fd | 711a 601e 
+  0x0000000119731ca4: b013 00fd | b10f 00fd | f137 00fd | f03b 00fd | f013 40fd | e02f 00fd | 1042 611e | f22b 00fd 
+  0x0000000119731cc4: f327 00fd | e03b 40fd | e137 40fd | f033 00fd 
+
+  0x0000000119731cd4: ; ImmutableOopMap {rfp=Oop [0]=Oop [8]=Oop [16]=Oop [56]=Oop [64]=Oop }
+                      ;*invokestatic atan2 {reexecute=0 rethrow=0 return_oop=0}
+                      ; - java.lang.Math::atan2@2 (line 587)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::<init>@69 (line 128)
+                      ; - edu.wpi.first.math.geometry.Rotation2d::rotateBy@42 (line 274)
+                      ; - frc.robot.subsystems.SwerveModule::optimize@39 (line 216)
+                      ; - frc.robot.subsystems.SwerveModule::setDesiredState@54 (line 156)
+                      ;   {static_call}
+  0x0000000119731cd4: df43 fc97 | a00b 00fd | 8ae3 c039 | aa70 0035 | f523 40f9 
+
+  0x0000000119731ce8: ;   {oop(a 'edu/wpi/first/math/geometry/Rotation2d'{0x000000070d6bcbf0})}
+  0x0000000119731ce8: 0b7e 99d2 | 6bad a1f2 | eb00 c0f2 | ea03 15aa | 6b01 0aca 
+
+  0x0000000119731cfc: ;   {oop(a 'edu/wpi/first/math/geometry/Rotation2d'{0x000000070d6bcbf0})}
+  0x0000000119731cfc: ad35 bcd2 | cd2f 8ff2 | 6bfd 55d3 | b4ff 43d3 | ad0e 00b9 | 0b01 00b4 | 4afd 49d3 | 0ba0 a0d2 
+  0x0000000119731d1c: 2b00 c0f2 | 6001 0a8b | 0a00 c039 | 5f11 0071 | a172 0054 | f213 40fd | 5042 611e | 8be3 c039 
+  0x0000000119731d3c: b00a 00fd | 4b6c 0035 | ea03 15aa | eb03 1daa | 6b01 0aca | 6bfd 55d3 | b40e 00b9 | 0b01 00b4 
+  0x0000000119731d5c: 4afd 49d3 | 0ba0 a0d2 | 2b00 c0f2 | 6001 0a8b | 0b00 c039 | 7f11 0071 | 816d 0054 | fa0b 40f9 
+  0x0000000119731d7c: b10a 40fd | f903 40f9 | 2a0f 40b9 
+
+  0x0000000119731d88: ;   {section_word}
+  0x0000000119731d88: 90cc ff5c | 56f1 7dd3 | 301a 701e 
+
+  0x0000000119731d94: ; implicit exception: dispatches to 0x0000000119733cd8
+  0x0000000119731d94: cbaa 40b9 | 6df1 7dd3 
+
+  0x0000000119731d9c: ; implicit exception: dispatches to 0x0000000119733cf0
+  0x0000000119731d9c: aa09 40b9 
+
+  0x0000000119731da0: ;   {metadata('java/util/concurrent/locks/ReentrantLock')}
+  0x0000000119731da0: cc00 a0d2 | 0c80 83f2 | 5f01 0c6b | a1a6 0054 | ab0d 40b9 | 73f1 7dd3 | 5397 00b4 | eb03 0032 
+  0x0000000119731dc0: ec03 1f2a | 6a42 0091 | e803 0caa | 4bfd e888 | 1f01 0c6b | fd17 9f9a | ddcb 0034 | 8be3 c039 
+  0x0000000119731de0: 4b4b 0035 | fb1f 40f9 | ea03 13aa | eb03 1baa | 6b01 0aca | 74ff 43d3 | 6bfd 55d3 | 740e 00b9 
+  0x0000000119731e00: 0b01 00b4 | 4afd 49d3 | 0ba0 a0d2 | 2b00 c0f2 | 6001 0a8b | 0b00 c039 | 7f11 0071 | 4155 0054 
+  0x0000000119731e20: ccaa 5429 | 9df1 7dd3 | 4df1 7dd3 | bda3 00b5 
+
+  0x0000000119731e30: ; implicit exception: dispatches to 0x0000000119733d0c
+  0x0000000119731e30: aa09 40b9 
+
+  0x0000000119731e34: ;   {metadata('java/util/concurrent/locks/ReentrantLock')}
+  0x0000000119731e34: cc00 a0d2 | 0c80 83f2 | 5f01 0c6b | c1a3 0054 | ab0d 40b9 | 6ef1 7dd3 | ae93 00b4 | ca41 0091 
+  0x0000000119731e54: 4afd df88 | cc0d 40b9 | 8bf1 7dd3 | 5d05 0051 | 7f01 1beb | 21c8 0054 | 5f05 0071 | 61b1 0054 
+  0x0000000119731e74: 8ae3 c039 | ea47 0035 | df0d 00b9 | ca41 0091 | 5dfd 9f88 | ca51 0091 | 4afd df88 | 5df1 7dd3 
+  0x0000000119731e94: d34e 40b9 | bdc7 00b5 | 77f2 7dd3 | 1792 00b4 | cbaa 40b9 | f00a 00fd | 6df1 7dd3 
+
+  0x0000000119731eb0: ; implicit exception: dispatches to 0x0000000119733d28
+  0x0000000119731eb0: aa09 40b9 
+
+  0x0000000119731eb4: ;   {metadata('java/util/concurrent/locks/ReentrantLock')}
+  0x0000000119731eb4: cc00 a0d2 | 0c80 83f2 | 5f01 0c6b | c1a0 0054 | ab0d 40b9 | 6ef1 7dd3 | 8e91 00b4 | eb03 0032 
+  0x0000000119731ed4: ec03 1f2a | ca41 0091 | e803 0caa | 4bfd e888 | 1f01 0c6b | fd17 9f9a | 1dc6 0034 | 8be3 c039 
+  0x0000000119731ef4: 6b45 0035 | ea03 0eaa | eb03 1baa | 6b01 0aca | 6bfd 55d3 | d40d 00b9 | 0b01 00b4 | 4afd 49d3 
+  0x0000000119731f14: 0ba0 a0d2 | 2b00 c0f2 | 6001 0a8b | 0b00 c039 | 7f11 0071 | 0150 0054 | ccaa 5429 | 9df1 7dd3 
+  0x0000000119731f34: 4df1 7dd3 | 1d9e 00b5 
+
+  0x0000000119731f3c: ; implicit exception: dispatches to 0x0000000119733d48
+  0x0000000119731f3c: aa09 40b9 
+
+  0x0000000119731f40: ;   {metadata('java/util/concurrent/locks/ReentrantLock')}
+  0x0000000119731f40: cc00 a0d2 | 0c80 83f2 | 5f01 0c6b | 619e 0054 | ab0d 40b9 | 6ef1 7dd3 | 2e8e 00b4 | ca41 0091 
+  0x0000000119731f60: 4afd df88 | cc0d 40b9 | 8bf1 7dd3 | 5d05 0051 | 7f01 1beb | e1c2 0054 | 5f05 0071 | e1a9 0054 
+  0x0000000119731f80: 8ae3 c039 | 4a42 0035 | df0d 00b9 | ca41 0091 | 5dfd 9f88 | ca51 0091 | 4afd df88 | cc2a 40b9 
+  0x0000000119731fa0: 5df1 7dd3 | 8ff1 7dd3 | 7dc2 00b5 
+
+  0x0000000119731fac: ; implicit exception: dispatches to 0x0000000119733d68
+  0x0000000119731fac: ea09 40b9 
+
+  0x0000000119731fb0: ;   {metadata('java/util/concurrent/locks/ReentrantLock')}
+  0x0000000119731fb0: cc00 a0d2 | 0c80 83f2 | 5f01 0c6b | e19b 0054 | eb0d 40b9 | 6df1 7dd3 | ad8b 00b4 | eb03 0032 
+  0x0000000119731fd0: ec03 1f2a | aa41 0091 | e803 0caa | 4bfd e888 | 1f01 0c6b | fd17 9f9a | 9dc1 0034 | 8be3 c039 
+  0x0000000119731ff0: eb40 0035 | ea03 0daa | eb03 1baa | 6b01 0aca | 6bfd 55d3 | b40d 00b9 | 8b3f 00b4 | 4afd 49d3 
+  0x0000000119732010: 0ba0 a0d2 | 2b00 c0f2 | 6001 0a8b | 0b00 c039 | 7f11 0071 | 414b 0054 | e81f 40f9 | e827 00f9 
+  0x0000000119732030: f453 00b9 | f343 00b9 | f71f 00f9 | f01b 00fd | f55b 02a9 | fa0f 00f9 | f20b 00fd | f903 00f9 
+  0x0000000119732050: e103 16aa 
+
+  0x0000000119732054: ; ImmutableOopMap {[0]=Oop [8]=Oop [24]=Oop [32]=Oop [40]=Oop [56]=Oop [64]=NarrowOop [72]=Oop [80]=NarrowOop }
+                      ;*invokevirtual reportIfTooOld {reexecute=0 rethrow=0 return_oop=0}
+                      ; - com.ctre.phoenix6.hardware.ParentDevice::setControlPrivate@10 (line 396)
+                      ; - com.ctre.phoenix6.hardware.TalonFX::setControlPrivate@6 (line 366)
+                      ; - com.ctre.phoenix6.hardware.core.CoreTalonFX::setControl@2 (line 5690)
+                      ; - com.ctre.phoenix6.hardware.TalonFX::set@13 (line 339)
+                      ; - frc.robot.subsystems.SwerveModule::setDesiredState@70 (line 159)
+                      ;   {optimized virtual_call}
+  0x0000000119732054: 4f3d fe97 | f317 40f9 | 6a2e 40b9 | 4af1 7dd3 
+
+  0x0000000119732064: ; implicit exception: dispatches to 0x0000000119733d88
+  0x0000000119732064: 4b15 40b9 
+
+  0x0000000119732068: ;   {oop(a 'com/ctre/phoenix6/StatusCode'{0x000000070d6296b0})}
+  0x0000000119732068: 0ad6 92d2 | 4aac a1f2 | ea00 c0f2 | 4a15 40b9 | 7f01 0a6b | a172 0054 | fd03 0032 | 7f01 0a6b 
+  0x0000000119732088: a1bd 0054 | 8be3 c039 | 8b3d 0035 | f41f 40f9 | ea03 13aa | eb03 14aa | 6b01 0aca | 6bfd 55d3 
+  0x00000001197320a8: ed43 40b9 | 6d26 00b9 | 4b3c 00b4 | 4afd 49d3 | 0ba0 a0d2 | 2b00 c0f2 | 6001 0a8b | 0b00 c039 
+  0x00000001197320c8: 7f11 0071 | 614a 0054 | e103 14aa | 6b0e 40b9 | 6af1 7dd3 
+
+  0x00000001197320dc: ; implicit exception: dispatches to 0x0000000119733d94
+  0x00000001197320dc: 4b15 40b9 | 4311 40b9 | 62f1 7dd3 | 0934 8cd2 | 4901 a0f2 | 0901 c0f2 
+
+  0x00000001197320f4: ; ImmutableOopMap {[0]=Oop [8]=Oop [24]=Oop [32]=Oop [40]=Oop [56]=Oop [72]=Oop [80]=NarrowOop }
+                      ;*invokevirtual sendRequest {reexecute=0 rethrow=0 return_oop=1}
+                      ; - com.ctre.phoenix6.hardware.ParentDevice::setControlPrivate@95 (line 406)
+                      ; - com.ctre.phoenix6.hardware.TalonFX::setControlPrivate@6 (line 366)
+                      ; - com.ctre.phoenix6.hardware.core.CoreTalonFX::setControl@2 (line 5690)
+                      ; - com.ctre.phoenix6.hardware.TalonFX::set@13 (line 339)
+                      ; - frc.robot.subsystems.SwerveModule::setDesiredState@70 (line 159)
+                      ;   {virtual_call}
+  0x00000001197320f4: f319 0094 | ed17 40f9 | aa29 40b9 | e023 00f9 | 4ef1 7dd3 
+
+  0x0000000119732108: ; implicit exception: dispatches to 0x0000000119733da4
+  0x0000000119732108: cb09 40b9 
+
+  0x000000011973210c: ;   {metadata('java/util/concurrent/locks/ReentrantLock')}
+  0x000000011973210c: ca00 a0d2 | 0a80 83f2 | 7f01 0a6b | 0192 0054 | ca0d 40b9 | 4ff1 7dd3 | cf81 00b4 | ea41 0091 
+  0x000000011973212c: 4bfd df88 | ea0d 40b9 | 4af1 7dd3 | 7d05 0051 | f327 40f9 | 5f01 13eb | 01b8 0054 | 7f05 0071 
+  0x000000011973214c: 61aa 0054 | 8be3 c039 | cb38 0035 | ff0d 00b9 | ea41 0091 | 5dfd 9f88 | ea51 0091 | 4bfd df88 
+  0x000000011973216c: f413 40f9 | 900a 40fd | 7df1 7dd3 
+
+  0x0000000119732178: ;   {section_word}
+  0x0000000119732178: 51ad ff5c | 10c2 601e | ddb6 00b5 | eb23 40f9 
+
+  0x0000000119732188: ; implicit exception: dispatches to 0x0000000119733db0
+  0x0000000119732188: 6a15 40b9 
+
+  0x000000011973218c: ;   {oop(a 'com/ctre/phoenix6/StatusCode'{0x000000070d6296b0})}
+  0x000000011973218c: 0cd6 92d2 | 4cac a1f2 | ec00 c0f2 | 8c15 40b9 | 5f01 0c6b | 418e 0054 | 2022 701e | cd17 0054 
+  0x00000001197321ac: fa03 40f9 | 4a0f 40b9 | 56f1 7dd3 
+
+  0x00000001197321b8: ; implicit exception: dispatches to 0x0000000119733e34
+  0x00000001197321b8: cbaa 40b9 | d552 40b9 | 6ef1 7dd3 | b7f2 7dd3 
+
+  0x00000001197321c8: ; implicit exception: dispatches to 0x0000000119733e40
+  0x00000001197321c8: ca09 40b9 
+
+  0x00000001197321cc: ;   {metadata('java/util/concurrent/locks/ReentrantLock')}
+  0x00000001197321cc: cc00 a0d2 | 0c80 83f2 | 5f01 0c6b | a192 0054 | cb0d 40b9 | 6ff1 7dd3 | cf8f 00b4 | ed03 0032 
+  0x00000001197321ec: eb03 1f2a | ea41 0091 | e803 0baa | 4dfd e888 | 1f01 0b6b | fd17 9f9a | bdc7 0034 | 8be3 c039 
+  0x000000011973220c: 4b4e 0035 | ea03 0faa | eb03 13aa | 6b01 0aca | 6cfd 55d3 | eb53 40b9 | eb0d 00b9 | 0c01 00b4 
+  0x000000011973222c: 4afd 49d3 | 0ca0 a0d2 | 2c00 c0f2 | 8001 0a8b | 0c00 c039 | 9f11 0071 | a153 0054 | cdaa 5429 
+  0x000000011973224c: bdf1 7dd3 | 4ef1 7dd3 | 7d8f 00b5 
+
+  0x0000000119732258: ; implicit exception: dispatches to 0x0000000119733e50
+  0x0000000119732258: ca09 40b9 
+
+  0x000000011973225c: ;   {metadata('java/util/concurrent/locks/ReentrantLock')}
+  0x000000011973225c: cd00 a0d2 | 0d80 83f2 | 5f01 0d6b | 418f 0054 | cc0d 40b9 | 8ff1 7dd3 | ef8b 00b4 | ea41 0091 
+  0x000000011973227c: 4afd df88 | ed0d 40b9 | acf1 7dd3 | 5d05 0051 | 9f01 13eb | e1c3 0054 | 5f05 0071 | 01b7 0054 
+  0x000000011973229c: 8ae3 c039 | 0a4b 0035 | ff0d 00b9 | ea41 0091 | 5dfd 9f88 | ea51 0091 | 4afd df88 | cd2a 40b9 
+  0x00000001197322bc: 5df1 7dd3 | b0f1 7dd3 | 1dc3 00b5 
+
+  0x00000001197322c8: ; implicit exception: dispatches to 0x0000000119733e64
+  0x00000001197322c8: 0a0a 40b9 
+
+  0x00000001197322cc: ;   {metadata('java/util/concurrent/locks/ReentrantLock')}
+  0x00000001197322cc: cd00 a0d2 | 0d80 83f2 | 5f01 0d6b | 618c 0054 | 0c0e 40b9 | 8ff1 7dd3 | 0f89 00b4 | ee03 0032 
+  0x00000001197322ec: ec03 1f2a | ea41 0091 | e803 0caa | 4efd e888 | 1f01 0c6b | fd17 9f9a | ddc1 0034 | 8ce3 c039 
+  0x000000011973230c: 0c49 0035 | ea03 0faa | ec03 13aa | 8c01 0aca | eb0d 00b9 | 8bfd 55d3 | 0b01 00b4 | 4afd 49d3 
+  0x000000011973232c: 0ba0 a0d2 | 2b00 c0f2 | 6001 0a8b | 0b00 c039 | 7f11 0071 | c14f 0054 | f71f 00f9 | fd03 152a 
+  0x000000011973234c: f4db 02a9 | f313 00f9 | fa03 00f9 | e103 16aa 
+
+  0x000000011973235c: ; ImmutableOopMap {rfp=NarrowOop [0]=Oop [8]=Oop [24]=Oop [32]=Oop [40]=Oop [48]=Oop [56]=Oop }
+                      ;*invokevirtual reportIfTooOld {reexecute=0 rethrow=0 return_oop=0}
+                      ; - com.ctre.phoenix6.hardware.ParentDevice::setControlPrivate@10 (line 396)
+                      ; - com.ctre.phoenix6.hardware.TalonFX::setControlPrivate@6 (line 366)
+                      ; - com.ctre.phoenix6.hardware.core.CoreTalonFX::setControl@2 (line 7476)
+                      ; - com.ctre.phoenix6.hardware.TalonFX::disable@5 (line 374)
+                      ; - com.ctre.phoenix6.hardware.TalonFX::stopMotor@1 (line 381)
+                      ; - frc.robot.subsystems.SwerveModule::setDesiredState@91 (line 162)
+                      ;   {optimized virtual_call}
+  0x000000011973235c: 8d3c fe97 | f31b 40f9 | 6a2e 40b9 | 4af1 7dd3 
+
+  0x000000011973236c: ; implicit exception: dispatches to 0x0000000119733e78
+  0x000000011973236c: 4b15 40b9 
+
+  0x0000000119732370: ;   {oop(a 'com/ctre/phoenix6/StatusCode'{0x000000070d6296b0})}
+  0x0000000119732370: 0ad6 92d2 | 4aac a1f2 | ea00 c0f2 | 4a15 40b9 | 7f01 0a6b | a15a 0054 | ec03 0032 | 7f01 0a6b 
+  0x0000000119732390: 21be 0054 | 8be3 c039 | 4b46 0035 | f41f 40f9 | ea03 13aa | eb03 14aa | 6b01 0aca | 6bfd 55d3 
+  0x00000001197323b0: 7d26 00b9 | 2b45 00b4 | b44e 00b4 | 4afd 49d3 | 0ba0 a0d2 | 2b00 c0f2 | 6001 0a8b | 0b00 c039 
+  0x00000001197323d0: 7f11 0071 | 014e 0054 | e103 14aa | 6b0e 40b9 | 6af1 7dd3 
+
+  0x00000001197323e4: ; implicit exception: dispatches to 0x0000000119733e84
+  0x00000001197323e4: 4b15 40b9 | 4311 40b9 | 62f1 7dd3 | 0948 92d2 | 4901 a0f2 | 0901 c0f2 
+
+  0x00000001197323fc: ; ImmutableOopMap {[0]=Oop [8]=Oop [24]=Oop [32]=Oop [40]=Oop [48]=Oop [56]=Oop }
+                      ;*invokevirtual sendRequest {reexecute=0 rethrow=0 return_oop=1}
+                      ; - com.ctre.phoenix6.hardware.ParentDevice::setControlPrivate@95 (line 406)
+                      ; - com.ctre.phoenix6.hardware.TalonFX::setControlPrivate@6 (line 366)
+                      ; - com.ctre.phoenix6.hardware.core.CoreTalonFX::setControl@2 (line 7476)
+                      ; - com.ctre.phoenix6.hardware.TalonFX::disable@5 (line 374)
+                      ; - com.ctre.phoenix6.hardware.TalonFX::stopMotor@1 (line 381)
+                      ; - frc.robot.subsystems.SwerveModule::setDesiredState@91 (line 162)
+                      ;   {virtual_call}
+  0x00000001197323fc: 115b 0094 | ed1b 40f9 | aa29 40b9 | e023 00f9 | 4ff1 7dd3 
+
+  0x0000000119732410: ; implicit exception: dispatches to 0x0000000119733e98
+  0x0000000119732410: eb09 40b9 
+
+  0x0000000119732414: ;   {metadata('java/util/concurrent/locks/ReentrantLock')}
+  0x0000000119732414: ca00 a0d2 | 0a80 83f2 | 7f01 0a6b | c182 0054 | ea0d 40b9 | 4ef1 7dd3 | 6e7f 00b4 | ca41 0091 
+  0x0000000119732434: 4bfd df88 | ca0d 40b9 | 4cf1 7dd3 | 7d05 0051 | ea13 40f9 | 9f01 0aeb | c1b8 0054 | 7f05 0071 
+  0x0000000119732454: 81b1 0054 | 8be3 c039 | 8b41 0035 | df0d 00b9 | ca41 0091 | 5dfd 9f88 | ca51 0091 | 4bfd df88 
+  0x0000000119732474: 7df1 7dd3 | fdb7 00b5 | eb23 40f9 
+
+  0x0000000119732480: ; implicit exception: dispatches to 0x0000000119733ea4
+  0x0000000119732480: 6a15 

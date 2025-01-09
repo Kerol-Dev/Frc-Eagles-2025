@@ -38,8 +38,6 @@ public class GroundIntakeSubsystem extends SubsystemBase {
         groundIntakeRotationMotor2Config.idleMode(IdleMode.kBrake);
         groundIntakeRotationMotor2Config.inverted(GroundIntakeConstants.kGroundIntakeRotationMotor1Inverted);
         groundIntakeRotationMotor2Config.encoder
-                .inverted(GroundIntakeConstants.kGroundIntakeRotationMotor2EncoderInverted);
-        groundIntakeRotationMotor2Config.encoder
                 .positionConversionFactor(360 / GroundIntakeConstants.kGroundIntakeRotationMotor2Reduction);
         groundIntakeRotationMotor2Config.closedLoop.pid(GroundIntakeConstants.kGroundIntakeRotationP,
                 GroundIntakeConstants.kGroundIntakeRotationI, GroundIntakeConstants.kGroundIntakeRotationD);
@@ -125,7 +123,7 @@ public class GroundIntakeSubsystem extends SubsystemBase {
 
             @Override
             public boolean isFinished() {
-                return AlgaeArmIntake.AlgaeArmIntakeSensor.get();
+                return !AlgaeArmIntake.AlgaeArmIntakeSensor.get();
             }
         };
     }

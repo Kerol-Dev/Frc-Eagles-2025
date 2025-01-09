@@ -135,7 +135,7 @@ public final class Constants {
 
   public static final class ElevatorConstants
   {
-    public static final int kElevatorMotorCanID = 5;
+    public static final int kElevatorMotorCanID = 8;
 
     public static final boolean kElevatorMotorInverted = false;
     public static final boolean kElevatorMotorEncoderInverted = false;
@@ -155,7 +155,7 @@ public final class Constants {
 
   public static final class ArmConstants
   {
-    public static final int kArmMotorCanID = 5;
+    public static final int kArmMotorCanID = 9;
 
     public static final boolean kArmMotorInverted = false;
     public static final boolean kArmMotorEncoderInverted = false;
@@ -175,7 +175,7 @@ public final class Constants {
 
   public static final class CoralArmIntakeConstants
   {
-    public static final int kCoralArmIntakeMotorCanID = 6;
+    public static final int kCoralArmIntakeMotorCanID = 31;
     public static final int kCoralArmIntakeSensorPort = 1;
 
     public static final boolean kCoralArmIntakeMotorInverted = false;
@@ -183,8 +183,8 @@ public final class Constants {
 
   public static final class AlgaeArmIntakeConstants
   {
-    public static final int kAlgaeArmIntakeMotorCanID = 6;
-    public static final int kAlgaeArmIntakeSensorPort = 1;
+    public static final int kAlgaeArmIntakeMotorCanID = 32;
+    public static final int kAlgaeArmIntakeSensorPort = 9;
 
     public static final boolean kAlgaeArmIntakeMotorInverted = false;
   }

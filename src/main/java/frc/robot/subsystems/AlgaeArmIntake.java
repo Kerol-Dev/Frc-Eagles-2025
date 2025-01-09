@@ -72,6 +72,6 @@ public class AlgaeArmIntake extends SubsystemBase {
     }
 
     public boolean getAlgaeArmIntakeSensor() {
-        return AlgaeArmIntakeSensor.get();
+        return !AlgaeArmIntakeSensor.get();
     }
 }

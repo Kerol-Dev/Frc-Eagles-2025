@@ -1,0 +1,121 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto-L4-1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PlaceL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto-L4-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "GrabFromSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto-L4-3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PlaceL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto-L4-4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "GrabFromSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto-L4-5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PlaceL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto-L4-6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "GrabFromSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto-L4-7"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PlaceL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto-L4-8"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "GrabFromSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Auto-L4-9"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PlaceL4"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
