@@ -14,6 +14,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,6 +27,8 @@ public class GroundIntakeSubsystem extends SubsystemBase {
             MotorType.kBrushless);
 
     private final DigitalInput groundIntakeSensor = new DigitalInput(GroundIntakeConstants.kGroundIntakeSensorPort);
+
+    private boolean isOpen = false;
 
     public GroundIntakeSubsystem() {
         TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
@@ -54,6 +57,14 @@ public class GroundIntakeSubsystem extends SubsystemBase {
                 PersistMode.kPersistParameters);
     }
 
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Intake Position", groundIntakeRotationMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putBoolean("Intake State", isOpen);
+        SmartDashboard.putNumber("Intake Rot Temp", groundIntakeRotationMotor.getDeviceTemp().getValueAsDouble());
+        SmartDashboard.putNumber("Intake feed Temp", groundIntakeFeedMotor.getMotorTemperature());
+    }
+
     public Command setIntakePositionCommand(boolean open) {
         return new Command() {
             @Override
@@ -69,6 +80,7 @@ public class GroundIntakeSubsystem extends SubsystemBase {
     }
 
     public void setIntakePosition(boolean open) {
+        isOpen = open;
         groundIntakeRotationMotor.setControl(new PositionDutyCycle(open ? GroundIntakeConstants.kGroundIntakeOpenedAngle
         : GroundIntakeConstants.kGroundIntakeClosedAngle).withEnableFOC(true));
     }

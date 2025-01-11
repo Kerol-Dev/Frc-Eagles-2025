@@ -147,6 +147,8 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontLeft.updateSmartDashboard();
     m_frontRight.updateSmartDashboard();
 
+    m_field.setRobotPose(getPose());
+
     SmartDashboard.putData(m_gyro);
     SmartDashboard.putData(m_field);
 

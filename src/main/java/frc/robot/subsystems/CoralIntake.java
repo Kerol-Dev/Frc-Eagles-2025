@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -20,6 +21,12 @@ public class CoralIntake extends SubsystemBase{
         SparkMaxConfig coralArmIntakeMotorConfig = new SparkMaxConfig();
         coralArmIntakeMotorConfig.inverted(CoralArmIntakeConstants.kCoralArmIntakeMotorInverted);
         coralArmIntakeMotor.configure(coralArmIntakeMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("Coral Sensor", getCoralIntakeSensor());
+        SmartDashboard.putNumber("Coral Temp", coralArmIntakeMotor.getMotorTemperature());
     }
 
     public Command grabCommand(){

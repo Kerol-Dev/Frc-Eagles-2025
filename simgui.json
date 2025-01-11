@@ -1,11 +1,4 @@
 {
-  "HALProvider": {
-    "RoboRIO": {
-      "window": {
-        "visible": true
-      }
-    }
-  },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
@@ -39,7 +32,19 @@
     "DartClient_38042589@1": {
       "open": true
     },
+    "DartClient_53214158@2": {
+      "open": true
+    },
     "Server": {
+      "Subscribers": {
+        "open": true
+      },
+      "open": true
+    },
+    "shuffleboard@1": {
+      "Publishers": {
+        "open": true
+      },
       "Subscribers": {
         "open": true
       },

@@ -30,7 +30,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.06716694078947365,
+      "waypointRelativePos": 0.016025904605263177,
       "rotationDegrees": -59.99999999999999
     }
   ],
@@ -45,8 +45,8 @@
     }
   ],
   "globalConstraints": {
-    "maxVelocity": 4.5,
-    "maxAcceleration": 13.5,
+    "maxVelocity": 4.8,
+    "maxAcceleration": 14.0,
     "maxAngularVelocity": 800.0,
     "maxAngularAcceleration": 1700.0,
     "nominalVoltage": 12.0,
@@ -57,7 +57,7 @@
     "rotation": -55.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "L4-Auto",
   "idealStartingState": {
     "velocity": 0,
     "rotation": -59.99999999999999

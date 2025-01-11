@@ -33,7 +33,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = ElevatorConstants.kElevatorMotorReverseSoftLimit;
         talonFXConfiguration.MotionMagic.MotionMagicAcceleration = ElevatorConstants.kElevatorMotorAcceleration / 60;
-        talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.kElevatorMotorCruiseVelocity / 60;
+        talonFXConfiguration.MotionMagic.MotionMagicCruiseVelocity = ElevatorConstants.kElevatorMotorCruiseVelocity
+                / 60;
         talonFXConfiguration.Feedback.SensorToMechanismRatio = ElevatorConstants.kElevatorMotorSensorToMechRatio;
         talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         talonFXConfiguration.MotorOutput.Inverted = ElevatorConstants.kElevatorMotorInverted
@@ -60,18 +61,26 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private double getElevatorPositionValue(ElevatorPosition position) {
         switch (position) {
-            case coral_L4:
-                return 0;
-            case coral_L3:
-                return 50;
-            case coral_L2:
-                return 70;
-            case coral_L1:
-                return 90;
-            case processor:
-                return 110;
             case idle:
-                return 130;
+                return 90;
+            case grab_algae_ground:
+                return 0;
+            case grab_algae_reef_1:
+                return 90;
+            case grab_algae_reef_2:
+                return 0;
+            case grab_coral_source:
+                return 0;
+            case place_algae_processor:
+                return 90;
+            case place_coral_l1:
+                return 0;
+            case place_coral_l2:
+                return 0;
+            case place_coral_l3:
+                return 90;
+            case place_coral_l4:
+                return 90;
             default:
                 return 0;
         }

@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
@@ -25,11 +26,11 @@ public class ArmRotationIntake extends SubsystemBase {
 
         sparkMaxConfig.idleMode(IdleMode.kBrake);
         sparkMaxConfig.inverted(ArmConstants.kArmMotorInverted);
-        sparkMaxConfig.encoder
-                .positionConversionFactor(ArmConstants.kArmMotorSensorToMechRatio);
+        // sparkMaxConfig.encoder
+        //         .positionConversionFactor(ArmConstants.kArmMotorSensorToMechRatio);
         sparkMaxConfig.closedLoop.pid(ArmConstants.kArmMotorP,
                 ArmConstants.kArmMotorI, ArmConstants.kArmMotorD);
-        sparkMaxConfig.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        sparkMaxConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
         sparkMaxConfig.closedLoop.outputRange(-ArmConstants.kArmMotorMaxSpeed,
                 ArmConstants.kArmMotorMaxSpeed);
         armMotor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters,
@@ -51,16 +52,35 @@ public class ArmRotationIntake extends SubsystemBase {
         };
     }
 
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Arm Position", armMotor.getAbsoluteEncoder().getPosition());
+        SmartDashboard.putNumber("Arm Goal", armGoalPosition);
+        SmartDashboard.putNumber("Arm temp", armMotor.getMotorTemperature());
+    }
+
     private double getArmPositionValue(ArmPosition position) {
         switch (position) {
-            case coral_L4:
-                return 150;
-            case coral_L23:
-                return 135;
-            case coral_L1:
-                return 90;
             case idle:
                 return 0;
+            case grab_algae_ground:
+                return 0;
+            case grab_algae_reef_1:
+                return 90;
+            case grab_algae_reef_2:
+                return 0;
+            case grab_coral_source:
+                return 0;
+            case place_algae_processor:
+                return 90;
+            case place_coral_l1:
+                return 0;
+            case place_coral_l2:
+                return 0;
+            case place_coral_l3:
+                return 90;
+            case place_coral_l4:
+                return 90;
             default:
                 return 0;
         }

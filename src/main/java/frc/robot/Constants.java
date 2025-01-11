@@ -1,9 +1,24 @@
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.photonvision.simulation.SimCameraProperties;
+
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.networktables.StructSubscriber;
+import frc.robot.subsystems.vision.Camera;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -110,8 +125,7 @@ public final class Constants {
     public static final int kTurningMotorStallCurrentLimit = 100;
   }
 
-  public static final class GroundIntakeConstants
-  {
+  public static final class GroundIntakeConstants {
     public static final int kGroundIntakeRotationMotorCanId = 5;
     public static final int kGroundIntakeFeedMotorCanId = 7;
     public static final int kGroundIntakeSensorPort = 0;
@@ -130,8 +144,7 @@ public final class Constants {
     public static final double kGroundIntakeRotationMaxSpeed = 1;
   }
 
-  public static final class ElevatorConstants
-  {
+  public static final class ElevatorConstants {
     public static final int kElevatorMotorCanID = 8;
 
     public static final boolean kElevatorMotorInverted = false;
@@ -140,7 +153,8 @@ public final class Constants {
     public static final double kElevatorMotorForwardSoftLimit = 250;
     public static final double kElevatorMotorReverseSoftLimit = 0;
 
-    public static final double kElevatorMotorSensorToMechRatio = (1.27 * 28) / 100; // Teeth Pitch * Teeth Count / Gear Ratio
+    public static final double kElevatorMotorSensorToMechRatio = (1.27 * 28) / 100; // Teeth Pitch * Teeth Count / Gear
+                                                                                    // Ratio
     public static final double kElevatorMotorAcceleration = 4800; // RPM
     public static final double kElevatorMotorCruiseVelocity = 8400; // RPM
 
@@ -150,8 +164,7 @@ public final class Constants {
     public static final double kElevatorMaxSpeed = 1;
   }
 
-  public static final class ArmConstants
-  {
+  public static final class ArmConstants {
     public static final int kArmMotorCanID = 9;
 
     public static final boolean kArmMotorInverted = false;
@@ -168,20 +181,32 @@ public final class Constants {
     public static final double kArmMotorMaxSpeed = 1;
   }
 
-  public static final class CoralArmIntakeConstants
-  {
+  public static final class CoralArmIntakeConstants {
     public static final int kCoralArmIntakeMotorCanID = 31;
     public static final int kCoralArmIntakeSensorPort = 1;
 
     public static final boolean kCoralArmIntakeMotorInverted = false;
   }
 
-  public static final class AlgaeArmIntakeConstants
-  {
+  public static final class AlgaeArmIntakeConstants {
     public static final int kAlgaeArmIntakeMotorCanID = 32;
     public static final int kAlgaeArmIntakeSensorPort = 9;
 
     public static final boolean kAlgaeArmIntakeMotorInverted = false;
+  }
+
+  public static final class VisionConstants {
+    public static AprilTagFieldLayout aprilTagFieldLayout;
+    public static ArrayList<Camera> cameras = new ArrayList<Camera>();
+    public static Set<String> visibleAprilTags = new HashSet<>();
+
+    public static StructSubscriber<Pose2d> readSimulationPose;
+
+    public static Matrix<N3, N1> curStdDevs;
+    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
+    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+
+    public static SimCameraProperties simCameraProperties = new SimCameraProperties();
   }
 
   /**

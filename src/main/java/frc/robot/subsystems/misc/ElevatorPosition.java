@@ -1,14 +1,14 @@
 package frc.robot.subsystems.misc;
 
 public enum ElevatorPosition {
-    coral_L4,
-    coral_L3,
-    coral_L2,
-    coral_L1,
-    processor,
     idle,
-    source,
-    grab_from_intake,
-    grab_algea_1,
-    grab_algea_2
+    grab_algae_ground,
+    grab_algae_reef_1,
+    grab_algae_reef_2,
+    grab_coral_source,
+    place_algae_processor,
+    place_coral_l1,
+    place_coral_l2,
+    place_coral_l3,
+    place_coral_l4
 }
