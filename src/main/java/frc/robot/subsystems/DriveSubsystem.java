@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -7,6 +8,7 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -75,10 +77,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearRightcanCoderOffset,
       true);
 
-  
-
   private final StructArrayPublisher<SwerveModuleState> publisher;
-
   // Field visualization and gyro
   public final Field2d m_field = new Field2d();
   public static AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
@@ -90,6 +89,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
   FieldPositions fieldPositions = new FieldPositions();
+
   /**
    * Constructs the DriveSubsystem and configures autonomous settings.
    */
@@ -104,12 +104,18 @@ public class DriveSubsystem extends SubsystemBase {
             return alliance == DriverStation.Alliance.Red;
           },
           this);
+
     } catch (Exception e) {
       DriverStation.reportError(e.getMessage(), true);
     }
 
     publisher = NetworkTableInstance.getDefault()
         .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
+
+      PathPlannerLogging.setLogActivePathCallback((activePath) -> {
+          final Pose2d[] trajectory = activePath.toArray(new Pose2d[0]);
+          Logger.recordOutput("Trajectory", trajectory);
+        });
   }
 
   /**
@@ -244,17 +250,17 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Pose2d getClosestPose(Pose2d... poses) {
-        Pose2d closestPose = null;
-        double closestDistance = Double.MAX_VALUE;
-        for (Pose2d pose2d: poses) {
-          double distance = PhotonUtils.getDistanceToPose(getPose(), pose2d);
-          if (distance < closestDistance) {
-              closestDistance = distance;
-              closestPose = pose2d;
-          }
-        }
-        return closestPose;
+    Pose2d closestPose = null;
+    double closestDistance = Double.MAX_VALUE;
+    for (Pose2d pose2d : poses) {
+      double distance = PhotonUtils.getDistanceToPose(getPose(), pose2d);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestPose = pose2d;
+      }
     }
+    return closestPose;
+  }
 
   public Command goToPosePathfind(PathfindType pathfindType) {
     pathfindType = PathfindType.Processor;
@@ -275,9 +281,10 @@ public class DriveSubsystem extends SubsystemBase {
       case Processor:
         pose = fieldPositions.getPose("processor");
         break;
-      
+
       case Closest:
-        pose = getClosestPose(fieldPositions.getPose("processor"), fieldPositions.getClosestHumanPose(getPose()), fieldPositions.getClosestReefPose(getPose()));
+        pose = getClosestPose(fieldPositions.getPose("processor"), fieldPositions.getClosestHumanPose(getPose()),
+            fieldPositions.getClosestReefPose(getPose()));
         break;
 
       default:
@@ -285,8 +292,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     try {
-      if(pose.getX() == 0)
-      {
+      if (pose.getX() == 0) {
         throw new Exception("No valid pose found");
       }
 
