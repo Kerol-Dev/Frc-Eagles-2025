@@ -1,13 +1,14 @@
+/**
+ * This class manages the arm rotation for handling various intake operations.
+ * It controls the arm motor, its position, and provides commands for movements.
+ */
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -18,25 +19,32 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.misc.ArmPosition;
 
 public class ArmRotationIntake extends SubsystemBase {
-    private final SparkMax armMotor = new SparkMax(ElevatorConstants.kElevatorMotorCanID, MotorType.kBrushless);
+    // Motor responsible for rotating the arm
+    private final TalonFX armMotor = new TalonFX(ElevatorConstants.kElevatorMotorCanID);
     private double armGoalPosition = 0;
 
+    /**
+     * Constructor that configures the arm motor settings.
+     */
     public ArmRotationIntake() {
-        SparkMaxConfig sparkMaxConfig = new SparkMaxConfig();
-
-        sparkMaxConfig.idleMode(IdleMode.kBrake);
-        sparkMaxConfig.inverted(ArmConstants.kArmMotorInverted);
-        // sparkMaxConfig.encoder
-        //         .positionConversionFactor(ArmConstants.kArmMotorSensorToMechRatio);
-        sparkMaxConfig.closedLoop.pid(ArmConstants.kArmMotorP,
-                ArmConstants.kArmMotorI, ArmConstants.kArmMotorD);
-        sparkMaxConfig.closedLoop.feedbackSensor(FeedbackSensor.kAbsoluteEncoder);
-        sparkMaxConfig.closedLoop.outputRange(-ArmConstants.kArmMotorMaxSpeed,
-                ArmConstants.kArmMotorMaxSpeed);
-        armMotor.configure(sparkMaxConfig, ResetMode.kResetSafeParameters,
-                PersistMode.kPersistParameters);
+        TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
+        talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        talonFXConfiguration.MotorOutput.Inverted = ArmConstants.kArmMotorInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
+        talonFXConfiguration.Feedback.SensorToMechanismRatio = ArmConstants.kArmMotorSensorToMechRatio;
+        talonFXConfiguration.Slot0.kP = ArmConstants.kArmMotorP;
+        talonFXConfiguration.Slot0.kI = ArmConstants.kArmMotorI;
+        talonFXConfiguration.Slot0.kD = ArmConstants.kArmMotorD;
+        talonFXConfiguration.MotorOutput.PeakForwardDutyCycle = ArmConstants.kArmMotorMaxSpeed;
+        talonFXConfiguration.MotorOutput.PeakReverseDutyCycle = -ArmConstants.kArmMotorMaxSpeed;
+        armMotor.getConfigurator().apply(talonFXConfiguration);
     }
 
+    /**
+     * Creates a command to move the arm to a specific position.
+     *
+     * @param positionSelection The desired arm position.
+     * @return The command to set the arm position.
+     */
     public Command setArmPositionCommand(ArmPosition positionSelection) {
         armGoalPosition = getArmPositionValue(positionSelection);
         return new Command() {
@@ -52,13 +60,22 @@ public class ArmRotationIntake extends SubsystemBase {
         };
     }
 
+    /**
+     * Updates the SmartDashboard with the arm's current and goal positions and temperature.
+     */
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Arm Position", armMotor.getAbsoluteEncoder().getPosition());
+        SmartDashboard.putNumber("Arm Position", armMotor.getPosition().getValueAsDouble());
         SmartDashboard.putNumber("Arm Goal", armGoalPosition);
-        SmartDashboard.putNumber("Arm temp", armMotor.getMotorTemperature());
+        SmartDashboard.putNumber("Arm temp", armMotor.getDeviceTemp().getValueAsDouble());
     }
 
+    /**
+     * Retrieves the numerical value of a specific arm position.
+     *
+     * @param position The desired arm position.
+     * @return The corresponding numerical value.
+     */
     private double getArmPositionValue(ArmPosition position) {
         switch (position) {
             case idle:
@@ -86,15 +103,30 @@ public class ArmRotationIntake extends SubsystemBase {
         }
     }
 
+    /**
+     * Sets the arm's position to a specific value.
+     *
+     * @param position The desired position value.
+     */
     public void setArmPosition(double position) {
-        armMotor.getClosedLoopController().setReference(position, ControlType.kPosition);
+        armMotor.setControl(new PositionDutyCycle(position).withEnableFOC(true));
     }
 
+    /**
+     * Sets the arm's position to a predefined ArmPosition.
+     *
+     * @param position The ArmPosition to set.
+     */
     public void setArmPosition(ArmPosition position) {
-        armMotor.getClosedLoopController().setReference(getArmPositionValue(position), ControlType.kPosition);
+        armMotor.setControl(new PositionDutyCycle(getArmPositionValue(position)).withEnableFOC(true));
     }
 
+    /**
+     * Checks if the arm has reached its goal position.
+     *
+     * @return True if the arm is at the goal position, false otherwise.
+     */
     public boolean isArmAtPosition() {
-        return MathUtil.isNear(armGoalPosition, armMotor.getEncoder().getPosition(), 10);
+        return MathUtil.isNear(armGoalPosition, armMotor.getPosition().getValueAsDouble(), 10);
     }
 }
