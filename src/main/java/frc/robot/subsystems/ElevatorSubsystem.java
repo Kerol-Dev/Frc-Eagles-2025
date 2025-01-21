@@ -14,6 +14,8 @@ import frc.robot.subsystems.misc.ElevatorPosition;
 
 public class ElevatorSubsystem extends SubsystemBase {
     public final TalonFX elevatorMotor = new TalonFX(ElevatorConstants.kElevatorMotorCanID);
+    public final TalonFX elevatorMotor2 = new TalonFX(ElevatorConstants.kElevatorMotorCanID2);
+
     private double elevatorGoalPosition = 0;
 
     public ElevatorSubsystem() {
@@ -63,8 +65,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         switch (position) {
             case idle:
                 return 90;
-            case grab_algae_ground:
-                return 0;
             case grab_algae_reef_1:
                 return 90;
             case grab_algae_reef_2:

@@ -10,12 +10,10 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.AlgaeIntake;
 import frc.robot.subsystems.ArmRotationIntake;
-import frc.robot.subsystems.CoralIntake;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.GroundIntakeSubsystem;
 import frc.robot.subsystems.misc.ArmPosition;
 import frc.robot.subsystems.misc.ElevatorPosition;
 import frc.robot.subsystems.misc.PressCountCommandHandler;
@@ -38,11 +36,9 @@ public class RobotContainer {
 
   // Subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final CoralIntake m_coralArmIntake = new CoralIntake();
-  private final AlgaeIntake m_algaeArmIntake = new AlgaeIntake();
+  private final Intake m_Intake = new Intake();
   public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
   private final ArmRotationIntake m_arm = new ArmRotationIntake();
-  private final GroundIntakeSubsystem m_groundIntake = new GroundIntakeSubsystem();
 
   // Autonomous command chooser
   private static SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -92,31 +88,31 @@ public class RobotContainer {
    */
   private void configurePathPlanner() {
     NamedCommands.registerCommand("InitializeForSource",
-        IntakeSourceInitCommand().onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()));
+        IntakeSourceInitCommand().onlyIf(() -> m_Intake.getCoralIntakeSensor()));
     NamedCommands.registerCommand("GrabFromSource", IntakeSourceGrabCommand()
-        .onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.5)));
+        .onlyIf(() -> m_Intake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.5)));
     NamedCommands.registerCommand("PlaceL4Init",
         PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
-            .onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()));
+            .onlyIf(() -> m_Intake.getCoralIntakeSensor()));
     NamedCommands.registerCommand("PlaceL4",
         PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
-            .onlyIf(() -> m_coralArmIntake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(1.2)));
+            .onlyIf(() -> m_Intake.getCoralIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(1.2)));
     NamedCommands.registerCommand("SpitAlgae", DropAlgaeProcessorCommand()
-        .onlyIf(() -> !m_algaeArmIntake.getAlgaeArmIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.5)));
+        .onlyIf(() -> !m_Intake.getAlgaeArmIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(0.5)));
     NamedCommands.registerCommand("InitAlgae1",
         PlaceReefInit(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1)
-            .onlyIf(() -> !m_algaeArmIntake.getAlgaeArmIntakeSensor()));
+            .onlyIf(() -> !m_Intake.getAlgaeArmIntakeSensor()));
     NamedCommands.registerCommand("InitAlgae2",
         PlaceReefInit(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2)
-            .onlyIf(() -> !m_algaeArmIntake.getAlgaeArmIntakeSensor()));
+            .onlyIf(() -> !m_Intake.getAlgaeArmIntakeSensor()));
 
     // TODO: BEFORE IDLE SYSTEMS, GO BACK!!
     NamedCommands.registerCommand("GrabAlgae1",
         GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1)
-            .onlyIf(() -> !m_algaeArmIntake.getAlgaeArmIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(1.2)));
+            .onlyIf(() -> !m_Intake.getAlgaeArmIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(1.2)));
     NamedCommands.registerCommand("GrabAlgae2",
         GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2)
-            .onlyIf(() -> !m_algaeArmIntake.getAlgaeArmIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(1.2)));
+            .onlyIf(() -> !m_Intake.getAlgaeArmIntakeSensor()).andThen(IdleSystemsCommand().withTimeout(1.2)));
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData(autoChooser);
   }
@@ -128,9 +124,6 @@ public class RobotContainer {
     driverController.start().onTrue(new InstantCommand(m_robotDrive::zeroHeading));
     driverController.leftBumper().onTrue(new InstantCommand(() -> slowSpeedEnabled = !slowSpeedEnabled));
 
-    // driverController.rightTrigger()
-    // .whileTrue(pathfindToReef().andThen(new
-    // InstantCommand(placeCoralCommand::recordPress)));
     driverController.rightTrigger()
         .whileTrue(pathfindToReef().andThen(
             PlaceAutomaticCoral().andThen(AutoReleaseCoral()).andThen(new InstantCommand(() -> triggerRumble(0.5)))));
@@ -140,22 +133,6 @@ public class RobotContainer {
         .onFalse(IdleSystemsCommand());
     driverController.leftBumper().whileTrue(pathfindToProcessor().andThen(DropAlgaeProcessorCommand()))
         .onFalse(IdleSystemsCommand());
-    driverController.a().whileTrue(GrabFromGroundCommand()).onFalse(IdleSystemsCommand());
-  }
-
-  /**
-   * Command to grab from the ground.
-   * 
-   * @return Grab from ground command
-   */
-  private Command GrabFromGroundCommand() {
-    return m_arm.setArmPositionCommand(ArmPosition.grab_algae_ground)
-        .alongWith(m_elevator.setElevatorPositionCommand(ElevatorPosition.grab_algae_ground))
-        .alongWith(m_groundIntake.setIntakePositionCommand(true)
-            .andThen(m_groundIntake.grabAlgea())
-            .andThen(m_groundIntake.setIntakePositionCommand(false))
-            .andThen(m_groundIntake.grabAlgea().andThen(m_algaeArmIntake.grabCommand())))
-        .andThen(new InstantCommand(() -> triggerRumble(0.5)));
   }
 
   /**
@@ -172,7 +149,7 @@ public class RobotContainer {
   }
 
   private Command AutoReleaseCoral() {
-    return m_coralArmIntake.releaseCommand()
+    return m_Intake.releaseCommand(true)
         .andThen(new InstantCommand(() -> triggerRumble(0.5)));
   }
 
@@ -236,7 +213,7 @@ public class RobotContainer {
   private Command GrabAlgaeReefCommand(ElevatorPosition elevatorPosition, ArmPosition armPosition) {
     return m_elevator.setElevatorPositionCommand(elevatorPosition)
         .alongWith(m_arm.setArmPositionCommand(armPosition))
-        .andThen(m_algaeArmIntake.grabCommand())
+        .andThen(m_Intake.grabCommand(false))
         .andThen(new InstantCommand(() -> triggerRumble(0.5)));
   }
 
@@ -248,7 +225,7 @@ public class RobotContainer {
   private Command DropAlgaeProcessorCommand() {
     return m_elevator.setElevatorPositionCommand(ElevatorPosition.place_algae_processor)
         .alongWith(m_arm.setArmPositionCommand(ArmPosition.place_algae_processor))
-        .andThen(m_algaeArmIntake.releaseCommand())
+        .andThen(m_Intake.releaseCommand(false))
         .andThen(new InstantCommand(() -> triggerRumble(0.5)));
   }
 
@@ -260,7 +237,7 @@ public class RobotContainer {
   private Command IntakeSourceGrabCommand() {
     return m_arm.setArmPositionCommand(ArmPosition.grab_coral_source)
         .alongWith(m_elevator.setElevatorPositionCommand(ElevatorPosition.grab_coral_source))
-        .andThen(m_coralArmIntake.grabCommand())
+        .andThen(m_Intake.grabCommand(false))
         .andThen(new InstantCommand(() -> triggerRumble(0.5)));
   }
 
@@ -277,10 +254,9 @@ public class RobotContainer {
   private Command IdleSystemsCommand() {
     return m_elevator.setElevatorPositionCommand(ElevatorPosition.idle)
         .alongWith(m_arm.setArmPositionCommand(ArmPosition.idle))
-        .alongWith(m_groundIntake.setIntakePositionCommand(false))
-        .alongWith(m_groundIntake.stopMotors())
-        .alongWith(m_coralArmIntake.stopMotors())
-        .alongWith(m_algaeArmIntake.stopMotors());
+        .alongWith(m_Intake.stopMotors())
+        .alongWith(m_Intake.stopMotors())
+        .alongWith(m_Intake.stopMotors());
   }
 
   /**
