@@ -174,7 +174,7 @@ public final class Constants {
     public static final double kArmMotorForwardSoftLimit = 180;
     public static final double kArmMotorReverseSoftLimit = 0;
 
-    public static final double kArmMotorSensorToMechRatio = 360 / 50; // 360 / Gear Ratio
+    public static final double kArmMotorSensorToMechRatio = 50; // 360 / Gear Ratio
 
     public static final double kArmMotorP = 1;
     public static final double kArmMotorI = 0;

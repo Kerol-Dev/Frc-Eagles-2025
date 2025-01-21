@@ -1,3 +1,7 @@
+/**
+ * The VisionSubsystem class integrates camera and vision-related functionality for the robot.
+ * It processes pose estimation using AprilTags and simulates vision systems for testing purposes.
+ */
 package frc.robot.subsystems.vision;
 
 import java.nio.file.Path;
@@ -31,11 +35,14 @@ import frc.robot.subsystems.vision.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Detector;
 
 public class VisionSubsystem extends SubsystemBase {
+    /** Simulation instance for vision processing */
     public static VisionSystemSim visionSystemSim = new VisionSystemSim("Main");
 
+    /** Pose estimator for swerve drive using vision data */
     SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
             DriveSubsystem.getHeading(), DriveSubsystem.getModulePositions(), new Pose2d());
 
+    // Publishers for camera pose estimation data
     StructPublisher<Pose3d> structPublisherFL = NetworkTableInstance.getDefault().getTable("Camera Data")
             .getStructTopic("Camera Estimation FL", Pose3d.struct).publish();
     StructPublisher<Pose3d> structPublisherFR = NetworkTableInstance.getDefault().getTable("Camera Data")
@@ -45,10 +52,18 @@ public class VisionSubsystem extends SubsystemBase {
     StructPublisher<Pose3d> structPublisherRR = NetworkTableInstance.getDefault().getTable("Camera Data")
             .getStructTopic("Camera Estimation RR", Pose3d.struct).publish();
 
+    /**
+     * Constructor initializes the vision system and cameras.
+     */
     public VisionSubsystem() {
         InitializeCameras();
     }
 
+    /**
+     * Retrieves the estimated global pose from the vision system.
+     *
+     * @return An Optional containing the estimated robot pose if available.
+     */
     public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
         Optional<EstimatedRobotPose> visionEst = Optional.empty();
         for (Camera camera : VisionConstants.cameras) {
@@ -78,20 +93,21 @@ public class VisionSubsystem extends SubsystemBase {
         return visionEst;
     }
 
+    /**
+     * Updates standard deviations for pose estimation based on visible targets.
+     *
+     * @param estimatedPose The estimated robot pose.
+     * @param targets       List of detected photon targets.
+     */
     private void updateEstimationStdDevs(
             Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
         if (estimatedPose.isEmpty()) {
-            // No pose input. Default to single-tag std devs
             VisionConstants.curStdDevs = VisionConstants.kSingleTagStdDevs;
-
         } else {
-            // Pose present. Start running Heuristic
             var estStdDevs = VisionConstants.kSingleTagStdDevs;
             int numTags = 0;
             double avgDist = 0;
 
-            // Precalculation - see how many tags we found, and calculate an
-            // average-distance metric
             for (var tgt : targets) {
                 var tagPose = VisionConstants.aprilTagFieldLayout.getTagPose(tgt.getFiducialId());
                 if (tagPose.isEmpty())
@@ -105,15 +121,11 @@ public class VisionSubsystem extends SubsystemBase {
             }
 
             if (numTags == 0) {
-                // No tags visible. Default to single-tag std devs
                 VisionConstants.curStdDevs = VisionConstants.kSingleTagStdDevs;
             } else {
-                // One or more tags visible, run the full heuristic.
                 avgDist /= numTags;
-                // Decrease std devs if multiple targets are visible
                 if (numTags > 1)
                     estStdDevs = VisionConstants.kMultiTagStdDevs;
-                // Increase std devs based on (average) distance
                 if (numTags == 1 && avgDist > 4)
                     estStdDevs = VecBuilder.fill(Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE);
                 else
@@ -123,11 +135,18 @@ public class VisionSubsystem extends SubsystemBase {
         }
     }
 
+    /**
+     * Retrieves the current standard deviations for pose estimation.
+     *
+     * @return The estimation standard deviations as a matrix.
+     */
     public Matrix<N3, N1> getEstimationStdDevs() {
         return VisionConstants.curStdDevs;
     }
 
-    // Simulation
+    /**
+     * Periodic update for simulation, including updating pose estimations.
+     */
     public void simulationPeriodic() {
         if (VisionConstants.readSimulationPose.get() != null)
             visionSystemSim.update(VisionConstants.readSimulationPose.get());
@@ -135,7 +154,6 @@ public class VisionSubsystem extends SubsystemBase {
         var visionEst = getEstimatedGlobalPose();
         visionEst.ifPresent(
                 est -> {
-                    // Change our trust in the measurement based on the tags we can see
                     updateEstimationStdDevs(visionEst, visionEst.get().targetsUsed);
                     var estStdDevs = getEstimationStdDevs();
 
@@ -144,6 +162,9 @@ public class VisionSubsystem extends SubsystemBase {
                 });
     }
 
+    /**
+     * Initializes the cameras and simulation configurations.
+     */
     private void InitializeCameras() {
         try {
             VisionConstants.aprilTagFieldLayout = new AprilTagFieldLayout(
@@ -152,7 +173,6 @@ public class VisionSubsystem extends SubsystemBase {
             e.printStackTrace();
         }
 
-        // Simulation
         VisionConstants.readSimulationPose = NetworkTableInstance.getDefault().getTable("PathPlanner")
                 .getStructTopic("targetPose", Pose2d.struct).subscribe(null);
 

@@ -1,0 +1,4 @@
+
+build/jni/release/wpimathjni.dll
+build/jni/release/wpimath.dll
+build/jni/release/wpimath.pdb
