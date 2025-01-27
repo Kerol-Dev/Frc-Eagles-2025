@@ -146,7 +146,7 @@ public class RobotContainer {
         SwitchObjectMode().schedule();
       }
     });
-  }
+  } 
 
   /**
    * Command for placing coral at the reef.
@@ -274,8 +274,6 @@ public class RobotContainer {
   private Command IdleSystemsCommand() {
     return m_elevator.setElevatorPositionCommand(ElevatorPosition.idle)
         .alongWith(m_arm.setArmPositionCommand(ArmPosition.idle))
-        .alongWith(m_Intake.stopMotors())
-        .alongWith(m_Intake.stopMotors())
         .alongWith(m_Intake.stopMotors());
   }
 
