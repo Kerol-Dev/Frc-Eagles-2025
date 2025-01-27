@@ -14,6 +14,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.misc.ArmPosition;
@@ -79,7 +80,7 @@ public class ArmRotationIntake extends SubsystemBase {
     private double getArmPositionValue(ArmPosition position) {
         switch (position) {
             case idle:
-                return 0;
+                return RobotContainer.coralMode ? 0 : 180;
             case grab_algae_reef_1:
                 return 90;
             case grab_algae_reef_2:
