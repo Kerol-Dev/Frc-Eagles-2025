@@ -1,12 +1,14 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
@@ -44,6 +46,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                 : InvertedValue.CounterClockwise_Positive;
 
         elevatorMotor.getConfigurator().apply(talonFXConfiguration);
+        elevatorMotor2.setControl(new Follower(elevatorMotor.getDeviceID(), false));
     }
 
     public Command setElevatorPositionCommand(ElevatorPosition positionSelection) {
@@ -59,6 +62,16 @@ public class ElevatorSubsystem extends SubsystemBase {
                 return isElevatorAtPosition();
             }
         };
+    }
+
+    /**
+     * Updates the SmartDashboard with the elevator's current and goal positions and temperature.
+     */
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Elevator Position", elevatorMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("Elevator Goal", elevatorGoalPosition);
+        SmartDashboard.putNumber("Elevator temp", elevatorMotor.getDeviceTemp().getValueAsDouble());
     }
 
     private double getElevatorPositionValue(ElevatorPosition position) {
