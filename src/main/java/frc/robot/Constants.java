@@ -4,20 +4,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.photonvision.simulation.SimCameraProperties;
-
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.networktables.StructSubscriber;
 import frc.robot.subsystems.vision.Camera;
 
 /**
@@ -125,25 +121,6 @@ public final class Constants {
     public static final int kTurningMotorStallCurrentLimit = 100;
   }
 
-  public static final class GroundIntakeConstants {
-    public static final int kGroundIntakeRotationMotorCanId = 5;
-    public static final int kGroundIntakeFeedMotorCanId = 7;
-    public static final int kGroundIntakeSensorPort = 0;
-
-    public static final boolean kGroundIntakeRotationMotorInverted = false;
-    public static final boolean kGroundIntakeFeedMotorInverted = false;
-
-    public static final double kGroundIntakeRotationMotorReduction = 360 / 10.0;
-
-    public static final double kGroundIntakeClosedAngle = 0;
-    public static final double kGroundIntakeOpenedAngle = 90;
-
-    public static final double kGroundIntakeRotationP = 1;
-    public static final double kGroundIntakeRotationI = 0;
-    public static final double kGroundIntakeRotationD = 0;
-    public static final double kGroundIntakeRotationMaxSpeed = 1;
-  }
-
   public static final class ElevatorConstants {
     public static final int kElevatorMotorCanID = 8;
     public static final int kElevatorMotorCanID2 = 91;
@@ -182,18 +159,12 @@ public final class Constants {
     public static final double kArmMotorMaxSpeed = 1;
   }
 
-  public static final class CoralArmIntakeConstants {
-    public static final int kCoralArmIntakeMotorCanID = 31;
+  public static final class ArmIntakeConstants {
+    public static final int kArmIntakeMotorCanID = 31;
     public static final int kCoralArmIntakeSensorPort = 1;
-
-    public static final boolean kCoralArmIntakeMotorInverted = false;
-  }
-
-  public static final class AlgaeArmIntakeConstants {
-    public static final int kAlgaeArmIntakeMotorCanID = 32;
     public static final int kAlgaeArmIntakeSensorPort = 9;
 
-    public static final boolean kAlgaeArmIntakeMotorInverted = false;
+    public static final boolean kArmIntakeMotorInverted = false;
   }
 
   public static final class VisionConstants {
@@ -201,13 +172,9 @@ public final class Constants {
     public static ArrayList<Camera> cameras = new ArrayList<Camera>();
     public static Set<String> visibleAprilTags = new HashSet<>();
 
-    public static StructSubscriber<Pose2d> readSimulationPose;
-
     public static Matrix<N3, N1> curStdDevs;
     public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
     public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
-
-    public static SimCameraProperties simCameraProperties = new SimCameraProperties();
   }
 
   /**

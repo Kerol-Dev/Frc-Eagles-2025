@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -8,7 +7,6 @@ import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
-import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -41,7 +39,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class DriveSubsystem extends SubsystemBase {
 
   // Swerve modules for each corner of the robot
-  public static final SwerveModule m_frontRight = new SwerveModule(
+  public static final SwerveModule m_frontLeft = new SwerveModule(
       DriveConstants.kFrontLeftDrivingCanId,
       DriveConstants.kFrontLeftTurningCanId,
       DriveConstants.kFrontLeftcanCoderIDCanId,
@@ -50,7 +48,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kFrontLeftcanCoderOffset,
       true);
 
-  public static final SwerveModule m_frontLeft = new SwerveModule(
+  public static final SwerveModule m_frontRight = new SwerveModule(
       DriveConstants.kFrontRightDrivingCanId,
       DriveConstants.kFrontRightTurningCanId,
       DriveConstants.kFrontRightcanCoderIDCanId,
@@ -59,7 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kFrontRightcanCoderOffset,
       true);
 
-  public static final SwerveModule m_rearRight = new SwerveModule(
+  public static final SwerveModule m_rearLeft = new SwerveModule(
       DriveConstants.kRearLeftDrivingCanId,
       DriveConstants.kRearLeftTurningCanId,
       DriveConstants.kRearLeftcanCoderIDCanId,
@@ -68,7 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearLeftcanCoderOffset,
       true);
 
-  public static final SwerveModule m_rearLeft = new SwerveModule(
+  public static final SwerveModule m_rearRight = new SwerveModule(
       DriveConstants.kRearRightDrivingCanId,
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kRearRightcanCoderIDCanId,
@@ -111,11 +109,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     publisher = NetworkTableInstance.getDefault()
         .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
-
-      PathPlannerLogging.setLogActivePathCallback((activePath) -> {
-          final Pose2d[] trajectory = activePath.toArray(new Pose2d[0]);
-          Logger.recordOutput("Trajectory", trajectory);
-        });
   }
 
   /**
@@ -157,6 +150,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     SmartDashboard.putData(m_gyro);
     SmartDashboard.putData(m_field);
+
+    visionSubsystem.periodic();
 
     // Periodically send a set of module states
     publisher.set(new SwerveModuleState[] {
@@ -275,7 +270,7 @@ public class DriveSubsystem extends SubsystemBase {
         break;
 
       case Algea:
-        pose = fieldPositions.getPose("algea");
+        pose = fieldPositions.getClosestAlgeaPose(getPose());
         break;
 
       case Processor:

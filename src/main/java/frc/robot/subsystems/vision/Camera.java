@@ -7,19 +7,16 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.simulation.PhotonCameraSim;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.Constants.VisionConstants;
 
 public class Camera {
     public String cameraName = "photon_camera";
     public PhotonCamera cameraObject;
-    public PhotonCameraSim cameraSim;
     public Transform3d robotToCamPos;
     private final PoseStrategy poseStrategy;
     public final PhotonPoseEstimator poseEstimator;
@@ -29,17 +26,11 @@ public class Camera {
         cameraObject = new PhotonCamera(cameraName);
         robotToCamPos = new Transform3d(pos, rot);
         poseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
-        cameraSim = new PhotonCameraSim(cameraObject, VisionConstants.simCameraProperties);
         poseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagFieldLayout,
                 poseStrategy, robotToCamPos);
-        VisionSubsystem.visionSystemSim.addCamera(cameraSim, robotToCamPos);
-        cameraSim.enableProcessedStream(true);
     }
 
     public EstimatedRobotPose update() {
-        if(!RobotBase.isReal())
-            return null;
-        
         // Update Pose Estimation Per Camera
         List<PhotonPipelineResult> results = cameraObject.getAllUnreadResults();
         if(results.size() < 1 || results.isEmpty()) {

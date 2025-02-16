@@ -10,7 +10,6 @@ import java.util.Optional;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonUtils;
-import org.photonvision.simulation.VisionSystemSim;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -18,14 +17,10 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -35,22 +30,9 @@ import frc.robot.subsystems.vision.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Detector;
 
 public class VisionSubsystem extends SubsystemBase {
-    /** Simulation instance for vision processing */
-    public static VisionSystemSim visionSystemSim = new VisionSystemSim("Main");
-
     /** Pose estimator for swerve drive using vision data */
     SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
             DriveSubsystem.getHeading(), DriveSubsystem.getModulePositions(), new Pose2d());
-
-    // Publishers for camera pose estimation data
-    StructPublisher<Pose3d> structPublisherFL = NetworkTableInstance.getDefault().getTable("Camera Data")
-            .getStructTopic("Camera Estimation FL", Pose3d.struct).publish();
-    StructPublisher<Pose3d> structPublisherFR = NetworkTableInstance.getDefault().getTable("Camera Data")
-            .getStructTopic("Camera Estimation FR", Pose3d.struct).publish();
-    StructPublisher<Pose3d> structPublisherRL = NetworkTableInstance.getDefault().getTable("Camera Data")
-            .getStructTopic("Camera Estimation RL", Pose3d.struct).publish();
-    StructPublisher<Pose3d> structPublisherRR = NetworkTableInstance.getDefault().getTable("Camera Data")
-            .getStructTopic("Camera Estimation RR", Pose3d.struct).publish();
 
     /**
      * Constructor initializes the vision system and cameras.
@@ -69,25 +51,6 @@ public class VisionSubsystem extends SubsystemBase {
         for (Camera camera : VisionConstants.cameras) {
             for (var change : camera.cameraObject.getAllUnreadResults()) {
                 visionEst = camera.poseEstimator.update(change);
-                visionEst.ifPresent(
-                        est -> {
-                            switch (camera.cameraName) {
-                                case "FrontLeft":
-                                    structPublisherFL.set(est.estimatedPose);
-                                    break;
-                                case "FrontRight":
-                                    structPublisherFR.set(est.estimatedPose);
-                                    break;
-                                case "RearLeft":
-                                    structPublisherRL.set(est.estimatedPose);
-                                    break;
-                                case "RearRight":
-                                    structPublisherRR.set(est.estimatedPose);
-                                    break;
-                                default:
-                                    break;
-                            }
-                        });
             }
         }
         return visionEst;
@@ -147,10 +110,7 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Periodic update for simulation, including updating pose estimations.
      */
-    public void simulationPeriodic() {
-        if (VisionConstants.readSimulationPose.get() != null)
-            visionSystemSim.update(VisionConstants.readSimulationPose.get());
-
+    public void periodic() {
         var visionEst = getEstimatedGlobalPose();
         visionEst.ifPresent(
                 est -> {
@@ -172,14 +132,6 @@ public class VisionSubsystem extends SubsystemBase {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        VisionConstants.readSimulationPose = NetworkTableInstance.getDefault().getTable("PathPlanner")
-                .getStructTopic("targetPose", Pose2d.struct).subscribe(null);
-
-        VisionConstants.simCameraProperties.setCalibration(1280, 960, Rotation2d.fromDegrees(100));
-        VisionConstants.simCameraProperties.setFPS(30);
-        VisionConstants.simCameraProperties.setAvgLatencyMs(15);
-        visionSystemSim.addAprilTags(VisionConstants.aprilTagFieldLayout);
 
         double cameraX = 0.255;
         double cameraY = 0.255;
