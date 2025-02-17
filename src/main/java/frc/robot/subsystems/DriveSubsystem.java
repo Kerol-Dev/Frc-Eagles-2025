@@ -258,7 +258,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Command goToPosePathfind(PathfindType pathfindType) {
-    pathfindType = PathfindType.Processor;
     Pose2d pose = new Pose2d();
     switch (pathfindType) {
       case Reef:

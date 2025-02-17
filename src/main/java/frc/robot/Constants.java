@@ -39,8 +39,8 @@ public final class Constants {
     public static final double kMaxAngularSpeedPathfind = Math.PI; // Maximum angular velocity (rad/s)
     public static final double kMaxAngularAccelerationPathfind = 3; // Maximum angular acceleration
 
-    public static final double kTrackWidth = 0.679; // Distance between left and right wheels (meters)
-    public static final double kWheelBase = 0.519; // Distance between front and back wheels (meters)
+    public static final double kTrackWidth = 0.569; // Distance between left and right wheels (meters)
+    public static final double kWheelBase = 0.517; // Distance between front and back wheels (meters)
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
@@ -131,10 +131,14 @@ public final class Constants {
     public static final double kElevatorMotorForwardSoftLimit = 250;
     public static final double kElevatorMotorReverseSoftLimit = 0;
 
-    public static final double kElevatorMotorSensorToMechRatio = (1.27 * 28) / 100; // Teeth Pitch * Teeth Count / Gear
-                                                                                    // Ratio
-    public static final double kElevatorMotorAcceleration = 4800; // RPM
-    public static final double kElevatorMotorCruiseVelocity = 8400; // RPM
+    public static final double kElevatorGearRatio = 5; // Gear ratio
+    public static final double kChainPitch = 0.635; // Pitch of the 25# chain in cm
+    public static final double kSprocketTeeth = 28; // Number of teeth on the sprocket (1:1 ratio)
+
+    // Conversion factor from motor rotations to elevator rise in cm
+    public static final double kElevatorMotorSensorToMechRatio = (kChainPitch * kSprocketTeeth) / kElevatorGearRatio;
+    public static final double kElevatorMotorAcceleration = 4000; // RPM
+    public static final double kElevatorMotorCruiseVelocity = 5000; // RPM
 
     public static final double kElevatorMotorP = 1;
     public static final double kElevatorMotorI = 0;
