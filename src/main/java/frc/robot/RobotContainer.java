@@ -216,11 +216,8 @@ public class RobotContainer {
               currentCommand = PlaceReefInit(ElevatorPosition.place_coral_l2);
               break;
             case 1:
-              currentCommand = PlaceReefInit(ElevatorPosition.place_coral_l1);
               isFinished = true;
-            default:
-              isFinished = true;
-              break;
+              return;
           }
           currentCommand.schedule();
         }
