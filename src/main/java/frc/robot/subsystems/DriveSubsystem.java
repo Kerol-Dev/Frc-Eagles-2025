@@ -97,7 +97,7 @@ public class DriveSubsystem extends SubsystemBase {
     try {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
-              new PIDConstants(5.0, 0.0, 0.0),
+              new PIDConstants(8.0, 0.0, 0.0),
               new PIDConstants(5.0, 0.0, 0.0)),
           RobotConfig.fromGUISettings(), () -> {
             var alliance = DriverStation.getAlliance().get();
@@ -131,6 +131,19 @@ public class DriveSubsystem extends SubsystemBase {
         m_rearRight.getState());
   }
 
+  public Command goToPose(String s) {
+    if(s == null)
+    return null;
+    
+    PathConstraints constraints = new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecondPathfind,
+          DriveConstants.kMaxAccelerationPathfind,
+          DriveConstants.kMaxAngularSpeedPathfind,
+          DriveConstants.kMaxAngularAccelerationPathfind);
+
+    return AutoBuilder.pathfindToPose(fieldPositions.getPose(s), constraints, 0);
+
+  }
+
   /**
    * Sets the desired speeds for the robot.
    * 
@@ -148,10 +161,12 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    AutoBuilder.resetOdom(getPose());
     m_rearLeft.updateSmartDashboard();
     m_rearRight.updateSmartDashboard();
     m_frontLeft.updateSmartDashboard();
     m_frontRight.updateSmartDashboard();
+
 
     m_field.setRobotPose(getPose());
 
@@ -263,7 +278,6 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Command goToPosePathfind(PathfindType pathfindType) {
-    pathfindType = PathfindType.Processor;
     Pose2d pose = new Pose2d();
     switch (pathfindType) {
       case Reef:
@@ -275,7 +289,7 @@ public class DriveSubsystem extends SubsystemBase {
         break;
 
       case Algea:
-        pose = fieldPositions.getPose("algea");
+        pose = fieldPositions.getClosestAlgeaPose(getPose());
         break;
 
       case Processor:

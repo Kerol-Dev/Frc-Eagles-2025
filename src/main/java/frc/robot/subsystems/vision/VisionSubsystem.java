@@ -52,6 +52,7 @@ public class VisionSubsystem extends SubsystemBase {
     StructPublisher<Pose3d> structPublisherRR = NetworkTableInstance.getDefault().getTable("Camera Data")
             .getStructTopic("Camera Estimation RR", Pose3d.struct).publish();
 
+    StructPublisher<Pose2d> poseEstimatorPB = NetworkTableInstance.getDefault().getTable("Poses").getStructTopic("Robot Pose Est", Pose2d.struct).publish();
     /**
      * Constructor initializes the vision system and cameras.
      */
@@ -160,6 +161,9 @@ public class VisionSubsystem extends SubsystemBase {
                     poseEstimator.addVisionMeasurement(
                             est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
                 });
+
+        poseEstimator.resetPose(visionSystemSim.getRobotPose().toPose2d());
+        poseEstimatorPB.set(poseEstimator.getEstimatedPosition());
     }
 
     /**

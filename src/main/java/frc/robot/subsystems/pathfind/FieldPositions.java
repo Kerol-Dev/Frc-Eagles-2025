@@ -60,7 +60,7 @@ public class FieldPositions {
     }
 
     public Pose2d getClosestReefPose(Pose2d robotPose) {
-        Pose2d closestReefPose = null;
+        Pose2d closestReefPose = new Pose2d();
         double closestDistance = Double.MAX_VALUE;
         for (FieldPosition fieldPosition : fieldPositions) {
             if (fieldPosition.name.contains("reef")) {
@@ -76,7 +76,7 @@ public class FieldPositions {
 
     public Pose2d getClosestHumanPose(Pose2d robotPose)
     {
-        Pose2d closestHumanPose = null;
+        Pose2d closestHumanPose = new Pose2d();
         double closestDistance = Double.MAX_VALUE;
         for (FieldPosition fieldPosition : fieldPositions) {
             if (fieldPosition.name.contains("human")) {
@@ -92,7 +92,7 @@ public class FieldPositions {
 
     public Pose2d getClosestAlgeaPose(Pose2d robotPose)
     {
-        Pose2d closestAlgeaPose = null;
+        Pose2d closestAlgeaPose = new Pose2d();
         double closestDistance = Double.MAX_VALUE;
         for (FieldPosition fieldPosition : fieldPositions) {
             if (fieldPosition.name.contains("algea")) {
@@ -107,9 +107,29 @@ public class FieldPositions {
     }
 
     public FieldPositions() {
-        addFieldPosition(new Pose2d(0, 0, new Rotation2d()), "human_right");
-        addFieldPosition(new Pose2d(0, 0, new Rotation2d()), "human_left");
-        addFieldPosition(new Pose2d(0, 0, new Rotation2d()), "reef_a");
-        addFieldPosition(new Pose2d(1, 0, new Rotation2d()), "processor");
+        addFieldPosition(new Pose2d(3.198, 4.189, Rotation2d.fromDegrees(0)), "reef_a");
+        addFieldPosition(new Pose2d(3.190, 3.852, Rotation2d.fromDegrees(0)), "reef_b");
+        addFieldPosition(new Pose2d(3.713, 2.992, Rotation2d.fromDegrees(60)), "reef_c");
+        addFieldPosition(new Pose2d(3.995, 2.835, Rotation2d.fromDegrees(60)), "reef_d");
+        addFieldPosition(new Pose2d(4.980, 2.840, Rotation2d.fromDegrees(120)), "reef_e");
+        addFieldPosition(new Pose2d(5.267, 3.003, Rotation2d.fromDegrees(120)), "reef_f");
+        addFieldPosition(new Pose2d(5.768, 3.866, Rotation2d.fromDegrees(180)), "reef_g");
+        addFieldPosition(new Pose2d(5.771, 4.187, Rotation2d.fromDegrees(180)), "reef_h");
+        addFieldPosition(new Pose2d(5.266, 5.053, Rotation2d.fromDegrees(240)), "reef_i");
+        addFieldPosition(new Pose2d(4.982, 5.222, Rotation2d.fromDegrees(240)), "reef_j");
+        addFieldPosition(new Pose2d(3.991, 5.219, Rotation2d.fromDegrees(300)), "reef_k");
+        addFieldPosition(new Pose2d(3.697, 5.050, Rotation2d.fromDegrees(300)), "reef_l");
+
+        addFieldPosition(new Pose2d(1.166, 0.982, Rotation2d.fromDegrees(55)), "human_right");
+        addFieldPosition(new Pose2d(1.166, 7.033, Rotation2d.fromDegrees(305)), "human_left");
+
+        addFieldPosition(new Pose2d(5.973, 0.762, Rotation2d.fromDegrees(270)), "processor");
+
+        addFieldPosition(new Pose2d(3.206, 4.035, Rotation2d.fromDegrees(0)), "algea_a");
+        addFieldPosition(new Pose2d(3.851, 2.917, Rotation2d.fromDegrees(60)), "algea_b");
+        addFieldPosition(new Pose2d(5.125, 2.919, Rotation2d.fromDegrees(120)), "algea_c");
+        addFieldPosition(new Pose2d(5.763, 4.017, Rotation2d.fromDegrees(180)), "algea_d");
+        addFieldPosition(new Pose2d(5.137, 5.124, Rotation2d.fromDegrees(240)), "algea_e");
+        addFieldPosition(new Pose2d(3.849, 5.128, Rotation2d.fromDegrees(300)), "algea_f");
     }
 }

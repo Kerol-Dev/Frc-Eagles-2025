@@ -38,7 +38,7 @@ public class RobotContainer {
       OIConstants.kDriverControllerPort);
 
   // Subsystems
-  private final DriveSubsystem m_robotDrive = new DriveSubsystem();
+  public final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Intake m_Intake = new Intake();
   public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
   private final ArmRotationIntake m_arm = new ArmRotationIntake();

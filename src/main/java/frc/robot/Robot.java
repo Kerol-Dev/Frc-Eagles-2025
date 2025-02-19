@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class Robot extends TimedRobot{
@@ -41,6 +43,20 @@ public class Robot extends TimedRobot{
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+
+    Commands.sequence(m_robotContainer.m_robotDrive.goToPose("reef_b"), new WaitCommand(1), 
+    m_robotContainer.m_robotDrive.goToPose("human_left"), new WaitCommand(1),
+    m_robotContainer.m_robotDrive.goToPose("reef_c"), new WaitCommand(1),
+    m_robotContainer.m_robotDrive.goToPose("human_right"), new WaitCommand(1),
+    m_robotContainer.m_robotDrive.goToPose("reef_d"), new WaitCommand(1),
+    m_robotContainer.m_robotDrive.goToPose("human_right"), new WaitCommand(1),
+    m_robotContainer.m_robotDrive.goToPose("algea_b"), new WaitCommand(1),
+    m_robotContainer.m_robotDrive.goToPose("processor"), new WaitCommand(1),
+    m_robotContainer.m_robotDrive.goToPose("reef_e"), new WaitCommand(1),
+    m_robotContainer.m_robotDrive.goToPose("human_right"), new WaitCommand(1),
+    m_robotContainer.m_robotDrive.goToPose("reef_f"), new WaitCommand(1),
+    m_robotContainer.m_robotDrive.goToPose("human_right"), new WaitCommand(1)
+    ).schedule();
   }
 
   boolean slowSpeedEnabledAutomatically = false;
