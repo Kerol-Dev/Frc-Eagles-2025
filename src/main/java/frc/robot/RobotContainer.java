@@ -20,21 +20,20 @@ import frc.robot.subsystems.misc.ArmPosition;
 import frc.robot.subsystems.misc.ElevatorPosition;
 import frc.robot.subsystems.misc.PressCountCommandHandler;
 import frc.robot.subsystems.pathfind.PathfindType;
-import frc.robot.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 
 /**
- * Main container for the robot. Handles subsystems, commands, and button
- * bindings.
+ * Main container for the robot. Handles subsystems, commands, and button bindings.
  */
 public class RobotContainer {
 
-  // Xbox controller for driver input
-  public static final CommandXboxController driverController = new CommandXboxController(
+  // PS5 controller for driver input
+  public static final CommandPS5Controller driverController = new CommandPS5Controller(
       OIConstants.kDriverControllerPort);
 
   // Subsystems
@@ -61,23 +60,61 @@ public class RobotContainer {
    * Initializes subsystems, commands, and button bindings.
    */
   public RobotContainer() {
-    // Initialize command handlers
-    placeCoralCommand = new PressCountCommandHandler(IdleSystemsCommand(), 0.25,
-        PlaceReefCoralCommand(ElevatorPosition.place_coral_l1, ArmPosition.place_coral_l1),
-        PlaceReefCoralCommand(ElevatorPosition.place_coral_l2, ArmPosition.place_coral_l2),
-        PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3),
-        PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4));
 
-    grabAlgaeCommand = new PressCountCommandHandler(IdleSystemsCommand(), 0.25,
-        GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1),
-        GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2));
+    // ------------------------------------------------
+    // Updated PressCountCommandHandlers
+    // ------------------------------------------------
+    // Each press runs:
+    //  1) A conditional switch to coral mode/algae mode
+    //  2) Pathfinding to the correct location
+    //  3) Elevator/arm commands for that "step"
+
+    placeCoralCommand = new PressCountCommandHandler(
+        /* resetCommand when exceeding # of steps: */ IdleSystemsCommand(),
+        /* minimum press interval: */ 0.25,
+
+        // Step 1 -> L1
+        checkAndSwitchToCoralMode()
+            .andThen(pathfindToReef())
+            .andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l1, ArmPosition.place_coral_l1)),
+
+        // Step 2 -> L2
+        checkAndSwitchToCoralMode()
+            .andThen(pathfindToReef())
+            .andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l2, ArmPosition.place_coral_l2)),
+
+        // Step 3 -> L3
+        checkAndSwitchToCoralMode()
+            .andThen(pathfindToReef())
+            .andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3)),
+
+        // Step 4 -> L4
+        checkAndSwitchToCoralMode()
+            .andThen(pathfindToReef())
+            .andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4))
+    );
+
+    grabAlgaeCommand = new PressCountCommandHandler(
+        /* resetCommand: */ IdleSystemsCommand(),
+        /* min press interval: */ 0.25,
+
+        // First press -> Algae Reef 1
+        checkAndSwitchToAlgaeMode()
+            .andThen(pathFindToAlgae())
+            .andThen(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1)),
+
+        // Second press -> Algae Reef 2
+        checkAndSwitchToAlgaeMode()
+            .andThen(pathFindToAlgae())
+            .andThen(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2))
+    );
 
     // Set default command for the drivetrain
     m_robotDrive.setDefaultCommand(new RunCommand(
         () -> m_robotDrive.drive(
             -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
             -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
-            MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband) / 1.4,
+            -MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband) / 1.4,
             true,
             slowSpeedEnabled),
         m_robotDrive));
@@ -93,146 +130,150 @@ public class RobotContainer {
    * Configures PathPlanner autonomous routines.
    */
   private void configurePathPlanner() {
+    // Example of how named commands are registered:
     registerNamedCommand("InitializeForSource", IntakeSourceInitCommand(), () -> m_Intake.getCoralIntakeSensor(), true);
-    registerNamedCommand("GrabFromSource", IntakeSourceGrabCommand().andThen(IdleSystemsCommand().withTimeout(0.5)),
-        () -> m_Intake.getCoralIntakeSensor(), true);
+    registerNamedCommand("GrabFromSource",
+        IntakeSourceGrabCommand().andThen(IdleSystemsCommand().withTimeout(0.5)),
+        () -> m_Intake.getCoralIntakeSensor(),
+        true);
+
     registerNamedCommand("PlaceL4Init", PlaceReefInit(ElevatorPosition.place_coral_l4),
         () -> m_Intake.getCoralIntakeSensor(), true);
-    registerNamedCommand("PlaceL4", PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
-        .andThen(IdleSystemsCommand().withTimeout(1.2)), () -> m_Intake.getCoralIntakeSensor(), true);
-    registerNamedCommand("SpitAlgae", DropAlgaeProcessorCommand().andThen(IdleSystemsCommand().withTimeout(0.5)),
-        () -> !m_Intake.getAlgaeArmIntakeSensor(), false);
+    registerNamedCommand("PlaceL4",
+        PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
+            .andThen(IdleSystemsCommand().withTimeout(1.2)),
+        () -> m_Intake.getCoralIntakeSensor(),
+        true);
+
+    registerNamedCommand("SpitAlgae",
+        DropAlgaeProcessorCommand().andThen(IdleSystemsCommand().withTimeout(0.5)),
+        () -> !m_Intake.getAlgaeArmIntakeSensor(),
+        false);
     registerNamedCommand("InitAlgae1", PlaceReefInit(ElevatorPosition.grab_algae_reef_1),
-        () -> !m_Intake.getAlgaeArmIntakeSensor(), false);
+        () -> !m_Intake.getAlgaeArmIntakeSensor(),
+        false);
     registerNamedCommand("InitAlgae2", PlaceReefInit(ElevatorPosition.grab_algae_reef_2),
-        () -> !m_Intake.getAlgaeArmIntakeSensor(), false);
+        () -> !m_Intake.getAlgaeArmIntakeSensor(),
+        false);
     registerNamedCommand("GrabAlgae1",
         GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1)
             .andThen(IdleSystemsCommand().withTimeout(1.2)),
-        () -> !m_Intake.getAlgaeArmIntakeSensor(), false);
+        () -> !m_Intake.getAlgaeArmIntakeSensor(),
+        false);
     registerNamedCommand("GrabAlgae2",
         GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2)
             .andThen(IdleSystemsCommand().withTimeout(1.2)),
-        () -> !m_Intake.getAlgaeArmIntakeSensor(), false);
+        () -> !m_Intake.getAlgaeArmIntakeSensor(),
+        false);
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData(autoChooser);
   }
 
   private void registerNamedCommand(String name, Command command, BooleanSupplier condition, boolean isCoralMode) {
-    NamedCommands.registerCommand(name, new InstantCommand(() -> {
-      if (coralMode != isCoralMode) {
-        SwitchObjectMode().schedule();
-      }
-    }).andThen(command.onlyIf(condition)));
+    NamedCommands.registerCommand(
+        name,
+        new InstantCommand(() -> {
+          if (coralMode != isCoralMode) {
+            // Switch modes if mismatch
+            SwitchObjectMode().schedule();
+          }
+        }).andThen(command.onlyIf(condition)));
   }
 
   /**
    * Maps controller buttons to specific commands.
    */
   private void configureButtonBindings() {
-    driverController.start().onTrue(new InstantCommand(m_robotDrive::zeroHeading));
-    driverController.leftBumper().onTrue(new InstantCommand(() -> slowSpeedEnabled = !slowSpeedEnabled));
+    // Example: Zero the heading if needed
+    // driverController.s().onTrue(new InstantCommand(m_robotDrive::zeroHeading));
 
-    driverController.rightTrigger()
-        .whileTrue(checkAndSwitchToCoralMode().andThen(pathfindToReef().andThen(
-            PlaceAutomaticCoral().andThen(AutoReleaseCoral()).andThen(new InstantCommand(() -> triggerRumble(0.5))))));
-    driverController.rightBumper()
-        .whileTrue(checkAndSwitchToAlgaeMode()
-            .andThen(pathFindToAlgae().andThen(new InstantCommand(grabAlgaeCommand::recordPress))));
-    driverController.leftTrigger()
-        .whileTrue(checkAndSwitchToCoralMode().andThen(pathfindToHuman().andThen(IntakeSourceGrabCommand())))
-        .onFalse(IdleSystemsCommand());
-    driverController.leftBumper()
-        .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathfindToProcessor().andThen(DropAlgaeProcessorCommand())))
-        .onFalse(IdleSystemsCommand());
-  }
+    // Toggle slow speed
+    // driverController.L1().onTrue(new InstantCommand(() -> slowSpeedEnabled = !slowSpeedEnabled));
 
-  private Command checkAndSwitchToCoralMode() {
-    return new ConditionalCommand(
-        SwitchObjectMode(),
-        new InstantCommand(),
-        () -> !coralMode);
-  }
+    // -------------------------------------------------------------------------
+    // Revised R2: Press -> increment placeCoralCommand to next step
+    // (which itself does the mode switch, pathfind, and place sequence)
+    // -------------------------------------------------------------------------
+    driverController.R2().and(driverController.povUp()).whileTrue(checkAndSwitchToCoralMode()
+    .andThen(pathfindToReef())
+    .andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)));
 
-  private Command checkAndSwitchToAlgaeMode() {
-    return new ConditionalCommand(
-        SwitchObjectMode(),
-        new InstantCommand(),
-        () -> coralMode);
+    // -------------------------------------------------------------------------
+    // Revised R1: Press -> increment grabAlgaeCommand to next step
+    // (which does the mode switch, pathfind, and grab sequence)
+    // -------------------------------------------------------------------------
+    driverController.R1()
+      .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae().andThen(IntakeSourceGrabCommand())))
+       .onFalse(IdleSystemsCommand());
+    // -------------------------------------------------------------------------
+    // (Optional) L2, L1, etc. remain unchanged if you wish:
+    // Example usage (commented out if not needed):
+    //
+    driverController.L2()
+      .whileTrue(checkAndSwitchToCoralMode().andThen(pathfindToHuman().andThen(IntakeSourceGrabCommand())))
+       .onFalse(IdleSystemsCommand());
+     driverController.L1()
+         .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathfindToProcessor().andThen(DropAlgaeProcessorCommand())))
+         .onFalse(IdleSystemsCommand());
+    //
+    // Adjust or remove as needed.
+    // -------------------------------------------------------------------------
   }
 
   /**
-   * Command for placing coral at the reef.
-   * 
-   * @param elevatorPosition Elevator position
-   * @param armPosition      Arm position
-   * @return Place reef coral command
+   * Command to switch object mode (toggles coral/algae). Resets elevator & arm to idle.
    */
-  private Command PlaceReefCoralCommand(ElevatorPosition elevatorPosition, ArmPosition armPosition) {
-    return PlaceReefInit(elevatorPosition)
-        .andThen(m_arm.setArmPositionCommand(armPosition))
-        .andThen(AutoReleaseCoral())
-        .andThen(m_arm.setArmPositionCommand(ArmPosition.idle));
-  }
-
-  private Command AutoReleaseCoral() {
-    return m_Intake.releaseCommand(true)
-        .andThen(new InstantCommand(() -> triggerRumble(0.5)));
-  }
-
   private Command SwitchObjectMode() {
     return new InstantCommand(() -> coralMode = !coralMode)
         .andThen(m_elevator.setElevatorPositionCommand(ElevatorPosition.idle))
         .andThen(m_arm.setArmPositionCommand(ArmPosition.idle));
   }
 
-  private Command PlaceAutomaticCoral() {
-    return new Command() {
-      int currentLevel = 4;
-      Command currentCommand = PlaceReefInit(ElevatorPosition.place_coral_l4);
-      boolean isFinished = false;
-
-      @Override
-      public void initialize() {
-        currentCommand.schedule();
-      }
-
-      @Override
-      public void execute() {
-        if (currentCommand.isFinished()) {
-          if (VisionSubsystem.getLimelightObjectTarget()) {
-            currentLevel--;
-          } else {
-            isFinished = true;
-            return;
-          }
-
-          switch (currentLevel) {
-            case 3:
-              currentCommand = PlaceReefInit(ElevatorPosition.place_coral_l3);
-              break;
-            case 2:
-              currentCommand = PlaceReefInit(ElevatorPosition.place_coral_l2);
-              break;
-            case 1:
-              currentCommand = PlaceReefInit(ElevatorPosition.place_coral_l1);
-              isFinished = true;
-            default:
-              isFinished = true;
-              break;
-          }
-          currentCommand.schedule();
-        }
-      }
-
-      @Override
-      public boolean isFinished() {
-        return isFinished;
-      }
-    };
+  /**
+   * Checks if we need to switch to coral mode; if so, do it.
+   */
+  private Command checkAndSwitchToCoralMode() {
+    return new ConditionalCommand(
+        SwitchObjectMode(),
+        new InstantCommand(), // Do nothing if already in coral mode
+        () -> !coralMode
+    );
   }
 
+  /**
+   * Checks if we need to switch to algae mode; if so, do it.
+   */
+  private Command checkAndSwitchToAlgaeMode() {
+    return new ConditionalCommand(
+        SwitchObjectMode(),
+        new InstantCommand(), // Do nothing if already in algae mode
+        () -> coralMode
+    );
+  }
+
+  /**
+   * Command for placing coral at the reef.
+   */
+  private Command PlaceReefCoralCommand(ElevatorPosition elevatorPosition, ArmPosition armPosition) {
+    return PlaceReefInit(elevatorPosition)
+    .andThen(Commands.print("TEST"))
+        .andThen(m_arm.setArmPositionCommand(armPosition))
+        .andThen(AutoReleaseCoral())
+        .andThen(m_arm.setArmPositionCommand(ArmPosition.idle));
+  }
+
+  /**
+   * Automatically releases coral and triggers rumble.
+   */
+  private Command AutoReleaseCoral() {
+    return m_Intake.releaseCommand(true)
+        .andThen(new InstantCommand(() -> triggerRumble(0.5)));
+  }
+
+  /**
+   * Prepares elevator for reef placement.
+   */
   private Command PlaceReefInit(ElevatorPosition elevatorPosition) {
     return m_arm.setArmPositionCommand(ArmPosition.idle)
         .andThen(m_elevator.setElevatorPositionCommand(elevatorPosition));
@@ -240,9 +281,6 @@ public class RobotContainer {
 
   /**
    * Command for grabbing algae at the reef.
-   * 
-   * @param position Elevator position
-   * @return Grab algae reef command
    */
   private Command GrabAlgaeReefCommand(ElevatorPosition elevatorPosition, ArmPosition armPosition) {
     return m_elevator.setElevatorPositionCommand(elevatorPosition)
@@ -253,8 +291,6 @@ public class RobotContainer {
 
   /**
    * Command for dropping algae at the processor.
-   * 
-   * @return Drop algae processor command
    */
   private Command DropAlgaeProcessorCommand() {
     return m_elevator.setElevatorPositionCommand(ElevatorPosition.place_algae_processor)
@@ -265,8 +301,6 @@ public class RobotContainer {
 
   /**
    * Command for grabbing from the intake source.
-   * 
-   * @return Intake source grab command
    */
   private Command IntakeSourceGrabCommand() {
     return m_arm.setArmPositionCommand(ArmPosition.grab_coral_source)
@@ -282,8 +316,6 @@ public class RobotContainer {
 
   /**
    * Command to set all systems to idle state.
-   * 
-   * @return Idle systems command
    */
   private Command IdleSystemsCommand() {
     return m_elevator.setElevatorPositionCommand(ElevatorPosition.idle)
@@ -292,14 +324,12 @@ public class RobotContainer {
   }
 
   /**
-   * Triggers controller rumble for a specified duration.
-   * 
-   * @param durationSeconds Duration in seconds
+   * Triggers controller rumble for a specified duration (ignored in auto).
    */
   private void triggerRumble(double durationSeconds) {
-    if (DriverStation.isAutonomousEnabled())
+    if (DriverStation.isAutonomousEnabled()) {
       return;
-
+    }
     driverController.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
     new Thread(() -> {
       try {
@@ -314,27 +344,27 @@ public class RobotContainer {
 
   /**
    * Returns the selected autonomous command.
-   * 
-   * @return Selected autonomous command
    */
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
 
-  // Pathfinding Commands
+  // ----------------------------------------------------------------
+  // Pathfinding Helpers
+  // ----------------------------------------------------------------
   private Command pathfindToHuman() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Human);
+    return m_robotDrive.goToPosePathfind(PathfindType.Human, () -> m_robotDrive.getPose());
   }
 
   private Command pathfindToReef() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Reef);
+    return m_robotDrive.goToPosePathfind(PathfindType.Reef, () -> m_robotDrive.getPose());
   }
 
   private Command pathFindToAlgae() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Algea);
+    return m_robotDrive.goToPosePathfind(PathfindType.Algea, () -> m_robotDrive.getPose());
   }
 
   private Command pathfindToProcessor() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Processor);
+    return m_robotDrive.goToPosePathfind(PathfindType.Processor, () -> m_robotDrive.getPose());
   }
 }

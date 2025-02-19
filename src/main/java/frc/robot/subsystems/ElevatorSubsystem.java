@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -17,6 +19,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public final TalonFX elevatorMotor2 = new TalonFX(ElevatorConstants.kElevatorMotorCanID2);
 
     private double elevatorGoalPosition = 0;
+    private double currentPosition = 0;
 
     public ElevatorSubsystem() {
         TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
@@ -47,11 +50,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Command setElevatorPositionCommand(ElevatorPosition positionSelection) {
-        elevatorGoalPosition = getElevatorPositionValue(positionSelection);
         return new Command() {
             @Override
             public void initialize() {
-                setElevatorPosition(elevatorGoalPosition);
+                elevatorGoalPosition = getElevatorPositionValue(positionSelection);
             }
 
             @Override
@@ -80,7 +82,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             case place_coral_l3:
                 return 90;
             case place_coral_l4:
-                return 90;
+                return 900;
             default:
                 return 0;
         }
@@ -95,6 +97,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean isElevatorAtPosition() {
-        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 10);
+        return MathUtil.isNear(elevatorGoalPosition, currentPosition, 10);
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        // Update the elevator position in simulation
+        currentPosition = MathUtil.clamp(currentPosition + (elevatorGoalPosition - currentPosition) * 0.02, 0, 1000);
+        // Log the elevator's position to Advantage Scope
+        Logger.recordOutput("ElevatorPosition", currentPosition);
+        Logger.recordOutput("ElevatorGoalPosition", elevatorGoalPosition);
     }
 }

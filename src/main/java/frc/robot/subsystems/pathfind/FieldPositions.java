@@ -2,6 +2,7 @@ package frc.robot.subsystems.pathfind;
 
 import java.util.ArrayList;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -60,46 +61,45 @@ public class FieldPositions {
     }
 
     public Pose2d getClosestReefPose(Pose2d robotPose) {
-        Pose2d closestReefPose = new Pose2d();
+        Pose2d closestReefPose = null;
+        Logger.recordOutput("AAA", robotPose);
         double closestDistance = Double.MAX_VALUE;
         for (FieldPosition fieldPosition : fieldPositions) {
             if (fieldPosition.name.contains("reef")) {
                 double distance = PhotonUtils.getDistanceToPose(robotPose, getPose(fieldPosition));
                 if (distance < closestDistance) {
                     closestDistance = distance;
-                    closestReefPose = fieldPosition.pose;
+                    closestReefPose = getPose(fieldPosition); // Ensure the correct pose is returned
                 }
             }
         }
         return closestReefPose;
     }
 
-    public Pose2d getClosestHumanPose(Pose2d robotPose)
-    {
-        Pose2d closestHumanPose = new Pose2d();
+    public Pose2d getClosestHumanPose(Pose2d robotPose) {
+        Pose2d closestHumanPose = null;
         double closestDistance = Double.MAX_VALUE;
         for (FieldPosition fieldPosition : fieldPositions) {
             if (fieldPosition.name.contains("human")) {
                 double distance = PhotonUtils.getDistanceToPose(robotPose, getPose(fieldPosition));
                 if (distance < closestDistance) {
                     closestDistance = distance;
-                    closestHumanPose = fieldPosition.pose;
+                    closestHumanPose = getPose(fieldPosition); // Ensure the correct pose is returned
                 }
             }
         }
         return closestHumanPose;
     }
 
-    public Pose2d getClosestAlgeaPose(Pose2d robotPose)
-    {
-        Pose2d closestAlgeaPose = new Pose2d();
+    public Pose2d getClosestAlgeaPose(Pose2d robotPose) {
+        Pose2d closestAlgeaPose = null;
         double closestDistance = Double.MAX_VALUE;
         for (FieldPosition fieldPosition : fieldPositions) {
             if (fieldPosition.name.contains("algea")) {
                 double distance = PhotonUtils.getDistanceToPose(robotPose, getPose(fieldPosition));
                 if (distance < closestDistance) {
                     closestDistance = distance;
-                    closestAlgeaPose = fieldPosition.pose;
+                    closestAlgeaPose = getPose(fieldPosition); // Ensure the correct pose is returned
                 }
             }
         }

@@ -104,7 +104,7 @@ public class SwerveModule {
    * @return The current state of the module
    */
   public SwerveModuleState getState() {
-    return new SwerveModuleState(m_drivingMotor.getVelocity().getValueAsDouble() * 60, getAngle());
+    return m_desiredState;
   }
 
   /**

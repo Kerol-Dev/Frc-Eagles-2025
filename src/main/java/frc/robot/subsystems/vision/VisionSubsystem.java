@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonUtils;
 import org.photonvision.simulation.VisionSystemSim;
@@ -40,7 +41,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     /** Pose estimator for swerve drive using vision data */
     SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
-            DriveSubsystem.getHeading(), DriveSubsystem.getModulePositions(), new Pose2d());
+            new Rotation2d(), DriveSubsystem.getModulePositions(), new Pose2d());
 
     // Publishers for camera pose estimation data
     StructPublisher<Pose3d> structPublisherFL = NetworkTableInstance.getDefault().getTable("Camera Data")
@@ -148,9 +149,11 @@ public class VisionSubsystem extends SubsystemBase {
     /**
      * Periodic update for simulation, including updating pose estimations.
      */
+    @Override
     public void simulationPeriodic() {
-        if (VisionConstants.readSimulationPose.get() != null)
-            visionSystemSim.update(VisionConstants.readSimulationPose.get());
+        // Update the vision system simulation
+        // if (VisionConstants.readSimulationPose.get() != null)
+        //     visionSystemSim.update(VisionConstants.readSimulationPose.get());
 
         var visionEst = getEstimatedGlobalPose();
         visionEst.ifPresent(
@@ -164,6 +167,9 @@ public class VisionSubsystem extends SubsystemBase {
 
         poseEstimator.resetPose(visionSystemSim.getRobotPose().toPose2d());
         poseEstimatorPB.set(poseEstimator.getEstimatedPosition());
+
+        // Log the vision system's estimated pose to Advantage Scope
+        Logger.recordOutput("VisionPose", poseEstimator.getEstimatedPosition());
     }
 
     /**
@@ -209,7 +215,8 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose2d) {
-        poseEstimator.resetPosition(DriveSubsystem.getHeading(), DriveSubsystem.getModulePositions(), pose2d);
+        visionSystemSim.resetRobotPose(pose2d);
+        poseEstimator.resetPosition(poseEstimator.getEstimatedPosition().getRotation(), DriveSubsystem.getModulePositions(), pose2d);
     }
 
     public boolean isAprilTagVisible(int id) {

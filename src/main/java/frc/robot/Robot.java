@@ -1,6 +1,5 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -8,14 +7,23 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class Robot extends TimedRobot{
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger; // Import AdvantageKit Logger
+import org.littletonrobotics.junction.networktables.NT4Publisher; // Import NT4Publisher
+
+public class Robot extends LoggedRobot{
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
   @Override
   public void robotInit() {
+    Logger.recordMetadata("ProjectName", "Frc-Eagles-2025"); // Initialize AdvantageKit logger
+    Logger.addDataReceiver(new NT4Publisher()); // Add NT4Publisher to logger
+    Logger.start(); // Start the logger
+
     m_robotContainer = new RobotContainer();
     DriveSubsystem.resetToAbsolute();
+    
   }
 
   @Override
@@ -44,19 +52,19 @@ public class Robot extends TimedRobot{
       m_autonomousCommand.cancel();
     }
 
-    Commands.sequence(m_robotContainer.m_robotDrive.goToPose("reef_b"), new WaitCommand(1), 
-    m_robotContainer.m_robotDrive.goToPose("human_left"), new WaitCommand(1),
-    m_robotContainer.m_robotDrive.goToPose("reef_c"), new WaitCommand(1),
-    m_robotContainer.m_robotDrive.goToPose("human_right"), new WaitCommand(1),
-    m_robotContainer.m_robotDrive.goToPose("reef_d"), new WaitCommand(1),
-    m_robotContainer.m_robotDrive.goToPose("human_right"), new WaitCommand(1),
-    m_robotContainer.m_robotDrive.goToPose("algea_b"), new WaitCommand(1),
-    m_robotContainer.m_robotDrive.goToPose("processor"), new WaitCommand(1),
-    m_robotContainer.m_robotDrive.goToPose("reef_e"), new WaitCommand(1),
-    m_robotContainer.m_robotDrive.goToPose("human_right"), new WaitCommand(1),
-    m_robotContainer.m_robotDrive.goToPose("reef_f"), new WaitCommand(1),
-    m_robotContainer.m_robotDrive.goToPose("human_right"), new WaitCommand(1)
-    ).schedule();
+    // Commands.sequence(m_robotContainer.m_robotDrive.goToPose("reef_b"), new WaitCommand(1), 
+    // m_robotContainer.m_robotDrive.goToPose("human_left"), new WaitCommand(1),
+    // m_robotContainer.m_robotDrive.goToPose("reef_c"), new WaitCommand(1),
+    // m_robotContainer.m_robotDrive.goToPose("human_right"), new WaitCommand(1),
+    // m_robotContainer.m_robotDrive.goToPose("reef_d"), new WaitCommand(1),
+    // m_robotContainer.m_robotDrive.goToPose("human_right"), new WaitCommand(1),
+    // m_robotContainer.m_robotDrive.goToPose("algea_b"), new WaitCommand(1),
+    // m_robotContainer.m_robotDrive.goToPose("processor"), new WaitCommand(1),
+    // m_robotContainer.m_robotDrive.goToPose("reef_e"), new WaitCommand(1),
+    // m_robotContainer.m_robotDrive.goToPose("human_right"), new WaitCommand(1),
+    // m_robotContainer.m_robotDrive.goToPose("reef_f"), new WaitCommand(1),
+    // m_robotContainer.m_robotDrive.goToPose("human_right"), new WaitCommand(1)
+    // ).schedule();
   }
 
   boolean slowSpeedEnabledAutomatically = false;
