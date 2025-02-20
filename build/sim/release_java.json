@@ -5,17 +5,17 @@
     "extensions": [
       {
         "name": "Sim GUI",
-        "libName": "C:\\Users\\kerol\\Documents\\GitHub\\Frc-Eagles-2025\\build\\jni\\release\\halsim_gui.dll",
+        "libName": "C:\\Users\\kerol\\Pictures\\Frc-Eagles-2025\\build\\jni\\release\\halsim_gui.dll",
         "defaultEnabled": true
       },
       {
         "name": "Use Real DriverStation",
-        "libName": "C:\\Users\\kerol\\Documents\\GitHub\\Frc-Eagles-2025\\build\\jni\\release\\halsim_ds_socket.dll",
+        "libName": "C:\\Users\\kerol\\Pictures\\Frc-Eagles-2025\\build\\jni\\release\\halsim_ds_socket.dll",
         "defaultEnabled": false
       }
     ],
     "environment": {},
-    "libraryDir": "C:\\Users\\kerol\\Documents\\GitHub\\Frc-Eagles-2025\\build\\jni\\release",
+    "libraryDir": "C:\\Users\\kerol\\Pictures\\Frc-Eagles-2025\\build\\jni\\release",
     "mainClassName": "frc.robot.Main"
   }
 ]

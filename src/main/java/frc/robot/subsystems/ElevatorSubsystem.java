@@ -9,6 +9,9 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
@@ -106,6 +109,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         currentPosition = MathUtil.clamp(currentPosition + (elevatorGoalPosition - currentPosition) * 0.02, 0, 1000);
         // Log the elevator's position to Advantage Scope
         Logger.recordOutput("ElevatorPosition", currentPosition);
+        Logger.recordOutput("FinalComponent0", new Pose3d(0, 0, 1, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(90), 0)));
+        Logger.recordOutput("FinalComponent1", new Pose3d(0, 0, 1, new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(180), 0)));
+
         Logger.recordOutput("ElevatorGoalPosition", elevatorGoalPosition);
     }
 }
