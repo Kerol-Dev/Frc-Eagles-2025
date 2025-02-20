@@ -19,6 +19,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -120,6 +121,11 @@ public class VisionSubsystem extends SubsystemBase {
                     poseEstimator.addVisionMeasurement(
                             est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
                 });
+
+        poseEstimator.update(DriveSubsystem.getHeading(),
+                new SwerveModulePosition[] { DriveSubsystem.m_frontLeft.getPosition(),
+                        DriveSubsystem.m_frontRight.getPosition(), DriveSubsystem.m_rearLeft.getPosition(),
+                        DriveSubsystem.m_rearRight.getPosition() });
     }
 
     /**
@@ -133,19 +139,19 @@ public class VisionSubsystem extends SubsystemBase {
             e.printStackTrace();
         }
 
-        double cameraX = 0.255;
-        double cameraY = 0.255;
-        double cameraZ = 0.204;
-        double cameraPitch = 35;
+        double cameraX = 0.2103;
+        double cameraY = 0.2354;
+        double cameraZ = 0.210;
+        double cameraPitch = 15;
 
         VisionConstants.cameras.add(new Camera("FrontLeft", new Translation3d(cameraX, cameraY, cameraZ),
-                new Rotation3d(0.0, Math.toRadians(-cameraPitch), Math.toRadians(45))));
+                new Rotation3d(0.0, Math.toRadians(-cameraPitch), Math.toRadians(47.2))));
         VisionConstants.cameras.add(new Camera("RearRight", new Translation3d(-cameraX, -cameraY, cameraZ),
-                new Rotation3d(0.0, Math.toRadians(-cameraPitch), Math.toRadians(225))));
+                new Rotation3d(0.0, Math.toRadians(-cameraPitch), Math.toRadians(227.2))));
         VisionConstants.cameras.add(new Camera("RearLeft", new Translation3d(-cameraX, cameraY, cameraZ),
-                new Rotation3d(0.0, Math.toRadians(-cameraPitch), Math.toRadians(135))));
+                new Rotation3d(0.0, Math.toRadians(-cameraPitch), Math.toRadians(137.2))));
         VisionConstants.cameras.add(new Camera("FrontRight", new Translation3d(cameraX, -cameraY, cameraZ),
-                new Rotation3d(0.0, Math.toRadians(-cameraPitch), Math.toRadians(315))));
+                new Rotation3d(0.0, Math.toRadians(-cameraPitch), Math.toRadians(317.2))));
     }
 
     public static boolean getLimelightObjectTarget() {

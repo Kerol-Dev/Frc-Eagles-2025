@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -18,8 +19,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -75,7 +74,6 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearRightcanCoderOffset,
       true);
 
-  private final StructArrayPublisher<SwerveModuleState> publisher;
   // Field visualization and gyro
   public final Field2d m_field = new Field2d();
   public static AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
@@ -106,9 +104,6 @@ public class DriveSubsystem extends SubsystemBase {
     } catch (Exception e) {
       DriverStation.reportError(e.getMessage(), true);
     }
-
-    publisher = NetworkTableInstance.getDefault()
-        .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
   }
 
   /**
@@ -153,13 +148,12 @@ public class DriveSubsystem extends SubsystemBase {
 
     visionSubsystem.periodic();
 
-    // Periodically send a set of module states
-    publisher.set(new SwerveModuleState[] {
-        m_frontLeft.getState(),
-        m_frontRight.getState(),
-        m_rearLeft.getState(),
-        m_rearRight.getState()
-    });
+    Logger.recordOutput("SwerveStates", new SwerveModuleState[] {
+      m_frontLeft.getState(),
+      m_frontRight.getState(),
+      m_rearLeft.getState(),
+      m_rearRight.getState()
+  });
   }
 
   /**

@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -79,11 +79,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setElevatorPosition(double position) {
-        elevatorMotor.setControl(new MotionMagicDutyCycle(position).withEnableFOC(true));
+        elevatorMotor.setControl(new MotionMagicTorqueCurrentFOC(position));
     }
 
     public void setElevatorPosition(ElevatorPosition position) {
-        elevatorMotor.setControl(new MotionMagicDutyCycle(getElevatorPositionValue(position)).withEnableFOC(true));
+        elevatorMotor.setControl(new MotionMagicTorqueCurrentFOC(getElevatorPositionValue(position)));
     }
 
     public boolean isElevatorAtPosition() {

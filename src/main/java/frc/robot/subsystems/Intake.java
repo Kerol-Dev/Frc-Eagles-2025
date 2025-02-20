@@ -41,7 +41,7 @@ public class Intake extends SubsystemBase{
 
             @Override
             public boolean isFinished(){
-                return getCoralIntakeSensor();
+                return isAlgae ? getAlgaeArmIntakeSensor() : getCoralIntakeSensor();
             }
         };
     }
@@ -50,7 +50,7 @@ public class Intake extends SubsystemBase{
         return new Command(){
             @Override
             public void initialize(){
-                setIntakeSpeed(-0.25 * (isAlgae ? -1 : 1));
+                setIntakeSpeed(-0.5 * (isAlgae ? -1 : 1));
             }
 
             @Override
@@ -60,7 +60,7 @@ public class Intake extends SubsystemBase{
 
             @Override
             public boolean isFinished(){
-                return !getCoralIntakeSensor();
+                return isAlgae ? !getAlgaeArmIntakeSensor() : !getCoralIntakeSensor();
             }
         };
     }

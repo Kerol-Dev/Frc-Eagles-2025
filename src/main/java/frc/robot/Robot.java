@@ -47,9 +47,6 @@ public class Robot extends TimedRobot{
 
   @Override
   public void teleopPeriodic() {
-    m_robotContainer.placeCoralCommand.executeIfDebounced();
-    m_robotContainer.grabAlgaeCommand.executeIfDebounced();
-    
     if(m_robotContainer.m_elevator.elevatorMotor.getPosition().getValueAsDouble() > 100)
     {
       slowSpeedEnabledAutomatically = true;
