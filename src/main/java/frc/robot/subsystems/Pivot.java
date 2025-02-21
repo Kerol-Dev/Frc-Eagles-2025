@@ -21,7 +21,7 @@ import frc.robot.Constants.ArmConstants;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.misc.ArmPosition;
 
-public class ArmRotationIntake extends SubsystemBase {
+public class Pivot extends SubsystemBase {
     // Motor responsible for rotating the arm
     private final SparkMax armMotor = new SparkMax(ElevatorConstants.kElevatorMotorCanID, MotorType.kBrushless);
     SparkClosedLoopController armMotorController = armMotor.getClosedLoopController();
@@ -30,7 +30,7 @@ public class ArmRotationIntake extends SubsystemBase {
     /**
      * Constructor that configures the arm motor settings.
      */
-    public ArmRotationIntake() {
+    public Pivot() {
         SparkMaxConfig config = new SparkMaxConfig();
         config.inverted(ArmConstants.kArmMotorInverted);
         config.idleMode(IdleMode.kBrake);

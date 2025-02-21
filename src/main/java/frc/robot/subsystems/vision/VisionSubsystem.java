@@ -1,7 +1,3 @@
-/**
- * The VisionSubsystem class integrates camera and vision-related functionality for the robot.
- * It processes pose estimation using AprilTags and simulates vision systems for testing purposes.
- */
 package frc.robot.subsystems.vision;
 
 import java.nio.file.Path;
@@ -164,7 +160,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose2d) {
         poseEstimator.resetPosition(DriveSubsystem.getHeading(), DriveSubsystem.getModulePositions(), pose2d);
-    }
+        }
 
     public boolean isAprilTagVisible(int id) {
         return VisionConstants.visibleAprilTags.contains(String.valueOf(id));

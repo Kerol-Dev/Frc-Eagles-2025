@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.ArmRotationIntake;
+import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -42,7 +42,7 @@ public class RobotContainer {
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
   private final Intake m_Intake = new Intake();
   public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
-  private final ArmRotationIntake m_arm = new ArmRotationIntake();
+  private final Pivot m_arm = new Pivot();
 
   // Autonomous command chooser
   private static SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -127,6 +127,12 @@ public class RobotContainer {
   private void configureButtonBindings() {
     driverController.start().onTrue(new InstantCommand(m_robotDrive::zeroHeading));
     driverController.a().onTrue(new InstantCommand(() -> slowSpeedEnabled = !slowSpeedEnabled));
+
+    driverController.povUp().whileTrue(m_elevator.setElevatorPositionCommand(ElevatorPosition.place_coral_l4));
+    driverController.povDown().whileTrue(m_elevator.setElevatorPositionCommand(ElevatorPosition.idle));
+
+    driverController.povRight().whileTrue(m_arm.setArmPositionCommand(ArmPosition.place_coral_l4));
+    driverController.povLeft().whileTrue(m_arm.setArmPositionCommand(ArmPosition.idle));
 
     driverController.rightTrigger().and(driverController.povDown())
     .whileTrue(Commands.sequence(checkAndSwitchToCoralMode(), pathfindToReef(), PlaceReefCoralCommand(ElevatorPosition.place_coral_l2, ArmPosition.place_coral_l2), IdleSystemsCommand()))
@@ -279,6 +285,8 @@ public class RobotContainer {
     return m_arm.setArmPositionCommand(ArmPosition.grab_coral_source)
         .alongWith(m_elevator.setElevatorPositionCommand(ElevatorPosition.grab_coral_source))
         .andThen(m_Intake.grabCommand(false))
+        .andThen(new InstantCommand(() -> m_Intake.setIntakeSpeed(0.25)).withTimeout(0.3))
+        .andThen(new InstantCommand(() -> m_Intake.setIntakeSpeed(0)))
         .andThen(new InstantCommand(() -> triggerRumble(0.5)));
   }
 
