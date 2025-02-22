@@ -7,19 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Place-Coral-0"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PlaceL4"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Grab-Coral-1"
+            "pathName": "L3 Grab-Coral-1"
           }
         },
         {
@@ -37,7 +25,7 @@
         {
           "type": "named",
           "data": {
-            "name": "PlaceL4"
+            "name": "PlaceL3"
           }
         },
         {
@@ -61,7 +49,7 @@
         {
           "type": "named",
           "data": {
-            "name": "PlaceL4"
+            "name": "PlaceL3"
           }
         },
         {
@@ -85,7 +73,7 @@
         {
           "type": "named",
           "data": {
-            "name": "PlaceL4"
+            "name": "PlaceL3"
           }
         },
         {

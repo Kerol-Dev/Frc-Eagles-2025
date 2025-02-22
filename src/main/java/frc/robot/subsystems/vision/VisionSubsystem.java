@@ -18,8 +18,10 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
@@ -108,6 +110,14 @@ public class VisionSubsystem extends SubsystemBase {
      * Periodic update for simulation, including updating pose estimations.
      */
     public void periodic() {
+        poseEstimator.update(DriveSubsystem.getHeading(),
+                new SwerveModulePosition[] { DriveSubsystem.m_frontLeft.getPosition(),
+                        DriveSubsystem.m_frontRight.getPosition(), DriveSubsystem.m_rearLeft.getPosition(),
+                        DriveSubsystem.m_rearRight.getPosition() });
+
+        if(RobotContainer.autoChooser.getSelected().getName().startsWith("M") && !DriverStation.isTeleopEnabled())
+            return;
+
         var visionEst = getEstimatedGlobalPose();
         visionEst.ifPresent(
                 est -> {
@@ -117,11 +127,6 @@ public class VisionSubsystem extends SubsystemBase {
                     poseEstimator.addVisionMeasurement(
                             est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
                 });
-
-        poseEstimator.update(DriveSubsystem.getHeading(),
-                new SwerveModulePosition[] { DriveSubsystem.m_frontLeft.getPosition(),
-                        DriveSubsystem.m_frontRight.getPosition(), DriveSubsystem.m_rearLeft.getPosition(),
-                        DriveSubsystem.m_rearRight.getPosition() });
     }
 
     /**
@@ -160,7 +165,7 @@ public class VisionSubsystem extends SubsystemBase {
 
     public void resetOdometry(Pose2d pose2d) {
         poseEstimator.resetPosition(DriveSubsystem.getHeading(), DriveSubsystem.getModulePositions(), pose2d);
-        }
+    }
 
     public boolean isAprilTagVisible(int id) {
         return VisionConstants.visibleAprilTags.contains(String.valueOf(id));

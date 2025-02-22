@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.BooleanSupplier;
 import org.photonvision.PhotonUtils;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -9,7 +8,6 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
-
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -256,7 +254,7 @@ public class DriveSubsystem extends SubsystemBase {
     return closestPose;
   }
 
-  public Command goToPosePathfind(PathfindType pathfindType, BooleanSupplier IsRed) {
+  public Command goToPosePathfind(PathfindType pathfindType) {
     Pose2d pose = new Pose2d();
     switch (pathfindType) {
       case Reef:
@@ -294,7 +292,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kMaxAngularSpeedPathfind,
           DriveConstants.kMaxAngularAccelerationPathfind);
 
-      return IsRed.getAsBoolean() ? AutoBuilder.pathfindToPoseFlipped(pose, constraints, 0) : AutoBuilder.pathfindToPose(pose, constraints, 0);
+      return AutoBuilder.pathfindToPoseFlipped(pose, constraints, 0);
     } catch (Exception e) {
       DriverStation.reportError(e.getMessage(), true);
       return null;

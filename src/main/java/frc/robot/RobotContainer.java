@@ -9,7 +9,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
@@ -48,7 +47,7 @@ public class RobotContainer {
   // private final LedSubsystem m_LedSubsystem = new LedSubsystem();
 
   // Autonomous command chooser
-  private static SendableChooser<Command> autoChooser = new SendableChooser<>();
+  public static SendableChooser<Command> autoChooser = new SendableChooser<>();
 
   // Slow speed toggle flag
   public boolean slowSpeedEnabled = false;
@@ -95,6 +94,9 @@ public class RobotContainer {
     registerNamedCommand("PlaceL4", PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
         .andThen(IdleSystemsCommand()), () -> m_Intake.getCoralIntakeSensor(), true);
 
+    registerNamedCommand("PlaceL3", PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3)
+        .andThen(IdleSystemsCommand()), () -> m_Intake.getCoralIntakeSensor(), true);
+
     registerNamedCommand("SpitAlgae", DropAlgaeProcessorCommand().andThen(IdleSystemsCommand()),
         () -> !m_Intake.getAlgaeArmIntakeSensor(), false);
 
@@ -130,8 +132,11 @@ public class RobotContainer {
    * Maps controller buttons to specific commands.
    */
   private void configureButtonBindings() {
-    driverController.start().onTrue(new InstantCommand(m_robotDrive::zeroHeading));
+    driverController.start().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
     driverController.a().onTrue(new InstantCommand(() -> slowSpeedEnabled = !slowSpeedEnabled));
+
+    driverController.b().whileTrue(Commands.sequence(AutoBuilder.buildAuto("Auto-Algae"), AutoBuilder.buildAuto("Auto-L4-Mirrored"), AutoBuilder.buildAuto("Auto-L3-Mirrored")))
+    .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
 
     driverController.povUp().whileTrue(m_elevator.setElevatorPositionCommand(ElevatorPosition.place_coral_l4));
     driverController.povDown().whileTrue(m_elevator.setElevatorPositionCommand(ElevatorPosition.idle));
@@ -140,33 +145,33 @@ public class RobotContainer {
     driverController.povLeft().whileTrue(m_arm.setArmPositionCommand(ArmPosition.idle));
 
     driverController.rightTrigger().and(driverController.povDown())
-    .whileTrue(Commands.sequence(checkAndSwitchToCoralMode(), pathfindToReef(), PlaceReefCoralCommand(ElevatorPosition.place_coral_l2, ArmPosition.place_coral_l2), IdleSystemsCommand()))
-    .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToReef())).andThen(IdleSystemsCommand()));
+      .whileTrue(Commands.sequence(checkAndSwitchToCoralMode(), pathfindToReef(), PlaceReefCoralCommand(ElevatorPosition.place_coral_l2, ArmPosition.place_coral_l2), IdleSystemsCommand()))
+      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToReef())).andThen(IdleSystemsCommand()));
 
     driverController.rightTrigger().and(driverController.povRight())
-    .whileTrue(Commands.sequence(checkAndSwitchToCoralMode(), pathfindToReef(), PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3), IdleSystemsCommand()))
-    .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToReef())).andThen(IdleSystemsCommand()));
+      .whileTrue(Commands.sequence(checkAndSwitchToCoralMode(), pathfindToReef(), PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3), IdleSystemsCommand()))
+      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToReef())).andThen(IdleSystemsCommand()));
 
     driverController.rightTrigger().and(driverController.povUp())
-    .whileTrue(Commands.sequence(checkAndSwitchToCoralMode(), pathfindToReef(), PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4), IdleSystemsCommand()))
-    .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToReef())).andThen(IdleSystemsCommand()));
+      .whileTrue(Commands.sequence(checkAndSwitchToCoralMode(), pathfindToReef(), PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4), IdleSystemsCommand()))
+      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToReef())).andThen(IdleSystemsCommand()));
 
     driverController.rightBumper().and(driverController.povDown())
-    .whileTrue(Commands.sequence(checkAndSwitchToAlgaeMode(), pathFindToAlgae(), GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1), IdleSystemsCommand()))
-    .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathFindToAlgae())).andThen(IdleSystemsCommand()));
+      .whileTrue(Commands.sequence(checkAndSwitchToAlgaeMode(), pathFindToAlgae(), GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1), IdleSystemsCommand()))
+      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathFindToAlgae())).andThen(IdleSystemsCommand()));
 
     driverController.rightBumper().and(driverController.povRight())
-    .whileTrue(Commands.sequence(checkAndSwitchToAlgaeMode(), pathFindToAlgae(), GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2), IdleSystemsCommand()))
-    .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathFindToAlgae())).andThen(IdleSystemsCommand()));
+      .whileTrue(Commands.sequence(checkAndSwitchToAlgaeMode(), pathFindToAlgae(), GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2), IdleSystemsCommand()))
+      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathFindToAlgae())).andThen(IdleSystemsCommand()));
 
 
     driverController.leftTrigger()
-        .whileTrue(checkAndSwitchToCoralMode().andThen(pathfindToHuman().andThen(IntakeSourceGrabCommand())))
-        .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToHuman())).andThen(IdleSystemsCommand()));
+      .whileTrue(checkAndSwitchToCoralMode().andThen(pathfindToHuman().andThen(IntakeSourceGrabCommand())))
+      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToHuman())).andThen(IdleSystemsCommand()));
 
     driverController.leftBumper()
-        .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathfindToProcessor().andThen(DropAlgaeProcessorCommand())))
-        .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToProcessor())).andThen(IdleSystemsCommand()));
+      .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathfindToProcessor().andThen(DropAlgaeProcessorCommand())))
+      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToProcessor())).andThen(IdleSystemsCommand()));
   }
 
   private Command checkAndSwitchToCoralMode() {
@@ -345,18 +350,18 @@ public class RobotContainer {
 
   // Pathfinding Commands
   private Command pathfindToHuman() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Human, () -> DriverStation.getAlliance().get() == Alliance.Red);
+    return m_robotDrive.goToPosePathfind(PathfindType.Human);
   }
 
   private Command pathfindToReef() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Reef, () -> DriverStation.getAlliance().get() == Alliance.Red);
+    return m_robotDrive.goToPosePathfind(PathfindType.Reef);
   }
 
   private Command pathFindToAlgae() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Algea, () -> DriverStation.getAlliance().get() == Alliance.Red);
+    return m_robotDrive.goToPosePathfind(PathfindType.Algea);
   }
 
   private Command pathfindToProcessor() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Processor, () -> DriverStation.getAlliance().get() == Alliance.Red);
+    return m_robotDrive.goToPosePathfind(PathfindType.Processor);
   }
 }

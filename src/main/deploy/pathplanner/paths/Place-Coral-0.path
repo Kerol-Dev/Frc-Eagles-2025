@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.1880751787605925,
-        "y": 3.1240093683792374
+        "x": 7.204245564088983,
+        "y": 3.3421643273305084
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.730947100105932,
-        "y": 2.7131653866525425
+        "x": 6.958965723298028,
+        "y": 3.2938135289755306
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.136253255208333,
-        "y": 2.9230164930555556
+        "x": 5.263847739009534,
+        "y": 2.989756438691737
       },
       "prevControl": {
-        "x": 5.348628068631861,
-        "y": 2.791119038101634
+        "x": 6.704464463056143,
+        "y": 2.7900473384533893
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "InitAlgae2",
-      "waypointRelativePos": 0.6296849044850491,
+      "name": "InitializeForSource",
+      "waypointRelativePos": 0.6536674626245846,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -52,7 +52,7 @@
     "rotation": 119.99999999999999
   },
   "reversed": false,
-  "folder": "Algae Auto",
+  "folder": "L4-Auto-Mirrored",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
