@@ -12,8 +12,9 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
-import frc.robot.subsystems.Pivot;
-import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.misc.ArmPosition;
@@ -40,9 +41,10 @@ public class RobotContainer {
 
   // Subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final Intake m_Intake = new Intake();
+  private final IntakeSubsystem m_Intake = new IntakeSubsystem();
   public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
-  private final Pivot m_arm = new Pivot();
+  private final PivotSubsystem m_arm = new PivotSubsystem();
+  private final LedSubsystem m_LedSubsystem = new LedSubsystem();
 
   // Autonomous command chooser
   private static SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -67,6 +69,8 @@ public class RobotContainer {
             true,
             slowSpeedEnabled),
         m_robotDrive));
+
+    m_LedSubsystem.setDefaultCommand(new RunCommand(() -> m_LedSubsystem.updateFireAnimation(), m_LedSubsystem));
 
     // Configure button bindings
     configureButtonBindings();
@@ -202,6 +206,7 @@ public class RobotContainer {
         .andThen(m_arm.setArmPositionCommand(ArmPosition.idle));
   }
 
+  //#region OPTIONAL
   // private Command PlaceAutomaticCoral() {
   //   return new Command() {
   //     int currentLevel = 4;
@@ -244,6 +249,7 @@ public class RobotContainer {
   //     }
   //   };
   // }
+  //#endregion
 
   private Command PlaceReefInit(ElevatorPosition elevatorPosition) {
     return m_arm.setArmPositionCommand(ArmPosition.idle)

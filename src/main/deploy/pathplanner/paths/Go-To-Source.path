@@ -57,7 +57,7 @@
     "rotation": 55.0
   },
   "reversed": false,
-  "folder": "Algae-L4-Auto",
+  "folder": "L4-Auto-Mirrored",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 119.99999999999999
