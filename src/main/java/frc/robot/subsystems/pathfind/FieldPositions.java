@@ -6,9 +6,6 @@ import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 class FieldPosition {
     public Pose2d pose;
@@ -37,26 +34,7 @@ public class FieldPositions {
     }
 
     public Pose2d getPose(FieldPosition fieldPosition) {
-        if(!RobotBase.isReal())
-        {
-            return fieldPosition.pose;
-        }
-        return DriverStation.getAlliance().get() == Alliance.Blue ? fieldPosition.pose : mirrorPose(fieldPosition.pose);
-    }
-
-    public Pose2d mirrorPose(Pose2d blueAlliancePose) {
-        final double FIELD_LENGTH_METERS = 17.548;
-        // Mirror the X-coordinate by subtracting it from the field length
-        double mirroredX = FIELD_LENGTH_METERS - blueAlliancePose.getX();
-
-        // Y-coordinate remains the same
-        double mirroredY = blueAlliancePose.getY();
-
-        // Negate the rotation to mirror the heading
-        Rotation2d mirroredRotation = blueAlliancePose.getRotation().unaryMinus();
-
-        // Return the mirrored pose
-        return new Pose2d(mirroredX, mirroredY, mirroredRotation);
+        return fieldPosition.pose;
     }
 
     public Pose2d getClosestReefPose(Pose2d robotPose) {

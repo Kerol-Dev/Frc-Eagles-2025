@@ -7,18 +7,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Algae-1"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SpitAlgae"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Algae-2"
           }
         },

@@ -9,12 +9,13 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LedSubsystem;
+// import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.misc.ArmPosition;
@@ -44,7 +45,7 @@ public class RobotContainer {
   private final IntakeSubsystem m_Intake = new IntakeSubsystem();
   public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
   private final PivotSubsystem m_arm = new PivotSubsystem();
-  private final LedSubsystem m_LedSubsystem = new LedSubsystem();
+  // private final LedSubsystem m_LedSubsystem = new LedSubsystem();
 
   // Autonomous command chooser
   private static SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -70,7 +71,7 @@ public class RobotContainer {
             slowSpeedEnabled),
         m_robotDrive));
 
-    m_LedSubsystem.setDefaultCommand(new RunCommand(() -> m_LedSubsystem.updateFireAnimation(), m_LedSubsystem));
+    // m_LedSubsystem.setDefaultCommand(new RunCommand(() -> m_LedSubsystem.updateFireAnimation(), m_LedSubsystem));
 
     // Configure button bindings
     configureButtonBindings();
@@ -344,18 +345,18 @@ public class RobotContainer {
 
   // Pathfinding Commands
   private Command pathfindToHuman() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Human);
+    return m_robotDrive.goToPosePathfind(PathfindType.Human, () -> DriverStation.getAlliance().get() == Alliance.Red);
   }
 
   private Command pathfindToReef() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Reef);
+    return m_robotDrive.goToPosePathfind(PathfindType.Reef, () -> DriverStation.getAlliance().get() == Alliance.Red);
   }
 
   private Command pathFindToAlgae() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Algea);
+    return m_robotDrive.goToPosePathfind(PathfindType.Algea, () -> DriverStation.getAlliance().get() == Alliance.Red);
   }
 
   private Command pathfindToProcessor() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Processor);
+    return m_robotDrive.goToPosePathfind(PathfindType.Processor, () -> DriverStation.getAlliance().get() == Alliance.Red);
   }
 }

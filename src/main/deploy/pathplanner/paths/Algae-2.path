@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.018993055555556,
-        "y": 0.6177256944444435
+        "x": 7.1880751787605925,
+        "y": 3.1240093683792374
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.461639810845826,
-        "y": 1.4448414592914407
+        "x": 6.7917405525025725,
+        "y": 3.582587583296302
       },
       "isLocked": false,
       "linkedName": null
@@ -20,20 +20,15 @@
         "y": 2.9230164930555556
       },
       "prevControl": {
-        "x": 5.412957497836791,
-        "y": 2.467439996397875
+        "x": 5.348628068631861,
+        "y": 2.791119038101634
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.02,
-      "rotationDegrees": -90.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
@@ -60,7 +55,7 @@
   "folder": "Algae Auto",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 0.0
   },
   "useDefaultConstraints": true
 }

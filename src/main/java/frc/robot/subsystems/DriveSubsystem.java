@@ -1,8 +1,7 @@
 package frc.robot.subsystems;
 
-import org.littletonrobotics.junction.Logger;
+import java.util.function.BooleanSupplier;
 import org.photonvision.PhotonUtils;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -19,6 +18,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -38,7 +39,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class DriveSubsystem extends SubsystemBase {
 
   // Swerve modules for each corner of the robot
-  public static final SwerveModule m_frontLeft = new SwerveModule(
+  public static final SwerveModule m_frontRight = new SwerveModule(
       DriveConstants.kFrontLeftDrivingCanId,
       DriveConstants.kFrontLeftTurningCanId,
       DriveConstants.kFrontLeftcanCoderIDCanId,
@@ -47,7 +48,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kFrontLeftcanCoderOffset,
       true);
 
-  public static final SwerveModule m_frontRight = new SwerveModule(
+  public static final SwerveModule m_frontLeft = new SwerveModule(
       DriveConstants.kFrontRightDrivingCanId,
       DriveConstants.kFrontRightTurningCanId,
       DriveConstants.kFrontRightcanCoderIDCanId,
@@ -56,7 +57,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kFrontRightcanCoderOffset,
       true);
 
-  public static final SwerveModule m_rearLeft = new SwerveModule(
+  public static final SwerveModule m_rearRight = new SwerveModule(
       DriveConstants.kRearLeftDrivingCanId,
       DriveConstants.kRearLeftTurningCanId,
       DriveConstants.kRearLeftcanCoderIDCanId,
@@ -65,7 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearLeftcanCoderOffset,
       true);
 
-  public static final SwerveModule m_rearRight = new SwerveModule(
+  public static final SwerveModule m_rearLeft = new SwerveModule(
       DriveConstants.kRearRightDrivingCanId,
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kRearRightcanCoderIDCanId,
@@ -74,6 +75,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearRightcanCoderOffset,
       true);
 
+  private final StructArrayPublisher<SwerveModuleState> publisher;
   // Field visualization and gyro
   public final Field2d m_field = new Field2d();
   public static AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
@@ -104,6 +106,9 @@ public class DriveSubsystem extends SubsystemBase {
     } catch (Exception e) {
       DriverStation.reportError(e.getMessage(), true);
     }
+
+    publisher = NetworkTableInstance.getDefault()
+        .getStructArrayTopic("/SwerveStates", SwerveModuleState.struct).publish();
   }
 
   /**
@@ -141,19 +146,19 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontLeft.updateSmartDashboard();
     m_frontRight.updateSmartDashboard();
 
+
     m_field.setRobotPose(getPose());
 
     SmartDashboard.putData(m_gyro);
     SmartDashboard.putData(m_field);
 
-    visionSubsystem.periodic();
-
-    Logger.recordOutput("SwerveStates", new SwerveModuleState[] {
-      m_frontLeft.getState(),
-      m_frontRight.getState(),
-      m_rearLeft.getState(),
-      m_rearRight.getState()
-  });
+    // Periodically send a set of module states
+    publisher.set(new SwerveModuleState[] {
+        m_frontLeft.getState(),
+        m_frontRight.getState(),
+        m_rearLeft.getState(),
+        m_rearRight.getState()
+    });
   }
 
   /**
@@ -251,7 +256,7 @@ public class DriveSubsystem extends SubsystemBase {
     return closestPose;
   }
 
-  public Command goToPosePathfind(PathfindType pathfindType) {
+  public Command goToPosePathfind(PathfindType pathfindType, BooleanSupplier IsRed) {
     Pose2d pose = new Pose2d();
     switch (pathfindType) {
       case Reef:
@@ -289,7 +294,7 @@ public class DriveSubsystem extends SubsystemBase {
           DriveConstants.kMaxAngularSpeedPathfind,
           DriveConstants.kMaxAngularAccelerationPathfind);
 
-      return AutoBuilder.pathfindToPose(pose, constraints, 0);
+      return IsRed.getAsBoolean() ? AutoBuilder.pathfindToPoseFlipped(pose, constraints, 0) : AutoBuilder.pathfindToPose(pose, constraints, 0);
     } catch (Exception e) {
       DriverStation.reportError(e.getMessage(), true);
       return null;

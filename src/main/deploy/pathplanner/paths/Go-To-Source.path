@@ -28,18 +28,13 @@
       "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.02,
-      "rotationDegrees": 119.99999999999999
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "InitializeForSource",
-      "waypointRelativePos": 0.6809982350498334,
+      "waypointRelativePos": 0.7344840577411169,
       "endWaypointRelativePos": null,
       "command": null
     }
