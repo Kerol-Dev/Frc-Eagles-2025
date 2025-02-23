@@ -49,22 +49,22 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, kTrackWidth / 2));
 
     // CAN IDs for driving motors
-    public static final int kFrontLeftDrivingCanId = 0;
-    public static final int kFrontRightDrivingCanId = 0;
-    public static final int kRearLeftDrivingCanId = 0;
-    public static final int kRearRightDrivingCanId = 0;
+    public static final int kFrontLeftDrivingCanId = 2;
+    public static final int kFrontRightDrivingCanId = 1;
+    public static final int kRearLeftDrivingCanId = 4;
+    public static final int kRearRightDrivingCanId = 3;
 
     // CAN IDs for turning motors
-    public static final int kFrontLeftTurningCanId = 0;
-    public static final int kFrontRightTurningCanId = 0;
-    public static final int kRearLeftTurningCanId = 0;
-    public static final int kRearRightTurningCanId = 0;
+    public static final int kFrontLeftTurningCanId = 10;
+    public static final int kFrontRightTurningCanId = 8;
+    public static final int kRearLeftTurningCanId = 12;
+    public static final int kRearRightTurningCanId = 13;
 
     // CAN IDs for CANCoders (absolute encoders)
-    public static final int kFrontLeftcanCoderIDCanId = 0;
-    public static final int kFrontRightcanCoderIDCanId = 0;
-    public static final int kRearLeftcanCoderIDCanId = 0;
-    public static final int kRearRightcanCoderIDCanId = 0;
+    public static final int kFrontLeftcanCoderIDCanId = 19;
+    public static final int kFrontRightcanCoderIDCanId = 20;
+    public static final int kRearLeftcanCoderIDCanId = 17;
+    public static final int kRearRightcanCoderIDCanId = 21;
 
     // Offset values for CANCoders
     public static final float kFrontLeftcanCoderOffset = 0.0f;
@@ -121,13 +121,13 @@ public final class Constants {
   }
 
   public static final class ElevatorConstants {
-    public static final int kElevatorMotorCanID = 0;
-    public static final int kElevatorMotorCanID2 = 0;
+    public static final int kElevatorMotorCanID = 5;
+    public static final int kElevatorMotorCanID2 = 6;
 
     public static final boolean kElevatorMotorInverted = false;
     public static final boolean kElevatorMotorEncoderInverted = false;
 
-    public static final double kElevatorMotorForwardSoftLimit = 250;
+    public static final double kElevatorMotorForwardSoftLimit = 6;
     public static final double kElevatorMotorReverseSoftLimit = 0;
 
     public static final double kElevatorGearRatio = 5; // Gear ratio
@@ -136,38 +136,39 @@ public final class Constants {
 
     // Conversion factor from motor rotations to elevator rise in cm
     public static final double kElevatorMotorSensorToMechRatio = (kChainPitch * kSprocketTeeth) / kElevatorGearRatio;
-    public static final double kElevatorMotorAcceleration = 4000; // RPM
-    public static final double kElevatorMotorCruiseVelocity = 5000; // RPM
+    public static final double kElevatorMotorAcceleration = 1200; // RPM
+    public static final double kElevatorMotorCruiseVelocity = 1500; // RPM
 
-    public static final double kElevatorMotorP = 1;
-    public static final double kElevatorMotorI = 0;
+    public static final double kElevatorMotorP = 0.7;
+    public static final double kElevatorMotorI = 0.1;
     public static final double kElevatorMotorD = 0;
-    public static final double kElevatorMaxSpeed = 1;
+    public static final double kElevatorMaxSpeed = 0.7;
+    public static final double kElevatorMaxSpeedDown = 0.1;
   }
 
   public static final class ArmConstants {
-    public static final int kArmMotorCanID = 0;
+    public static final int kArmMotorCanID = 16;
 
     public static final boolean kArmMotorInverted = false;
     public static final boolean kArmMotorEncoderInverted = false;
 
-    public static final double kArmMotorForwardSoftLimit = 180;
-    public static final double kArmMotorReverseSoftLimit = 0;
+    public static final double kArmMotorForwardSoftLimit = -300;
+    public static final double kArmMotorReverseSoftLimit = -600;
 
-    public static final double kArmMotorSensorToMechRatio = 50; // 360 / Gear Ratio
+    public static final double kArmMotorSensorToMechRatio = 500; // 360 / Gear Ratio
 
-    public static final double kArmMotorP = 1;
+    public static final double kArmMotorP = 0.001;
     public static final double kArmMotorI = 0;
     public static final double kArmMotorD = 0;
     public static final double kArmMotorMaxSpeed = 1;
   }
 
   public static final class ArmIntakeConstants {
-    public static final int kArmIntakeMotorCanID = 0;
-    public static final int kCoralArmIntakeSensorPort = 0;
-    public static final int kAlgaeArmIntakeSensorPort = 1;
+    public static final int kArmIntakeMotorCanID = 7;
+    public static final int kCoralArmIntakeSensorPort = 1;
+    public static final int kAlgaeArmIntakeSensorPort = 0;
 
-    public static final boolean kArmIntakeMotorInverted = false;
+    public static final boolean kArmIntakeMotorInverted = true;
   }
 
   public static final class VisionConstants {

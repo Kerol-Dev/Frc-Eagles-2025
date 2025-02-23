@@ -24,6 +24,7 @@ public class IntakeSubsystem extends SubsystemBase{
     @Override
     public void periodic() {
         SmartDashboard.putBoolean("Coral Sensor", getCoralIntakeSensor());
+        SmartDashboard.putBoolean("Algea Sensor", getAlgaeArmIntakeSensor());
         SmartDashboard.putNumber("Coral Temp", ArmIntakeMotor.getDeviceTemp().getValueAsDouble());
     }
 
@@ -31,7 +32,7 @@ public class IntakeSubsystem extends SubsystemBase{
         return new Command(){
             @Override
             public void initialize(){
-                setIntakeSpeed(1 * (isAlgae ? -1 : 1));
+                setIntakeSpeed(0.3 * (isAlgae ? -1 : 1));
             }
 
             @Override
@@ -50,7 +51,7 @@ public class IntakeSubsystem extends SubsystemBase{
         return new Command(){
             @Override
             public void initialize(){
-                setIntakeSpeed(-0.5 * (isAlgae ? -1 : 1));
+                setIntakeSpeed(0.5 * (isAlgae ? -1 : 1));
             }
 
             @Override

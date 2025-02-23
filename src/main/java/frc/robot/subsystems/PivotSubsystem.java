@@ -18,12 +18,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ArmConstants;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.misc.ArmPosition;
 
 public class PivotSubsystem extends SubsystemBase {
     // Motor responsible for rotating the arm
-    private final SparkMax armMotor = new SparkMax(ElevatorConstants.kElevatorMotorCanID, MotorType.kBrushless);
+    private final SparkMax armMotor = new SparkMax(ArmConstants.kArmMotorCanID, MotorType.kBrushless);
     SparkClosedLoopController armMotorController = armMotor.getClosedLoopController();
     private double armGoalPosition = 0;
 
@@ -31,12 +30,7 @@ public class PivotSubsystem extends SubsystemBase {
      * Constructor that configures the arm motor settings.
      */
     public PivotSubsystem() {
-        SparkMaxConfig config = new SparkMaxConfig();
-        config.inverted(ArmConstants.kArmMotorInverted);
-        config.idleMode(IdleMode.kBrake);
-        config.closedLoop.pid(ArmConstants.kArmMotorP, ArmConstants.kArmMotorI, ArmConstants.kArmMotorD);
-        config.encoder.positionConversionFactor(ArmConstants.kArmMotorSensorToMechRatio);
-        armMotor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+       
     }
 
     /**

@@ -60,15 +60,15 @@ public class RobotContainer {
    * Initializes subsystems, commands, and button bindings.
    */
   public RobotContainer() {
-    // Set default command for the drivetrain
-    m_robotDrive.setDefaultCommand(new RunCommand(
-        () -> m_robotDrive.drive(
-            -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
-            MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband) / 1.4,
-            true,
-            slowSpeedEnabled),
-        m_robotDrive));
+    // // Set default command for the drivetrain
+    // m_robotDrive.setDefaultCommand(new RunCommand(
+    //     () -> m_robotDrive.drive(
+    //         -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
+    //         -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
+    //         MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband) / 1.4,
+    //         true,
+    //         slowSpeedEnabled),
+    //     m_robotDrive));
 
     // m_LedSubsystem.setDefaultCommand(new RunCommand(() -> m_LedSubsystem.updateFireAnimation(), m_LedSubsystem));
 
@@ -122,10 +122,10 @@ public class RobotContainer {
 
   private void registerNamedCommand(String name, Command command, BooleanSupplier condition, boolean isCoralMode) {
     NamedCommands.registerCommand(name, new ConditionalCommand(
-      SwitchObjectMode().andThen(command).onlyIf(condition),
-      command.onlyIf(condition),
+       SwitchObjectMode(),
+      new InstantCommand(),
       () -> coralMode != isCoralMode
-    ));
+    ).andThen(command).onlyIf(condition));
   }
 
   /**
@@ -137,12 +137,15 @@ public class RobotContainer {
 
     driverController.b().whileTrue(Commands.sequence(AutoBuilder.buildAuto("Auto-Algae"), AutoBuilder.buildAuto("Auto-L4-Mirrored"), AutoBuilder.buildAuto("Auto-L3-Mirrored")))
     .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
+    driverController.povDown().whileTrue(new InstantCommand(() -> m_arm.setArmPosition(0)).andThen(new InstantCommand(() -> m_elevator.setElevatorPosition(0))));
 
-    driverController.povUp().whileTrue(m_elevator.setElevatorPositionCommand(ElevatorPosition.place_coral_l4));
-    driverController.povDown().whileTrue(m_elevator.setElevatorPositionCommand(ElevatorPosition.idle));
+    driverController.a().whileTrue(new InstantCommand(() -> m_arm.setArmPosition(0)).andThen(new InstantCommand(() -> m_elevator.setElevatorPosition(1.50))));
 
-    driverController.povRight().whileTrue(m_arm.setArmPositionCommand(ArmPosition.place_coral_l4));
-    driverController.povLeft().whileTrue(m_arm.setArmPositionCommand(ArmPosition.idle));
+    driverController.povUp().whileTrue(new InstantCommand(() -> m_arm.setArmPosition(0)).andThen(new InstantCommand(() -> m_elevator.setElevatorPosition(3.46))));
+    driverController.povRight().whileTrue(m_Intake.grabCommand(false));
+    driverController.povLeft().whileTrue(m_Intake.releaseCommand(false));
+
+    driverController.povRight().whileTrue(m_Intake.grabCommand(false));
 
     driverController.rightTrigger().and(driverController.povDown())
       .whileTrue(Commands.sequence(checkAndSwitchToCoralMode(), pathfindToReef(), PlaceReefCoralCommand(ElevatorPosition.place_coral_l2, ArmPosition.place_coral_l2), IdleSystemsCommand()))

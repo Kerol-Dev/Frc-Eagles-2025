@@ -9,7 +9,7 @@ public enum ElevatorPosition {
     place_coral_l1(5.0),
     place_coral_l2(6.0),
     place_coral_l3(7.0),
-    place_coral_l4(8.0);
+    place_coral_l4(2.9);
 
     private final double position;
 

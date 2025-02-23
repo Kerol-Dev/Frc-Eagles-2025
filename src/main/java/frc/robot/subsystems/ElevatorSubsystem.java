@@ -2,7 +2,9 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicDutyCycle;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -31,7 +33,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         talonFXConfiguration.Slot0.kI = ElevatorConstants.kElevatorMotorI;
         talonFXConfiguration.Slot0.kD = ElevatorConstants.kElevatorMotorD;
         talonFXConfiguration.MotorOutput.PeakForwardDutyCycle = ElevatorConstants.kElevatorMaxSpeed;
-        talonFXConfiguration.MotorOutput.PeakReverseDutyCycle = -ElevatorConstants.kElevatorMaxSpeed;
+        talonFXConfiguration.MotorOutput.PeakReverseDutyCycle = -ElevatorConstants.kElevatorMaxSpeedDown;
         talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ElevatorConstants.kElevatorMotorForwardSoftLimit;
         talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
@@ -41,9 +43,6 @@ public class ElevatorSubsystem extends SubsystemBase {
                 / 60;
         talonFXConfiguration.Feedback.SensorToMechanismRatio = ElevatorConstants.kElevatorMotorSensorToMechRatio;
         talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        talonFXConfiguration.MotorOutput.Inverted = ElevatorConstants.kElevatorMotorInverted
-                ? InvertedValue.Clockwise_Positive
-                : InvertedValue.CounterClockwise_Positive;
 
         elevatorMotor.getConfigurator().apply(talonFXConfiguration);
         elevatorMotor2.setControl(new Follower(elevatorMotor.getDeviceID(), false));
@@ -79,11 +78,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void setElevatorPosition(double position) {
-        elevatorMotor.setControl(new MotionMagicTorqueCurrentFOC(position));
+        elevatorMotor.setControl(new PositionDutyCycle(position));
     }
 
     public void setElevatorPosition(ElevatorPosition position) {
-        elevatorMotor.setControl(new MotionMagicTorqueCurrentFOC(getElevatorPositionValue(position)));
+        elevatorMotor.setControl(new PositionDutyCycle(getElevatorPositionValue(position)));
     }
 
     public boolean isElevatorAtPosition() {
