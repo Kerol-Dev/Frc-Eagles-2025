@@ -131,14 +131,9 @@ public final class Constants {
     public static final double kElevatorMotorReverseSoftLimit = 0;
 
     public static final double kElevatorGearRatio = 5; // Gear ratio
-    public static final double kChainPitch = 0.635; // Pitch of the 25# chain in cm
-    public static final double kSprocketTeeth = 28; // Number of teeth on the sprocket (1:1 ratio)
 
     // Conversion factor from motor rotations to elevator rise in cm
-    public static final double kElevatorMotorSensorToMechRatio = (kChainPitch * kSprocketTeeth) / kElevatorGearRatio;
-    public static final double kElevatorMotorAcceleration = 1200; // RPM
-    public static final double kElevatorMotorCruiseVelocity = 1500; // RPM
-
+    public static final double kElevatorMotorSensorToMechRatio = kElevatorGearRatio;
     public static final double kElevatorMotorP = 0.7;
     public static final double kElevatorMotorI = 0.1;
     public static final double kElevatorMotorD = 0;

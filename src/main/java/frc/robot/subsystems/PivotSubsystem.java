@@ -7,11 +7,7 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -30,7 +26,6 @@ public class PivotSubsystem extends SubsystemBase {
      * Constructor that configures the arm motor settings.
      */
     public PivotSubsystem() {
-       
     }
 
     /**
@@ -70,8 +65,30 @@ public class PivotSubsystem extends SubsystemBase {
      * @param position The desired arm position.
      * @return The corresponding numerical value.
      */
+    
     private double getArmPositionValue(ArmPosition position) {
-        return position.getPosition();
+        switch (position) {
+            case idle:
+                return 0.0;
+            case grab_algae_reef_1:
+                return 10.0;
+            case grab_algae_reef_2:
+                return 20.0;
+            case grab_coral_source:
+                return 30.0;
+            case place_algae_processor:
+                return 40.0;
+            case place_coral_l:
+                return 50.0;
+            case place_coral_l2:
+                return 60.0;
+            case place_coral_l3:
+                return 70.0;
+            case place_coral_l4:
+                return 80.0;
+            default:
+                return 0.0;
+        }
     }
 
     /**
@@ -98,6 +115,6 @@ public class PivotSubsystem extends SubsystemBase {
      * @return True if the arm is at the goal position, false otherwise.
      */
     public boolean isArmAtPosition() {
-        return MathUtil.isNear(armGoalPosition, armMotor.getEncoder().getPosition(), 10);
+        return MathUtil.isNear(armGoalPosition, armMotor.getEncoder().getPosition(), 1);
     }
 }

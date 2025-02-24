@@ -6,7 +6,6 @@ import java.util.function.BooleanSupplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -25,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -137,15 +135,6 @@ public class RobotContainer {
 
     driverController.b().whileTrue(Commands.sequence(AutoBuilder.buildAuto("Auto-Algae"), AutoBuilder.buildAuto("Auto-L4-Mirrored"), AutoBuilder.buildAuto("Auto-L3-Mirrored")))
     .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
-    driverController.povDown().whileTrue(new InstantCommand(() -> m_arm.setArmPosition(0)).andThen(new InstantCommand(() -> m_elevator.setElevatorPosition(0))));
-
-    driverController.a().whileTrue(new InstantCommand(() -> m_arm.setArmPosition(0)).andThen(new InstantCommand(() -> m_elevator.setElevatorPosition(1.50))));
-
-    driverController.povUp().whileTrue(new InstantCommand(() -> m_arm.setArmPosition(0)).andThen(new InstantCommand(() -> m_elevator.setElevatorPosition(3.46))));
-    driverController.povRight().whileTrue(m_Intake.grabCommand(false));
-    driverController.povLeft().whileTrue(m_Intake.releaseCommand(false));
-
-    driverController.povRight().whileTrue(m_Intake.grabCommand(false));
 
     driverController.rightTrigger().and(driverController.povDown())
       .whileTrue(Commands.sequence(checkAndSwitchToCoralMode(), pathfindToReef(), PlaceReefCoralCommand(ElevatorPosition.place_coral_l2, ArmPosition.place_coral_l2), IdleSystemsCommand()))
