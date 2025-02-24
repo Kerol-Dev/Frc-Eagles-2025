@@ -37,41 +37,41 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class DriveSubsystem extends SubsystemBase {
 
   // Swerve modules for each corner of the robot
-  public static final SwerveModule m_frontRight = new SwerveModule(
+  public static final SwerveModule m_frontLeft = new SwerveModule(
       DriveConstants.kFrontLeftDrivingCanId,
       DriveConstants.kFrontLeftTurningCanId,
       DriveConstants.kFrontLeftcanCoderIDCanId,
-      true,
+      false,
       true,
       DriveConstants.kFrontLeftcanCoderOffset,
-      true);
+      false);
 
-  public static final SwerveModule m_frontLeft = new SwerveModule(
+  public static final SwerveModule m_frontRight = new SwerveModule(
       DriveConstants.kFrontRightDrivingCanId,
       DriveConstants.kFrontRightTurningCanId,
       DriveConstants.kFrontRightcanCoderIDCanId,
-      true,
+      false,
       true,
       DriveConstants.kFrontRightcanCoderOffset,
-      true);
+      false);
 
-  public static final SwerveModule m_rearRight = new SwerveModule(
+  public static final SwerveModule m_rearLeft = new SwerveModule(
       DriveConstants.kRearLeftDrivingCanId,
       DriveConstants.kRearLeftTurningCanId,
       DriveConstants.kRearLeftcanCoderIDCanId,
-      true,
+      false,
       true,
       DriveConstants.kRearLeftcanCoderOffset,
-      true);
+      false);
 
-  public static final SwerveModule m_rearLeft = new SwerveModule(
+  public static final SwerveModule m_rearRight = new SwerveModule(
       DriveConstants.kRearRightDrivingCanId,
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kRearRightcanCoderIDCanId,
-      true,
+      false,
       true,
       DriveConstants.kRearRightcanCoderOffset,
-      true);
+      false);
 
   private final StructArrayPublisher<SwerveModuleState> publisher;
   // Field visualization and gyro
@@ -93,8 +93,8 @@ public class DriveSubsystem extends SubsystemBase {
     try {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
-              new PIDConstants(5.0, 0.0, 0.0),
-              new PIDConstants(5.0, 0.0, 0.0)),
+              new PIDConstants(2, 0.0, 0.0),
+              new PIDConstants(8.0, 0, 0.0)),
           RobotConfig.fromGUISettings(), () -> {
             var alliance = DriverStation.getAlliance().get();
             return alliance == DriverStation.Alliance.Red;
@@ -143,7 +143,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.updateSmartDashboard();
     m_frontLeft.updateSmartDashboard();
     m_frontRight.updateSmartDashboard();
-
 
     m_field.setRobotPose(getPose());
 
@@ -255,48 +254,62 @@ public class DriveSubsystem extends SubsystemBase {
   }
 
   public Command goToPosePathfind(PathfindType pathfindType) {
-    Pose2d pose = new Pose2d();
-    switch (pathfindType) {
-      case Reef:
-        pose = fieldPositions.getClosestReefPose(getPose());
-        break;
+    return new Command() {
+      Command comd;
 
-      case Human:
-        pose = fieldPositions.getClosestHumanPose(getPose());
-        break;
+      @Override
+      public void initialize() {
+        Pose2d pose = new Pose2d();
+        switch (pathfindType) {
+          case Reef:
+            pose = fieldPositions.getClosestReefPose(getPose());
+            break;
 
-      case Algea:
-        pose = fieldPositions.getClosestAlgeaPose(getPose());
-        break;
+          case Human:
+            pose = fieldPositions.getClosestHumanPose(getPose());
+            break;
 
-      case Processor:
-        pose = fieldPositions.getPose("processor");
-        break;
+          case Algea:
+            pose = fieldPositions.getClosestAlgeaPose(getPose());
+            break;
 
-      case Closest:
-        pose = getClosestPose(fieldPositions.getPose("processor"), fieldPositions.getClosestHumanPose(getPose()),
-            fieldPositions.getClosestReefPose(getPose()));
-        break;
+          case Processor:
+            pose = fieldPositions.getPose("processor");
+            break;
 
-      default:
-        break;
-    }
+          case Closest:
+            pose = getClosestPose(fieldPositions.getPose("processor"), fieldPositions.getClosestHumanPose(getPose()),
+                fieldPositions.getClosestReefPose(getPose()));
+            break;
 
-    try {
-      if (pose.getX() == 0) {
-        throw new Exception("No valid pose found");
+          default:
+            break;
+        }
+
+        try {
+          if (pose.getX() == 0) {
+            throw new Exception("No valid pose found");
+          }
+
+          PathConstraints constraints = new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecondPathfind,
+              DriveConstants.kMaxAccelerationPathfind,
+              DriveConstants.kMaxAngularSpeedPathfind,
+              DriveConstants.kMaxAngularAccelerationPathfind);
+
+          comd = AutoBuilder.pathfindToPoseFlipped(pose, constraints, 0);
+          comd.schedule();
+        } catch (Exception e) {
+          DriverStation.reportError(e.getMessage(), true);
+          return;
+        }
+
       }
 
-      PathConstraints constraints = new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecondPathfind,
-          DriveConstants.kMaxAccelerationPathfind,
-          DriveConstants.kMaxAngularSpeedPathfind,
-          DriveConstants.kMaxAngularAccelerationPathfind);
-
-      return AutoBuilder.pathfindToPoseFlipped(pose, constraints, 0);
-    } catch (Exception e) {
-      DriverStation.reportError(e.getMessage(), true);
-      return null;
-    }
+      @Override
+      public boolean isFinished() {
+        return comd.isFinished();
+      }
+    };
   }
 
   /**

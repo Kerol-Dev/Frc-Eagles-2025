@@ -30,12 +30,12 @@ public final class Constants {
   public static final class DriveConstants {
 
     public static final double kMaxSpeedMetersPerSecond = 4.8; // Maximum robot speed
-    public static final double kMaxAcceleration = 8; // Maximum linear acceleration
+    public static final double kMaxAcceleration = 4; // Maximum linear acceleration
     public static final double kMaxAngularSpeed = Math.PI; // Maximum angular velocity (rad/s)
     public static final double kMaxAngularAcceleration = 3; // Maximum angular acceleration
 
-    public static final double kMaxSpeedMetersPerSecondPathfind = 4; // Maximum robot speed
-    public static final double kMaxAccelerationPathfind = 6; // Maximum linear acceleration
+    public static final double kMaxSpeedMetersPerSecondPathfind = 1.5; // Maximum robot speed
+    public static final double kMaxAccelerationPathfind = 1; // Maximum linear acceleration
     public static final double kMaxAngularSpeedPathfind = Math.PI; // Maximum angular velocity (rad/s)
     public static final double kMaxAngularAccelerationPathfind = 3; // Maximum angular acceleration
 
@@ -49,28 +49,28 @@ public final class Constants {
         new Translation2d(-kWheelBase / 2, kTrackWidth / 2));
 
     // CAN IDs for driving motors
-    public static final int kFrontLeftDrivingCanId = 2;
-    public static final int kFrontRightDrivingCanId = 1;
-    public static final int kRearLeftDrivingCanId = 4;
-    public static final int kRearRightDrivingCanId = 3;
+    public static final int kFrontRightDrivingCanId = 2;
+    public static final int kFrontLeftDrivingCanId = 1;
+    public static final int kRearRightDrivingCanId = 4;
+    public static final int kRearLeftDrivingCanId = 3;
 
     // CAN IDs for turning motors
-    public static final int kFrontLeftTurningCanId = 10;
-    public static final int kFrontRightTurningCanId = 8;
-    public static final int kRearLeftTurningCanId = 12;
-    public static final int kRearRightTurningCanId = 13;
+    public static final int kFrontRightTurningCanId = 10;
+    public static final int kFrontLeftTurningCanId = 8;
+    public static final int kRearRightTurningCanId = 12;
+    public static final int kRearLeftTurningCanId = 13;
 
     // CAN IDs for CANCoders (absolute encoders)
-    public static final int kFrontLeftcanCoderIDCanId = 19;
-    public static final int kFrontRightcanCoderIDCanId = 20;
-    public static final int kRearLeftcanCoderIDCanId = 17;
-    public static final int kRearRightcanCoderIDCanId = 21;
+    public static final int kFrontRightcanCoderIDCanId = 19;
+    public static final int kFrontLeftcanCoderIDCanId = 20;
+    public static final int kRearRightcanCoderIDCanId = 17;
+    public static final int kRearLeftcanCoderIDCanId = 21;
 
     // Offset values for CANCoders
-    public static final float kFrontLeftcanCoderOffset = 0.0f;
-    public static final float kFrontRightcanCoderOffset = 0.0f;
-    public static final float kRearLeftcanCoderOffset = 0.0f;
-    public static final float kRearRightcanCoderOffset = 0.0f;
+    public static final float kFrontRightcanCoderOffset = 272.63f;
+    public static final float kFrontLeftcanCoderOffset = 138.9f;
+    public static final float kRearRightcanCoderOffset = 266.8f;
+    public static final float kRearLeftcanCoderOffset = 247.3f;
 
     // Gyro configuration
     public static final boolean kGyroReversed = false;
@@ -103,7 +103,7 @@ public final class Constants {
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 0.75;
+    public static final double kTurningP = 1;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
     public static final double kTurningMinOutput = -1;
@@ -127,18 +127,18 @@ public final class Constants {
     public static final boolean kElevatorMotorInverted = false;
     public static final boolean kElevatorMotorEncoderInverted = false;
 
-    public static final double kElevatorMotorForwardSoftLimit = 6;
+    public static final double kElevatorMotorForwardSoftLimit = 4.51;
     public static final double kElevatorMotorReverseSoftLimit = 0;
 
     public static final double kElevatorGearRatio = 5; // Gear ratio
 
     // Conversion factor from motor rotations to elevator rise in cm
     public static final double kElevatorMotorSensorToMechRatio = kElevatorGearRatio;
-    public static final double kElevatorMotorP = 0.7;
-    public static final double kElevatorMotorI = 0.1;
+    public static final double kElevatorMotorP = 0.4;
+    public static final double kElevatorMotorI = 1;
     public static final double kElevatorMotorD = 0;
     public static final double kElevatorMaxSpeed = 0.7;
-    public static final double kElevatorMaxSpeedDown = 0.1;
+    public static final double kElevatorMaxSpeedDown = 0.15;
   }
 
   public static final class ArmConstants {

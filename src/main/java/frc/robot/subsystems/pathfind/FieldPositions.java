@@ -98,8 +98,8 @@ public class FieldPositions {
         addFieldPosition(new Pose2d(3.991, 5.219, Rotation2d.fromDegrees(300)), "reef_k");
         addFieldPosition(new Pose2d(3.697, 5.050, Rotation2d.fromDegrees(300)), "reef_l");
 
-        addFieldPosition(new Pose2d(1.166, 0.982, Rotation2d.fromDegrees(55)), "human_right");
-        addFieldPosition(new Pose2d(1.166, 7.033, Rotation2d.fromDegrees(305)), "human_left");
+        // addFieldPosition(new Pose2d(1.166, 0.982, Rotation2d.fromDegrees(55)), "human_right");
+        addFieldPosition(new Pose2d(0.671, 6.704, Rotation2d.fromDegrees(305)), "human_left");
 
         addFieldPosition(new Pose2d(5.973, 0.762, Rotation2d.fromDegrees(270)), "processor");
 

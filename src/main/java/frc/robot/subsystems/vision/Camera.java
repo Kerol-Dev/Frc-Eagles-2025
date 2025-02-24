@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
@@ -23,5 +24,6 @@ public class Camera {
         poseStrategy = PoseStrategy.LOWEST_AMBIGUITY;
         poseEstimator = new PhotonPoseEstimator(VisionConstants.aprilTagFieldLayout,
                 poseStrategy, robotToCamPos);
+        Logger.recordOutput(cameraName, robotToCamPos);
     }
 }

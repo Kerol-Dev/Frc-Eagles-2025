@@ -4,11 +4,13 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -58,14 +60,10 @@ public class SwerveModule {
 
     // Configure the driving motor
     m_drivingMotor = new TalonFX(drivingCANId);
-    m_drivingMotor.setNeutralMode(ModuleConstants.kDrivingMotorIdleMode);
-    TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
+      TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
     talonFXConfiguration.MotorOutput.Inverted = drivingMotorReversed ? InvertedValue.Clockwise_Positive
         : InvertedValue.CounterClockwise_Positive;
-    talonFXConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
-    talonFXConfiguration.CurrentLimits.StatorCurrentLimitEnable = true;
-    talonFXConfiguration.CurrentLimits.SupplyCurrentLimit = ModuleConstants.kDrivingMotorCurrentLimit;
-    talonFXConfiguration.CurrentLimits.StatorCurrentLimit = ModuleConstants.kDrivingMotorStallCurrentLimit;
+        talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     m_drivingMotor.getConfigurator().apply(talonFXConfiguration);
 
     // Configure the turning motor
@@ -74,13 +72,14 @@ public class SwerveModule {
     // Configure the CANcoder
     m_canEncoder = new CANcoder(cancoderID);
     CANcoderConfiguration caNcoderConfiguration = new CANcoderConfiguration();
+    caNcoderConfiguration.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
     caNcoderConfiguration.MagnetSensor.SensorDirection = encoderInverted ? SensorDirectionValue.Clockwise_Positive
         : SensorDirectionValue.CounterClockwise_Positive;
     m_canEncoder.getConfigurator().apply(caNcoderConfiguration);
 
     // Configure SparkMax for turning
     SparkMaxConfig config = new SparkMaxConfig();
-    config.inverted(true);
+    config.inverted(turningMotorReversed);
     config.encoder.positionConversionFactor(ModuleConstants.kTurningEncoderPositionFactor);
     config.encoder.velocityConversionFactor(ModuleConstants.kTurningEncoderVelocityFactor);
     config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);

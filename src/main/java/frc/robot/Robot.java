@@ -1,18 +1,24 @@
 package frc.robot;
 
+import java.util.logging.Logger;
+
+import org.littletonrobotics.junction.LoggedRobot;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveSubsystem;
 
-public class Robot extends TimedRobot{
+public class Robot extends LoggedRobot{
   private Command m_autonomousCommand;
   private RobotContainer m_robotContainer;
 
   @Override
   public void robotInit() {
     m_robotContainer = new RobotContainer();
+    
+    org.littletonrobotics.junction.Logger.start();
     DriveSubsystem.resetToAbsolute();
   }
 

@@ -6,6 +6,7 @@ import java.util.function.BooleanSupplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -21,9 +22,10 @@ import frc.robot.subsystems.misc.ElevatorPosition;
 import frc.robot.subsystems.pathfind.PathfindType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -58,15 +60,15 @@ public class RobotContainer {
    * Initializes subsystems, commands, and button bindings.
    */
   public RobotContainer() {
-    // // Set default command for the drivetrain
-    // m_robotDrive.setDefaultCommand(new RunCommand(
-    //     () -> m_robotDrive.drive(
-    //         -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
-    //         -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
-    //         MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband) / 1.4,
-    //         true,
-    //         slowSpeedEnabled),
-    //     m_robotDrive));
+    // Set default command for the drivetrain
+    m_robotDrive.setDefaultCommand(new RunCommand(
+        () -> m_robotDrive.drive(
+            -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
+            -MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband) / 1.2,
+            true,
+            slowSpeedEnabled),
+        m_robotDrive));
 
     // m_LedSubsystem.setDefaultCommand(new RunCommand(() -> m_LedSubsystem.updateFireAnimation(), m_LedSubsystem));
 
@@ -131,54 +133,36 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     driverController.start().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
-    driverController.a().onTrue(new InstantCommand(() -> slowSpeedEnabled = !slowSpeedEnabled));
+    driverController.leftBumper().onTrue(new InstantCommand(() -> slowSpeedEnabled = !slowSpeedEnabled));
+    driverController.b().whileTrue(pathfindToHuman().andThen(m_Intake.grabCommand(false)))
+    .onFalse(IdleSystemsCommand());
 
-    driverController.b().whileTrue(Commands.sequence(AutoBuilder.buildAuto("Auto-Algae"), AutoBuilder.buildAuto("Auto-L4-Mirrored"), AutoBuilder.buildAuto("Auto-L3-Mirrored")))
-    .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
+    driverController.povUp().onTrue(pathfindToReef().andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4).andThen(new WaitCommand(0.3)).andThen(IdleSystemsCommand())));
+    driverController.povDown().onTrue(pathfindToReef().andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l2, ArmPosition.place_coral_l4).andThen(new WaitCommand(0.3)).andThen(IdleSystemsCommand())));
+    driverController.povRight().onTrue(pathfindToReef().andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l4).andThen(new WaitCommand(0.3)).andThen(IdleSystemsCommand())));
 
-    driverController.rightTrigger().and(driverController.povDown())
-      .whileTrue(Commands.sequence(checkAndSwitchToCoralMode(), pathfindToReef(), PlaceReefCoralCommand(ElevatorPosition.place_coral_l2, ArmPosition.place_coral_l2), IdleSystemsCommand()))
-      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToReef())).andThen(IdleSystemsCommand()));
+    driverController.leftTrigger().whileTrue(pathFindToAlgae().andThen(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1).andThen(m_Intake.grabCommand(true))))
+    .onFalse(IdleSystemsCommand());
 
-    driverController.rightTrigger().and(driverController.povRight())
-      .whileTrue(Commands.sequence(checkAndSwitchToCoralMode(), pathfindToReef(), PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3), IdleSystemsCommand()))
-      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToReef())).andThen(IdleSystemsCommand()));
+    driverController.rightTrigger().whileTrue(pathFindToAlgae().andThen(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2).andThen(m_Intake.grabCommand(true))))
+    .onFalse(IdleSystemsCommand());
 
-    driverController.rightTrigger().and(driverController.povUp())
-      .whileTrue(Commands.sequence(checkAndSwitchToCoralMode(), pathfindToReef(), PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4), IdleSystemsCommand()))
-      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToReef())).andThen(IdleSystemsCommand()));
-
-    driverController.rightBumper().and(driverController.povDown())
-      .whileTrue(Commands.sequence(checkAndSwitchToAlgaeMode(), pathFindToAlgae(), GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1), IdleSystemsCommand()))
-      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathFindToAlgae())).andThen(IdleSystemsCommand()));
-
-    driverController.rightBumper().and(driverController.povRight())
-      .whileTrue(Commands.sequence(checkAndSwitchToAlgaeMode(), pathFindToAlgae(), GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2), IdleSystemsCommand()))
-      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathFindToAlgae())).andThen(IdleSystemsCommand()));
-
-
-    driverController.leftTrigger()
-      .whileTrue(checkAndSwitchToCoralMode().andThen(pathfindToHuman().andThen(IntakeSourceGrabCommand())))
-      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToHuman())).andThen(IdleSystemsCommand()));
-
-    driverController.leftBumper()
-      .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathfindToProcessor().andThen(DropAlgaeProcessorCommand())))
-      .onFalse(new InstantCommand(() -> CommandScheduler.getInstance().cancel(pathfindToProcessor())).andThen(IdleSystemsCommand()));
+    driverController.rightBumper().onTrue(SwitchObjectMode());
   }
 
-  private Command checkAndSwitchToCoralMode() {
-    return new ConditionalCommand(
-        SwitchObjectMode(),
-        new InstantCommand(),
-        () -> !coralMode);
-  }
+  // private Command checkAndSwitchToCoralMode() {
+  //   return new ConditionalCommand(
+  //       SwitchObjectMode(),
+  //       new InstantCommand(),
+  //       () -> !coralMode);
+  // }
 
-  private Command checkAndSwitchToAlgaeMode() {
-    return new ConditionalCommand(
-        SwitchObjectMode(),
-        new InstantCommand(),
-        () -> coralMode);
-  }
+  // private Command checkAndSwitchToAlgaeMode() {
+  //   return new ConditionalCommand(
+  //       SwitchObjectMode(),
+  //       new InstantCommand(),
+  //       () -> coralMode);
+  // }
 
   /**
    * Command for placing coral at the reef.
@@ -190,6 +174,7 @@ public class RobotContainer {
   private Command PlaceReefCoralCommand(ElevatorPosition elevatorPosition, ArmPosition armPosition) {
     return PlaceReefInit(elevatorPosition)
         .andThen(m_arm.setArmPositionCommand(armPosition))
+        .andThen(new WaitCommand(0.3))
         .andThen(AutoReleaseCoral());
   }
 
@@ -305,9 +290,7 @@ public class RobotContainer {
    * @return Idle systems command
    */
   private Command IdleSystemsCommand() {
-    return m_elevator.setElevatorPositionCommand(ElevatorPosition.idle)
-        .alongWith(m_arm.setArmPositionCommand(ArmPosition.idle))
-        .alongWith(m_Intake.stopMotors());
+    return m_arm.setArmPositionCommand(ArmPosition.idle).andThen(m_elevator.setElevatorPositionCommand(ElevatorPosition.idle));
   }
 
   /**

@@ -10,6 +10,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.misc.ElevatorPosition;
 
@@ -39,11 +40,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public Command setElevatorPositionCommand(ElevatorPosition positionSelection) {
-        elevatorGoalPosition = getElevatorPositionValue(positionSelection);
         return new Command() {
             @Override
             public void initialize() {
-                setElevatorPosition(elevatorGoalPosition);
+                elevatorGoalPosition = getElevatorPositionValue(positionSelection);
+                setElevatorPosition(getElevatorPositionValue(positionSelection));
             }
 
             @Override
@@ -66,23 +67,23 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double getElevatorPositionValue(ElevatorPosition position) {
         switch (position) {
             case idle:
-                return 0.0;
+                return RobotContainer.coralMode ? 0.1 : 1;
             case grab_algae_reef_1:
-                return 10.0;
+                return 0.0;
             case grab_algae_reef_2:
-                return 20.0;
+                return 3.3;
             case grab_coral_source:
-                return 30.0;
+                return 0.0;
             case place_algae_processor:
-                return 40.0;
+                return 0.0;
             case place_coral_l:
-                return 50.0;
+                return 0.0;
             case place_coral_l2:
-                return 60.0;
+                return 0.8;
             case place_coral_l3:
-                return 70.0;
+                return 2.14;
             case place_coral_l4:
-                return 80.0;
+                return 4.34;
             default:
                 return 0.0;
         }
@@ -97,6 +98,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean isElevatorAtPosition() {
-        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 10);
+        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.2);
     }
 }

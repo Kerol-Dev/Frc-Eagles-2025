@@ -8,13 +8,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmIntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase{
     private final TalonFX ArmIntakeMotor = new TalonFX(ArmIntakeConstants.kArmIntakeMotorCanID);
     private final DigitalInput coralArmIntakeSensor = new DigitalInput(ArmIntakeConstants.kCoralArmIntakeSensorPort);
     private final DigitalInput algaeArmIntakeSensor = new DigitalInput(ArmIntakeConstants.kAlgaeArmIntakeSensorPort);
-
+    private boolean grab = false;
     public IntakeSubsystem(){
         TalonFXConfiguration configuration = new TalonFXConfiguration();
         configuration.MotorOutput.Inverted = ArmIntakeConstants.kArmIntakeMotorInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;
@@ -26,13 +27,19 @@ public class IntakeSubsystem extends SubsystemBase{
         SmartDashboard.putBoolean("Coral Sensor", getCoralIntakeSensor());
         SmartDashboard.putBoolean("Algea Sensor", getAlgaeArmIntakeSensor());
         SmartDashboard.putNumber("Coral Temp", ArmIntakeMotor.getDeviceTemp().getValueAsDouble());
+
+        if(getAlgaeArmIntakeSensor() && !RobotContainer.coralMode && grab)
+        {
+            setIntakeSpeed(-0.3);
+        }
     }
 
     public Command grabCommand(boolean isAlgae){
         return new Command(){
             @Override
             public void initialize(){
-                setIntakeSpeed(0.3 * (isAlgae ? -1 : 1));
+                grab = true;
+                setIntakeSpeed(isAlgae ? -1 : 0.2);
             }
 
             @Override
@@ -51,6 +58,7 @@ public class IntakeSubsystem extends SubsystemBase{
         return new Command(){
             @Override
             public void initialize(){
+                grab = false;
                 setIntakeSpeed(0.5 * (isAlgae ? -1 : 1));
             }
 

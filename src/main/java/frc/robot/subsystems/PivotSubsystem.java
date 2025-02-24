@@ -7,12 +7,17 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.misc.ArmPosition;
 
@@ -26,6 +31,10 @@ public class PivotSubsystem extends SubsystemBase {
      * Constructor that configures the arm motor settings.
      */
     public PivotSubsystem() {
+        SparkMaxConfig config = new SparkMaxConfig();
+        config.idleMode(IdleMode.kBrake);
+        config.closedLoop.pid(0.003, 0, 0);
+        armMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     /**
@@ -35,13 +44,17 @@ public class PivotSubsystem extends SubsystemBase {
      * @return The command to set the arm position.
      */
     public Command setArmPositionCommand(ArmPosition positionSelection) {
-        armGoalPosition = getArmPositionValue(positionSelection);
         return new Command() {
             @Override
             public void initialize() {
-                setArmPosition(armGoalPosition);
+                armGoalPosition = getArmPositionValue(positionSelection);
+                setArmPosition(getArmPositionValue(positionSelection));
             }
 
+            @Override
+            public void execute() {
+                isArmAtPosition();
+            }
             @Override
             public boolean isFinished() {
                 return isArmAtPosition();
@@ -69,13 +82,13 @@ public class PivotSubsystem extends SubsystemBase {
     private double getArmPositionValue(ArmPosition position) {
         switch (position) {
             case idle:
-                return 0.0;
+                return RobotContainer.coralMode ? -100.0 : -7000;
             case grab_algae_reef_1:
-                return 10.0;
+                return -7000.0;
             case grab_algae_reef_2:
-                return 20.0;
+                return -7000.0;
             case grab_coral_source:
-                return 30.0;
+                return 0.0;
             case place_algae_processor:
                 return 40.0;
             case place_coral_l:
@@ -85,7 +98,7 @@ public class PivotSubsystem extends SubsystemBase {
             case place_coral_l3:
                 return 70.0;
             case place_coral_l4:
-                return 80.0;
+                return -100.0;
             default:
                 return 0.0;
         }
@@ -115,6 +128,6 @@ public class PivotSubsystem extends SubsystemBase {
      * @return True if the arm is at the goal position, false otherwise.
      */
     public boolean isArmAtPosition() {
-        return MathUtil.isNear(armGoalPosition, armMotor.getEncoder().getPosition(), 1);
+        return MathUtil.isNear(armGoalPosition, armMotor.getEncoder().getPosition(), 50);
     }
 }
