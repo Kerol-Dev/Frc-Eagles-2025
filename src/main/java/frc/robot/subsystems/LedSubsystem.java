@@ -1,16 +1,13 @@
 package frc.robot.subsystems;
 
-import java.util.List;
 import java.util.Random;
-
-import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
-import frc.robot.Constants.VisionConstants;
+import frc.robot.subsystems.vision.LimelightHelpers;
 
 public class LedSubsystem extends SubsystemBase {
     private AddressableLED addressableLED = new AddressableLED(2);
@@ -40,22 +37,12 @@ public class LedSubsystem extends SubsystemBase {
     public void periodic() {
         if (DriverStation.isEnabled())
             useBlueFlame = !RobotContainer.coralMode;
-        else if (!VisionConstants.cameras.get(0).cameraObject.isConnected()
-                || !VisionConstants.cameras.get(1).cameraObject.isConnected()
-                || !VisionConstants.cameras.get(2).cameraObject.isConnected()
-                || !VisionConstants.cameras.get(3).cameraObject.isConnected()) {
+        else if (LimelightHelpers.getTargetCount("") < 1) {
             useBlueFlame = true;
-        } 
+        }
         else
         {
-            int fineCams = 0;
-            for (int i = 0; i < 4; i++) {
-                List<PhotonPipelineResult> targResults = VisionConstants.cameras.get(i).cameraObject
-                        .getAllUnreadResults();
-                if (targResults.get(targResults.size() - 1).hasTargets())
-                    fineCams++;
-            }
-            useBlueFlame = fineCams == 0;
+            useBlueFlame = false;
         }
     }
 

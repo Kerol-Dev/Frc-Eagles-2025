@@ -1,20 +1,9 @@
 package frc.robot;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
-import frc.robot.subsystems.vision.Camera;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -34,10 +23,10 @@ public final class Constants {
     public static final double kMaxAngularSpeed = Math.PI; // Maximum angular velocity (rad/s)
     public static final double kMaxAngularAcceleration = 3; // Maximum angular acceleration
 
-    public static final double kMaxSpeedMetersPerSecondPathfind = 1.5; // Maximum robot speed
+    public static final double kMaxSpeedMetersPerSecondPathfind = 2; // Maximum robot speed
     public static final double kMaxAccelerationPathfind = 1; // Maximum linear acceleration
-    public static final double kMaxAngularSpeedPathfind = Math.PI; // Maximum angular velocity (rad/s)
-    public static final double kMaxAngularAccelerationPathfind = 3; // Maximum angular acceleration
+    public static final double kMaxAngularSpeedPathfind = Math.PI / 2; // Maximum angular velocity (rad/s)
+    public static final double kMaxAngularAccelerationPathfind = 1; // Maximum angular acceleration
 
     public static final double kTrackWidth = 0.569; // Distance between left and right wheels (meters)
     public static final double kWheelBase = 0.517; // Distance between front and back wheels (meters)
@@ -127,7 +116,7 @@ public final class Constants {
     public static final boolean kElevatorMotorInverted = false;
     public static final boolean kElevatorMotorEncoderInverted = false;
 
-    public static final double kElevatorMotorForwardSoftLimit = 4.51;
+    public static final double kElevatorMotorForwardSoftLimit = 4.4;
     public static final double kElevatorMotorReverseSoftLimit = 0;
 
     public static final double kElevatorGearRatio = 5; // Gear ratio
@@ -164,16 +153,6 @@ public final class Constants {
     public static final int kAlgaeArmIntakeSensorPort = 0;
 
     public static final boolean kArmIntakeMotorInverted = true;
-  }
-
-  public static final class VisionConstants {
-    public static AprilTagFieldLayout aprilTagFieldLayout;
-    public static ArrayList<Camera> cameras = new ArrayList<Camera>();
-    public static Set<String> visibleAprilTags = new HashSet<>();
-
-    public static Matrix<N3, N1> curStdDevs;
-    public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
-    public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
   }
 
   /**

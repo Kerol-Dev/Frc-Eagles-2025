@@ -1,10 +1,6 @@
 package frc.robot;
 
-import java.util.logging.Logger;
-
 import org.littletonrobotics.junction.LoggedRobot;
-
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -53,7 +49,7 @@ public class Robot extends LoggedRobot{
 
   @Override
   public void teleopPeriodic() {
-    if(m_robotContainer.m_elevator.elevatorMotor.getPosition().getValueAsDouble() > 100)
+    if(m_robotContainer.m_elevator.elevatorMotor.getPosition().getValueAsDouble() > 0.25)
     {
       slowSpeedEnabledAutomatically = true;
       m_robotContainer.slowSpeedEnabled = true;

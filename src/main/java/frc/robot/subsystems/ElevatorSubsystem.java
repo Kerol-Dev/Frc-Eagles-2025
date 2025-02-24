@@ -69,15 +69,13 @@ public class ElevatorSubsystem extends SubsystemBase {
             case idle:
                 return RobotContainer.coralMode ? 0.1 : 1;
             case grab_algae_reef_1:
-                return 0.0;
+                return 1.5;
             case grab_algae_reef_2:
                 return 3.3;
-            case grab_coral_source:
-                return 0.0;
             case place_algae_processor:
-                return 0.0;
+                return 0.1;
             case place_coral_l:
-                return 0.0;
+                return 0.5;
             case place_coral_l2:
                 return 0.8;
             case place_coral_l3:
@@ -98,6 +96,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean isElevatorAtPosition() {
-        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.2);
+        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.15);
     }
 }

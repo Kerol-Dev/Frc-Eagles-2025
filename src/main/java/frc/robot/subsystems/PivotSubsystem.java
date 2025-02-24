@@ -82,23 +82,21 @@ public class PivotSubsystem extends SubsystemBase {
     private double getArmPositionValue(ArmPosition position) {
         switch (position) {
             case idle:
-                return RobotContainer.coralMode ? -100.0 : -7000;
+                return RobotContainer.coralMode ? -50.0 : -7000;
             case grab_algae_reef_1:
                 return -7000.0;
             case grab_algae_reef_2:
                 return -7000.0;
-            case grab_coral_source:
-                return 0.0;
             case place_algae_processor:
-                return 40.0;
+                return -7000.0;
             case place_coral_l:
-                return 50.0;
+                return -50.0;
             case place_coral_l2:
-                return 60.0;
+                return -50.0;
             case place_coral_l3:
-                return 70.0;
+                return -50.0;
             case place_coral_l4:
-                return -100.0;
+                return -50.0;
             default:
                 return 0.0;
         }
@@ -128,6 +126,6 @@ public class PivotSubsystem extends SubsystemBase {
      * @return True if the arm is at the goal position, false otherwise.
      */
     public boolean isArmAtPosition() {
-        return MathUtil.isNear(armGoalPosition, armMotor.getEncoder().getPosition(), 50);
+        return MathUtil.isNear(armGoalPosition, armMotor.getEncoder().getPosition(), 30);
     }
 }
