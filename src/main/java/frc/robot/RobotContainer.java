@@ -5,7 +5,6 @@ import java.util.function.BooleanSupplier;
 // Import necessary libraries and classes
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -19,7 +18,6 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.misc.ArmPosition;
 import frc.robot.subsystems.misc.ElevatorPosition;
-import frc.robot.subsystems.pathfind.PathfindType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -130,6 +128,9 @@ public class RobotContainer {
         () -> m_Intake.getCoralIntakeSensor()
     )));
 
+    driverController.y().onTrue(SwitchObjectMode());
+    driverController.x().whileTrue(m_Intake.releaseCommand(true));
+
     driverController.povUp().onTrue(PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4).andThen(IdleSystemsCommand()).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
     driverController.povDown().onTrue(PlaceReefCoralCommand(ElevatorPosition.place_coral_l2, ArmPosition.place_coral_l4).andThen(IdleSystemsCommand()).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
     driverController.povRight().onTrue(PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l4).andThen(IdleSystemsCommand()).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
@@ -168,7 +169,7 @@ public class RobotContainer {
   private Command PlaceReefCoralCommand(ElevatorPosition elevatorPosition, ArmPosition armPosition) {
     return PlaceReefInit(elevatorPosition)
         .andThen(m_arm.setArmPositionCommand(armPosition))
-        .andThen(new WaitCommand(0.5))
+        .andThen(new WaitCommand(0.4))
         .andThen(AutoReleaseCoral());
   }
 
@@ -178,9 +179,17 @@ public class RobotContainer {
   }
 
   private Command SwitchObjectMode() {
-    return new InstantCommand(() -> coralMode = !coralMode)
-        .andThen(m_elevator.setElevatorPositionCommand(ElevatorPosition.idle))
-        .andThen(m_arm.setArmPositionCommand(ArmPosition.idle));
+    return new InstantCommand(() -> {
+      coralMode = !coralMode;
+      if(coralMode)
+      {
+        m_elevator.setElevatorPosition(0.4);
+      }
+      else
+      {
+        m_elevator.setElevatorPosition(1.54);
+      }
+    }).andThen(new WaitUntilCommand(() -> m_elevator.isElevatorAtPosition())).andThen(IdleSystemsCommand());
   }
 
   //#region OPTIONAL
@@ -314,18 +323,18 @@ public class RobotContainer {
 
   // Pathfinding Commands
   private Command pathfindToHuman() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Human);
+    return m_robotDrive.goToPosePathfind(() -> m_robotDrive.fieldPositions.getClosestHumanPose(m_robotDrive.getPoseSupplier().get())).andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
   }
 
   private Command pathfindToReef() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Reef);
+    return m_robotDrive.goToPosePathfind(() -> m_robotDrive.fieldPositions.getClosestReefPose(m_robotDrive.getPoseSupplier().get())).andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
   }
 
   private Command pathFindToAlgae() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Algea);
+    return m_robotDrive.goToPosePathfind(() -> m_robotDrive.fieldPositions.getClosestAlgeaPose(m_robotDrive.getPose()));
   }
 
   private Command pathfindToProcessor() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Processor);
+    return m_robotDrive.goToPosePathfind(() -> m_robotDrive.fieldPositions.getClosestReefPose(m_robotDrive.getPose()));
   }
 }

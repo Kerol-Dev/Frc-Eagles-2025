@@ -23,10 +23,10 @@ public final class Constants {
     public static final double kMaxAngularSpeed = Math.PI; // Maximum angular velocity (rad/s)
     public static final double kMaxAngularAcceleration = 3; // Maximum angular acceleration
 
-    public static final double kMaxSpeedMetersPerSecondPathfind = 2; // Maximum robot speed
-    public static final double kMaxAccelerationPathfind = 1; // Maximum linear acceleration
-    public static final double kMaxAngularSpeedPathfind = Math.PI / 2; // Maximum angular velocity (rad/s)
-    public static final double kMaxAngularAccelerationPathfind = 1; // Maximum angular acceleration
+    public static final double kMaxSpeedMetersPerSecondPathfind = 2.7; // Maximum robot speed
+    public static final double kMaxAccelerationPathfind = 1.5; // Maximum linear acceleration
+    public static final double kMaxAngularSpeedPathfind = Math.PI; // Maximum angular velocity (rad/s)
+    public static final double kMaxAngularAccelerationPathfind = 2; // Maximum angular acceleration
 
     public static final double kTrackWidth = 0.569; // Distance between left and right wheels (meters)
     public static final double kWheelBase = 0.517; // Distance between front and back wheels (meters)
@@ -92,7 +92,7 @@ public final class Constants {
     public static final double kDrivingMinOutput = -1;
     public static final double kDrivingMaxOutput = 1;
 
-    public static final double kTurningP = 1;
+    public static final double kTurningP = 0.75;
     public static final double kTurningI = 0;
     public static final double kTurningD = 0;
     public static final double kTurningMinOutput = -1;
@@ -123,11 +123,11 @@ public final class Constants {
 
     // Conversion factor from motor rotations to elevator rise in cm
     public static final double kElevatorMotorSensorToMechRatio = kElevatorGearRatio;
-    public static final double kElevatorMotorP = 0.4;
-    public static final double kElevatorMotorI = 1;
+    public static final double kElevatorMotorP = 0.5;
+    public static final double kElevatorMotorI = 0;
     public static final double kElevatorMotorD = 0;
-    public static final double kElevatorMaxSpeed = 0.7;
-    public static final double kElevatorMaxSpeedDown = 0.15;
+    public static final double kElevatorMaxSpeed = 0.6;
+    public static final double kElevatorMaxSpeedDown = 0.14;
   }
 
   public static final class ArmConstants {

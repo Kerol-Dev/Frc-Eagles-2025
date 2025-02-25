@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import org.photonvision.PhotonUtils;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -22,9 +24,9 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.pathfind.FieldPositions;
-import frc.robot.subsystems.pathfind.PathfindType;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /**
@@ -81,7 +83,7 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kMaxAngularAcceleration);
 
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
-  FieldPositions fieldPositions = new FieldPositions();
+  public FieldPositions fieldPositions = new FieldPositions();
 
   /**
    * Constructs the DriveSubsystem and configures autonomous settings.
@@ -91,7 +93,7 @@ public class DriveSubsystem extends SubsystemBase {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
               new PIDConstants(2, 0.0, 0.0),
-              new PIDConstants(8.0, 0.0, 0.0)),
+              new PIDConstants(2.0, 0.0, 0.0)),
           RobotConfig.fromGUISettings(), () -> {
             var alliance = DriverStation.getAlliance().get();
             return alliance == DriverStation.Alliance.Red;
@@ -239,62 +241,39 @@ public class DriveSubsystem extends SubsystemBase {
     return closestPose;
   }
 
-  public Command goToPosePathfind(PathfindType pathfindType) {
-    return new Command() {
-      Command comd;
+  public Supplier<Pose2d> getPoseSupplier()
+  {
+    return this::getPose;
+  }
 
-      @Override
-      public void initialize() {
-        Pose2d pose = new Pose2d();
-        switch (pathfindType) {
-          case Reef:
-            pose = fieldPositions.getClosestReefPose(getPose());
-            break;
-
-          case Human:
-            pose = fieldPositions.getClosestHumanPose(getPose());
-            break;
-
-          case Algea:
-            pose = fieldPositions.getClosestAlgeaPose(getPose());
-            break;
-
-          case Processor:
-            pose = fieldPositions.getPose("processor");
-            break;
-
-          case Closest:
-            pose = getClosestPose(fieldPositions.getPose("processor"), fieldPositions.getClosestHumanPose(getPose()),
-                fieldPositions.getClosestReefPose(getPose()));
-            break;
-
-          default:
-            break;
-        }
-
-        try {
-          if (pose.getX() == 0) {
-            throw new Exception("No valid pose found");
-          }
-
-          PathConstraints constraints = new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecondPathfind,
+  PathConstraints constraints = new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecondPathfind,
               DriveConstants.kMaxAccelerationPathfind,
               DriveConstants.kMaxAngularSpeedPathfind,
               DriveConstants.kMaxAngularAccelerationPathfind);
 
-          comd = AutoBuilder.pathfindToPoseFlipped(pose, constraints, 0);
-          comd.schedule();
-        } catch (Exception e) {
-          DriverStation.reportError(e.getMessage(), true);
-          return;
-        }
+  public Command goToPosePathfind(Supplier<Pose2d> poSupplier) {
+    return Commands.runOnce(() -> 
+    {
+      Pose2d target = poSupplier.get();
+      System.out.println(poSupplier.get());
+      AutoBuilder.pathfindToPose(target, constraints).schedule();
+    });
+  }
+
+  boolean movedOnce = false;
+
+  public boolean finishedPath()
+  {
+    if(!movedOnce && getSpeeds().vyMetersPerSecond > 0.1)
+    movedOnce = true;
+
+    if(getSpeeds().vyMetersPerSecond < 0.1 && movedOnce)
+      {
+        movedOnce = false;
+        return true;  
       }
 
-      @Override
-      public boolean isFinished() {
-        return comd.isFinished();
-      }
-    };
+    return false;
   }
 
   /**
@@ -310,7 +289,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The current heading as a Rotation2d.
    */
   public static Rotation2d getHeading() {
-    return m_gyro.getRotation2d();
+    return m_gyro.getRotation2d().plus(Rotation2d.fromDegrees(180));
   }
 
   public static SwerveModulePosition[] getModulePositions() {

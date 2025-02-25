@@ -99,18 +99,6 @@
           "data": {
             "name": "GrabFromSource"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Auto-L4-9"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PlaceL4"
-          }
         }
       ]
     }

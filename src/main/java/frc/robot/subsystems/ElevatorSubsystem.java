@@ -37,6 +37,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         elevatorMotor.getConfigurator().apply(talonFXConfiguration);
         elevatorMotor2.setControl(new Follower(elevatorMotor.getDeviceID(), false));
+
+        elevatorMotor.setPosition(0);
     }
 
     public Command setElevatorPositionCommand(ElevatorPosition positionSelection) {
@@ -67,27 +69,28 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double getElevatorPositionValue(ElevatorPosition position) {
         switch (position) {
             case idle:
-                return RobotContainer.coralMode ? 0.1 : 1;
+                return RobotContainer.coralMode ? 0.05 : 0.4;
             case grab_algae_reef_1:
                 return 1.5;
             case grab_algae_reef_2:
-                return 3.3;
+                return 2.9;
             case place_algae_processor:
                 return 0.1;
             case place_coral_l:
                 return 0.5;
             case place_coral_l2:
-                return 0.8;
+                return 1.01;
             case place_coral_l3:
-                return 2.14;
+                return 2.28;
             case place_coral_l4:
-                return 4.34;
+                return 4.28;
             default:
                 return 0.0;
         }
     }
 
     public void setElevatorPosition(double position) {
+        elevatorGoalPosition = position;
         elevatorMotor.setControl(new PositionDutyCycle(position));
     }
 
@@ -96,6 +99,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean isElevatorAtPosition() {
-        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.15);
+        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.2);
     }
 }

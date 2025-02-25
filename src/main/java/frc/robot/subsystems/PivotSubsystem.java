@@ -35,6 +35,8 @@ public class PivotSubsystem extends SubsystemBase {
         config.idleMode(IdleMode.kBrake);
         config.closedLoop.pid(0.003, 0, 0);
         armMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
+
+        armMotor.getEncoder().setPosition(0);
     }
 
     /**
@@ -82,7 +84,7 @@ public class PivotSubsystem extends SubsystemBase {
     private double getArmPositionValue(ArmPosition position) {
         switch (position) {
             case idle:
-                return RobotContainer.coralMode ? -50.0 : -7000;
+                return RobotContainer.coralMode ? -20.0 : -7000;
             case grab_algae_reef_1:
                 return -7000.0;
             case grab_algae_reef_2:
@@ -90,13 +92,13 @@ public class PivotSubsystem extends SubsystemBase {
             case place_algae_processor:
                 return -7000.0;
             case place_coral_l:
-                return -50.0;
+                return -20.0;
             case place_coral_l2:
-                return -50.0;
+                return -20.0;
             case place_coral_l3:
-                return -50.0;
+                return -20.0;
             case place_coral_l4:
-                return -50.0;
+                return -20.0;
             default:
                 return 0.0;
         }

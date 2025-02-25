@@ -13,7 +13,7 @@ import frc.robot.Constants.ArmIntakeConstants;
 
 public class IntakeSubsystem extends SubsystemBase{
     private final TalonFX ArmIntakeMotor = new TalonFX(ArmIntakeConstants.kArmIntakeMotorCanID);
-    private final DigitalInput coralArmIntakeSensor = new DigitalInput(ArmIntakeConstants.kCoralArmIntakeSensorPort);
+    public static final DigitalInput coralArmIntakeSensor = new DigitalInput(ArmIntakeConstants.kCoralArmIntakeSensorPort);
     private final DigitalInput algaeArmIntakeSensor = new DigitalInput(ArmIntakeConstants.kAlgaeArmIntakeSensorPort);
     private boolean grab = false;
     public IntakeSubsystem(){
@@ -39,7 +39,7 @@ public class IntakeSubsystem extends SubsystemBase{
             @Override
             public void initialize(){
                 grab = true;
-                setIntakeSpeed(isAlgae ? -1 : 0.2);
+                setIntakeSpeed(isAlgae ? -1 : 0.22);
             }
 
             @Override
@@ -59,7 +59,7 @@ public class IntakeSubsystem extends SubsystemBase{
             @Override
             public void initialize(){
                 grab = false;
-                setIntakeSpeed(0.5 * (isAlgae ? -1 : 1));
+                setIntakeSpeed(0.45 * (isAlgae ? -1 : 1));
             }
 
             @Override

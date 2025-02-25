@@ -1,6 +1,6 @@
 {
-  "robotWidth": 0.86,
-  "robotLength": 0.81,
+  "robotWidth": 0.83,
+  "robotLength": 0.87,
   "holonomicMode": true,
   "pathFolders": [
     "Algae Auto",
@@ -8,10 +8,10 @@
     "L4-Auto"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 4.8,
-  "defaultMaxAccel": 10.0,
-  "defaultMaxAngVel": 800.0,
-  "defaultMaxAngAccel": 1700.0,
+  "defaultMaxVel": 3.0,
+  "defaultMaxAccel": 2.0,
+  "defaultMaxAngVel": 500.0,
+  "defaultMaxAngAccel": 800.0,
   "defaultNominalVoltage": 12.0,
   "robotMass": 50.0,
   "robotMOI": 6.8,
