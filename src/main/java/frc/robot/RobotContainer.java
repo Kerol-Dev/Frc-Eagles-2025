@@ -126,6 +126,9 @@ public class RobotContainer {
     driverController.b().onTrue(checkAndSwitchToCoralMode().andThen(
         pathfindToHuman().andThen(m_Intake.grabCommand(false)).onlyIf(() -> !m_Intake.getCoralIntakeSensor())));
 
+    driverController.a().whileTrue(m_Intake.grabCommand(false).onlyIf(() -> !m_Intake.getCoralIntakeSensor()))
+    .onFalse(m_Intake.stopMotors());
+
     driverController.rightBumper().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReef(true)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
 
