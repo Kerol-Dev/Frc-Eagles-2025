@@ -75,11 +75,11 @@ public class ElevatorSubsystem extends SubsystemBase {
             case grab_algae_reef_2:
                 return 2.9;
             case place_algae_processor:
-                return 0.1;
+                return 0.4;
             case place_coral_l:
                 return 0.5;
             case place_coral_l2:
-                return 1.01;
+                return 1.12;
             case place_coral_l3:
                 return 2.28;
             case place_coral_l4:

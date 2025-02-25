@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.function.Supplier;
-
 import org.photonvision.PhotonUtils;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -24,6 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.pathfind.FieldPositions;
+import frc.robot.subsystems.pathfind.PathfindType;
+import frc.robot.subsystems.vision.LimelightHelpers;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -93,7 +93,7 @@ public class DriveSubsystem extends SubsystemBase {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
               new PIDConstants(2, 0.0, 0.0),
-              new PIDConstants(2.0, 0.0, 0.0)),
+              new PIDConstants(1.5, 0.0, 0.0)),
           RobotConfig.fromGUISettings(), () -> {
             var alliance = DriverStation.getAlliance().get();
             return alliance == DriverStation.Alliance.Red;
@@ -241,37 +241,44 @@ public class DriveSubsystem extends SubsystemBase {
     return closestPose;
   }
 
-  public Supplier<Pose2d> getPoseSupplier()
-  {
-    return this::getPose;
-  }
-
   PathConstraints constraints = new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecondPathfind,
-              DriveConstants.kMaxAccelerationPathfind,
-              DriveConstants.kMaxAngularSpeedPathfind,
-              DriveConstants.kMaxAngularAccelerationPathfind);
+      DriveConstants.kMaxAccelerationPathfind,
+      DriveConstants.kMaxAngularSpeedPathfind,
+      DriveConstants.kMaxAngularAccelerationPathfind);
 
-  public Command goToPosePathfind(Supplier<Pose2d> poSupplier) {
-    return Commands.runOnce(() -> 
-    {
-      Pose2d target = poSupplier.get();
-      System.out.println(poSupplier.get());
+  public Command goToPosePathfind(PathfindType type, boolean right) {
+    return Commands.runOnce(() -> {
+      if (LimelightHelpers.getTargetCount("") < 1 && type == PathfindType.Reef)
+        return;
+
+      Pose2d target;
+
+      if (type == PathfindType.Reef)
+        target = fieldPositions.getRightLeftReef((int) LimelightHelpers.getFiducialID(""), right);
+      else if (type == PathfindType.Human)
+        target = fieldPositions.getClosestHumanPose(getPose());
+      else if (type == PathfindType.Algea)
+        target = fieldPositions.getClosestAlgeaPose(getPose());
+      else
+        target = fieldPositions.getPose("Processor");
+
+      if (target == null)
+        return;
+
       AutoBuilder.pathfindToPose(target, constraints).schedule();
     });
   }
 
   boolean movedOnce = false;
 
-  public boolean finishedPath()
-  {
-    if(!movedOnce && getSpeeds().vyMetersPerSecond > 0.1)
-    movedOnce = true;
+  public boolean finishedPath() {
+    if (!movedOnce && Math.abs(getSpeeds().vyMetersPerSecond) > 0.1 && Math.abs(getSpeeds().vxMetersPerSecond) > 0.1)
+      movedOnce = true;
 
-    if(getSpeeds().vyMetersPerSecond < 0.1 && movedOnce)
-      {
-        movedOnce = false;
-        return true;  
-      }
+    if (Math.abs(getSpeeds().vyMetersPerSecond) < 0.1 && movedOnce && Math.abs(getSpeeds().vxMetersPerSecond) < 0.1) {
+      movedOnce = false;
+      return true;
+    }
 
     return false;
   }
