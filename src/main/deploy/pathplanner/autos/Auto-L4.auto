@@ -87,18 +87,6 @@
           "data": {
             "name": "PlaceL4"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Auto-L4-8"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "GrabFromSource"
-          }
         }
       ]
     }

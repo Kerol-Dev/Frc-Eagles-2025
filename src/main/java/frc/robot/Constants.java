@@ -126,8 +126,8 @@ public final class Constants {
     public static final double kElevatorMotorP = 0.5;
     public static final double kElevatorMotorI = 0;
     public static final double kElevatorMotorD = 0;
-    public static final double kElevatorMaxSpeed = 0.6;
-    public static final double kElevatorMaxSpeedDown = 0.14;
+    public static final double kElevatorMaxSpeed = 0.7;
+    public static final double kElevatorMaxSpeedDown = 0.18;
   }
 
   public static final class ArmConstants {

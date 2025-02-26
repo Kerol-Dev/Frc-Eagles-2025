@@ -85,14 +85,25 @@ public class DriveSubsystem extends SubsystemBase {
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
   public FieldPositions fieldPositions = new FieldPositions();
 
+  private double kP = 1.5;
+  private double kI = 0;
+  private double kD = 0;
+
   /**
    * Constructs the DriveSubsystem and configures autonomous settings.
    */
   public DriveSubsystem() {
+    SmartDashboard.putNumber("Drive kP", kP);
+    SmartDashboard.putNumber("Drive kI", kI);
+    SmartDashboard.putNumber("Drive kD", kD);
+    configureAutoBuilder();
+  }
+
+  public void configureAutoBuilder() {
     try {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
-              new PIDConstants(2, 0.0, 0.0),
+              new PIDConstants(kP, kI, kD),
               new PIDConstants(1.5, 0.0, 0.0)),
           RobotConfig.fromGUISettings(), () -> {
             var alliance = DriverStation.getAlliance().get();
@@ -139,6 +150,11 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.updateSmartDashboard();
     m_frontLeft.updateSmartDashboard();
     m_frontRight.updateSmartDashboard();
+
+    kP = SmartDashboard.getNumber("Drive kP", 0);
+    kI = SmartDashboard.getNumber("Drive ki", 0);
+    kD = SmartDashboard.getNumber("Drive kD", 0);
+
 
     m_field.setRobotPose(getPose());
 
