@@ -20,8 +20,8 @@ public final class Constants {
 
     public static final double kMaxSpeedMetersPerSecond = 4.8; // Maximum robot speed
     public static final double kMaxAcceleration = 4; // Maximum linear acceleration
-    public static final double kMaxAngularSpeed = Math.PI; // Maximum angular velocity (rad/s)
-    public static final double kMaxAngularAcceleration = 3; // Maximum angular acceleration
+    public static final double kMaxAngularSpeed = Math.PI * 1.2; // Maximum angular velocity (rad/s)
+    public static final double kMaxAngularAcceleration = Math.PI * 2; // Maximum angular acceleration
 
     public static final double kMaxSpeedMetersPerSecondPathfind = 3; // Maximum robot speed
     public static final double kMaxAccelerationPathfind = 1.5; // Maximum linear acceleration

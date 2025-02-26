@@ -93,9 +93,6 @@ public class DriveSubsystem extends SubsystemBase {
    * Constructs the DriveSubsystem and configures autonomous settings.
    */
   public DriveSubsystem() {
-    SmartDashboard.putNumber("Drive kP", kP);
-    SmartDashboard.putNumber("Drive kI", kI);
-    SmartDashboard.putNumber("Drive kD", kD);
     configureAutoBuilder();
   }
 
@@ -135,6 +132,14 @@ public class DriveSubsystem extends SubsystemBase {
    * @param speeds The desired chassis speeds.
    */
   public void setSpeeds(ChassisSpeeds speeds) {
+
+    if(ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 2)
+    {
+      speeds.vxMetersPerSecond /= 2;
+      speeds.vyMetersPerSecond /= 2;
+      speeds.omegaRadiansPerSecond /= 2;
+    }
+
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -150,11 +155,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.updateSmartDashboard();
     m_frontLeft.updateSmartDashboard();
     m_frontRight.updateSmartDashboard();
-
-    kP = SmartDashboard.getNumber("Drive kP", 0);
-    kI = SmartDashboard.getNumber("Drive ki", 0);
-    kD = SmartDashboard.getNumber("Drive kD", 0);
-
 
     m_field.setRobotPose(getPose());
 

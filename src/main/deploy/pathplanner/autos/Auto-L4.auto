@@ -92,22 +92,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "named",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Auto-L4-5"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Idle"
-                }
-              }
-            ]
+            "name": "PathfindToL4"
           }
         },
         {

@@ -6,8 +6,6 @@ import java.util.function.BooleanSupplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.events.EventTrigger;
-import com.pathplanner.lib.path.EventMarker;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -30,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 
 /**
  * Main container for the robot. Handles subsystems, commands, and button
@@ -39,7 +37,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 public class RobotContainer {
 
   // Xbox controller for driver input
-  public static final CommandXboxController driverController = new CommandXboxController(
+  public static final CommandPS5Controller driverController = new CommandPS5Controller(
       OIConstants.kDriverControllerPort);
 
   // Subsystems
@@ -68,7 +66,7 @@ public class RobotContainer {
         () -> m_robotDrive.drive(
             -MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
             -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
-            -MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband) / 1.2,
+            -MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband),
             true,
             slowSpeedEnabled),
         m_robotDrive));
@@ -95,7 +93,7 @@ public class RobotContainer {
     registerNamedCommand("Idle", IdleSystemsCommand(), () -> !m_Intake.getCoralIntakeSensor(), true);
 
     registerNamedCommand("PlaceL4", PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4),
-     () -> m_Intake.getCoralIntakeSensor(), true);
+        () -> m_Intake.getCoralIntakeSensor(), true);
 
     registerNamedCommand("PlaceL3", PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3)
         .andThen(IdleSystemsCommand()), () -> m_Intake.getCoralIntakeSensor(), true);
@@ -128,23 +126,19 @@ public class RobotContainer {
    * Maps controller buttons to specific commands.
    */
   private void configureButtonBindings() {
-    driverController.start().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+    driverController.options().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
 
-    // driverController.b().onTrue(checkAndSwitchToCoralMode().andThen(
-    //     pathfindToHuman().andThen(m_Intake.grabCommand(false)).onlyIf(() -> !m_Intake.getCoralIntakeSensor())));
+    driverController.circle().onTrue(checkAndSwitchToCoralMode().andThen(m_Intake.grabCommand(false))
+        .onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
 
-    driverController.b().onTrue(checkAndSwitchToCoralMode().andThen(m_Intake.grabCommand(false)).onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
-
-    // driverController.x().onTrue(new InstantCommand(() -> m_robotDrive.configureAutoBuilder()));
-
-    driverController.rightBumper().onTrue(
+    driverController.R1().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReef(true)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
 
-    driverController.leftBumper().onTrue(
+    driverController.L1().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReef(false)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
 
     // TODO: To remove
-   driverController.x().whileTrue(m_Intake.releaseCommand(true));
+    driverController.square().onTrue(m_Intake.releaseCommand(true));
 
     driverController.povUp().onTrue(PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
         .andThen(IdleSystemsCommand()).andThen(resetCommandScheduler())
@@ -153,24 +147,27 @@ public class RobotContainer {
         .andThen(IdleSystemsCommand()).andThen(resetCommandScheduler()).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
     driverController.povRight()
         .onTrue(PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3)
-            .andThen(IdleSystemsCommand()).andThen(resetCommandScheduler()).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
+            .andThen(IdleSystemsCommand()).andThen(resetCommandScheduler())
+            .onlyIf(() -> m_Intake.getCoralIntakeSensor()));
     driverController.povLeft().onTrue(
-        pathfindToProcessor().andThen(DropAlgaeProcessorCommand()).andThen(resetCommandScheduler()).onlyIf(() -> m_Intake.getAlgaeArmIntakeSensor()));
+        pathfindToProcessor().andThen(DropAlgaeProcessorCommand()).andThen(resetCommandScheduler())
+            .onlyIf(() -> m_Intake.getAlgaeArmIntakeSensor()));
 
-    driverController.leftTrigger()
+    driverController.L2()
         .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae()
             .andThen(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1)
                 .andThen(m_Intake.grabCommand(true)))))
         .onFalse(IdleSystemsCommand());
 
-    driverController.rightTrigger()
+    driverController.R2()
         .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae()
             .andThen(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2)
                 .andThen(m_Intake.grabCommand(true)))))
         .onFalse(IdleSystemsCommand());
 
-    driverController.y()
-        .onTrue(IdleSystemsCommand().andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())).andThen(checkAndSwitchToCoralMode()));
+    driverController.touchpad()
+        .onTrue(IdleSystemsCommand().andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()))
+            .andThen(checkAndSwitchToCoralMode()));
   }
 
   private Command checkAndSwitchToCoralMode() {
@@ -306,11 +303,11 @@ public class RobotContainer {
   }
 
   // Pathfinding Commands
-  private Command pathfindToHuman() {
-    return m_robotDrive
-        .goToPosePathfind(PathfindType.Human, false)
-        .andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
-  }
+  // private Command pathfindToHuman() {
+  // return m_robotDrive
+  // .goToPosePathfind(PathfindType.Human, false)
+  // .andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
+  // }
 
   private Command pathfindToReef(boolean right) {
     return m_robotDrive
@@ -323,7 +320,6 @@ public class RobotContainer {
   }
 
   private Command pathfindToProcessor() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Processor, false)
-        .andThen(resetCommandScheduler());
+    return m_robotDrive.goToPosePathfind(PathfindType.Processor, false);
   }
 }

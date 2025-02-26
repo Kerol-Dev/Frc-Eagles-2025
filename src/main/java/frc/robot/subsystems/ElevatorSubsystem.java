@@ -15,7 +15,7 @@ import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.misc.ElevatorPosition;
 
 public class ElevatorSubsystem extends SubsystemBase {
-    public final TalonFX elevatorMotor = new TalonFX(ElevatorConstants.kElevatorMotorCanID);
+    public static final TalonFX elevatorMotor = new TalonFX(ElevatorConstants.kElevatorMotorCanID);
     public final TalonFX elevatorMotor2 = new TalonFX(ElevatorConstants.kElevatorMotorCanID2);
 
     private double elevatorGoalPosition = 0;
