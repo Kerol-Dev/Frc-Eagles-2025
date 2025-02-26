@@ -85,11 +85,11 @@ public class DriveSubsystem extends SubsystemBase {
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
   public FieldPositions fieldPositions = new FieldPositions();
 
-  private double kP = 1.5;
+  private double kP = 3;
   private double kI = 0;
   private double kD = 0;
 
-  /**
+  /*
    * Constructs the DriveSubsystem and configures autonomous settings.
    */
   public DriveSubsystem() {

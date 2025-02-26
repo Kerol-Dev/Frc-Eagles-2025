@@ -98,7 +98,7 @@ public class PivotSubsystem extends SubsystemBase {
             case place_coral_l3:
                 return -20.0;
             case place_coral_l4:
-                return -20.0;
+                return -1400.0;
             default:
                 return 0.0;
         }
