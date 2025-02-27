@@ -42,7 +42,7 @@ public class RobotContainer {
 
   // Subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
-  private final IntakeSubsystem m_Intake = new IntakeSubsystem();
+  public final IntakeSubsystem m_Intake = new IntakeSubsystem();
   public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
   private final PivotSubsystem m_arm = new PivotSubsystem();
   // private final LedSubsystem m_LedSubsystem = new LedSubsystem();
@@ -215,7 +215,7 @@ public class RobotContainer {
   }
 
   private Command PlaceReefInit(ElevatorPosition elevatorPosition) {
-    return m_arm.setArmPositionCommand(ArmPosition.idle)
+    return m_arm.setArmPositionCommand(ArmPosition.ElevatorUp)
         .andThen(m_elevator.setElevatorPositionCommand(elevatorPosition));
   }
 
@@ -263,7 +263,7 @@ public class RobotContainer {
    * 
    * @return Idle systems command
    */
-  private Command IdleSystemsCommand() {
+  public Command IdleSystemsCommand() {
     return m_arm.setArmPositionCommand(ArmPosition.idle)
         .andThen(m_elevator.setElevatorPositionCommand(ElevatorPosition.idle));
   }

@@ -44,7 +44,7 @@ public class IntakeSubsystem extends SubsystemBase{
             @Override
             public void initialize(){
                 grab = true;
-                setIntakeSpeed(isAlgae ? -1 : 0.22);
+                setIntakeSpeed(isAlgae ? -1 : 0.2);
             }
 
             @Override
@@ -64,7 +64,7 @@ public class IntakeSubsystem extends SubsystemBase{
             @Override
             public void initialize(){
                 grab = false;
-                setIntakeSpeed(0.45 * (isAlgae ? -1 : 1));
+                setIntakeSpeed(0.55 * (isAlgae ? -1 : 1));
             }
 
             @Override
