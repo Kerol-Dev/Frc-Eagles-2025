@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 /**
  * Main container for the robot. Handles subsystems, commands, and button
@@ -37,7 +37,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandPS5Controller;
 public class RobotContainer {
 
   // Xbox controller for driver input
-  public static final CommandPS5Controller driverController = new CommandPS5Controller(
+  public static final CommandXboxController driverController = new CommandXboxController(
       OIConstants.kDriverControllerPort);
 
   // Subsystems
@@ -126,19 +126,19 @@ public class RobotContainer {
    * Maps controller buttons to specific commands.
    */
   private void configureButtonBindings() {
-    driverController.options().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
+    driverController.start().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
 
-    driverController.circle().onTrue(checkAndSwitchToCoralMode().andThen(m_Intake.grabCommand(false))
+    driverController.b().onTrue(checkAndSwitchToCoralMode().andThen(m_Intake.grabCommand(false))
         .onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
 
-    driverController.R1().onTrue(
+    driverController.rightBumper().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReef(true)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
 
-    driverController.L1().onTrue(
+    driverController.leftBumper().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReef(false)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
 
     // TODO: To remove
-    driverController.square().onTrue(m_Intake.releaseCommand(true));
+    driverController.x().onTrue(m_Intake.releaseCommand(true));
 
     driverController.povUp().onTrue(PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
         .andThen(IdleSystemsCommand()).andThen(resetCommandScheduler())
@@ -153,19 +153,19 @@ public class RobotContainer {
         pathfindToProcessor().andThen(DropAlgaeProcessorCommand()).andThen(resetCommandScheduler())
             .onlyIf(() -> m_Intake.getAlgaeArmIntakeSensor()));
 
-    driverController.L2()
+    driverController.leftTrigger()
         .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae()
             .andThen(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1)
                 .andThen(m_Intake.grabCommand(true)))))
         .onFalse(IdleSystemsCommand());
 
-    driverController.R2()
+    driverController.rightTrigger()
         .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae()
             .andThen(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2)
                 .andThen(m_Intake.grabCommand(true)))))
         .onFalse(IdleSystemsCommand());
 
-    driverController.touchpad()
+    driverController.y()
         .onTrue(IdleSystemsCommand().andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()))
             .andThen(checkAndSwitchToCoralMode()));
   }
