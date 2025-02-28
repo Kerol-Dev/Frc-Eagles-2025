@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.pathfind.FieldPositions;
 import frc.robot.subsystems.pathfind.PathfindType;
@@ -133,7 +134,7 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public void setSpeeds(ChassisSpeeds speeds) {
 
-    if(ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 2)
+    if(ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 2 && RobotContainer.coralMode)
     {
       speeds.vxMetersPerSecond /= 2;
       speeds.vyMetersPerSecond /= 2;
