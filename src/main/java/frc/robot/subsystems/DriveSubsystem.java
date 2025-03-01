@@ -8,6 +8,8 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -85,6 +87,10 @@ public class DriveSubsystem extends SubsystemBase {
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
   public FieldPositions fieldPositions = new FieldPositions();
 
+  PIDController xController = new PIDController(0.1, 0, 0);
+  PIDController yController = new PIDController(0.1, 0, 0);
+  PIDController rController = new PIDController(0.1, 0, 0);
+
   private double kP = 3;
   private double kI = 0;
   private double kD = 0;
@@ -93,6 +99,9 @@ public class DriveSubsystem extends SubsystemBase {
    * Constructs the DriveSubsystem and configures autonomous settings.
    */
   public DriveSubsystem() {
+    xController.setTolerance(0.05);
+    yController.setTolerance(0.05);
+    rController.setTolerance(2);
     configureAutoBuilder();
   }
 
@@ -101,7 +110,7 @@ public class DriveSubsystem extends SubsystemBase {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
               new PIDConstants(kP, kI, kD),
-              new PIDConstants(1.5, 0.0, 0.0)),
+              new PIDConstants(1, 0.0, 0.0)),
           RobotConfig.fromGUISettings(), () -> {
             var alliance = DriverStation.getAlliance().get();
             return alliance == DriverStation.Alliance.Red;
@@ -141,6 +150,48 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
 
+  public Command alignToReef(boolean right) {
+    return new Command() {
+      Pose2d apriltagPose2d;
+      double ySpeed;
+      double xSpeed;
+      double rSpeed;
+      double angleSetpoint;
+      boolean cancel = false;
+  
+      @Override
+      public void initialize() {
+        cancel = LimelightHelpers.getTargetCount("") < 1;
+        apriltagPose2d = fieldPositions.getRightLeftReef((int)LimelightHelpers.getFiducialID(""), right);
+  
+        System.out.println(apriltagPose2d);
+  
+        ySpeed = yController.calculate(getPose().getY(), apriltagPose2d.getY());
+        xSpeed = xController.calculate(getPose().getX(), apriltagPose2d.getX());
+        rSpeed = rController.calculate(getHeading().getDegrees(), apriltagPose2d.getRotation().getDegrees());
+      }
+  
+      @Override
+      public void execute() {
+        ySpeed = yController.calculate(getPose().getY(), apriltagPose2d.getY());
+        xSpeed = xController.calculate(getPose().getX(), apriltagPose2d.getX());
+        rSpeed = rController.calculate(getHeading().getDegrees(), angleSetpoint);
+        System.out.println(ySpeed + " " + xSpeed + " " + rSpeed);
+        // setSpeeds(new ChassisSpeeds(xSpeed, ySpeed, rSpeed));
+      }
+  
+      @Override
+      public void end(boolean interrupted) {
+        setSpeeds(new ChassisSpeeds());
+      }
+  
+      @Override
+      public boolean isFinished() {
+        return (xController.atSetpoint() && yController.atSetpoint() && rController.atSetpoint()) || cancel;
+      }
+    };
+  }
+  
   @Override
   public void periodic() {
     m_rearLeft.updateSmartDashboard();

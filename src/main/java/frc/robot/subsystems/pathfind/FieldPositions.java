@@ -40,6 +40,17 @@ public class FieldPositions {
         return null;
     }
 
+    public double getTagRotation(int tag) {
+
+        for (FieldPosition position : fieldPositions) {
+            if(position.tag == tag)
+            {
+                return position.pose.getRotation().getDegrees();
+            }
+        }
+        return 0;
+    }
+
     public Pose2d getPose(String name) {
         for (FieldPosition fieldPosition : fieldPositions) {
             if (fieldPosition.name.equals(name)) {
