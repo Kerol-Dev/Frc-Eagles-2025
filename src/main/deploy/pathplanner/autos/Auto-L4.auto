@@ -23,9 +23,16 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Auto-L4-2"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Auto-L4-2"
+                }
+              }
+            ]
           }
         },
         {
@@ -35,9 +42,16 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Auto-L4-3"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Auto-L4-3"
+                }
+              }
+            ]
           }
         },
         {
@@ -53,33 +67,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Auto-L4-4"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Auto-L4-4"
+                }
+              }
+            ]
           }
         },
         {
           "type": "named",
           "data": {
             "name": "GrabFromSource"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Auto-L4-5"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PlaceL4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Idle"
           }
         }
       ]

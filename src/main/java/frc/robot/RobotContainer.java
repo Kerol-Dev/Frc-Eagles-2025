@@ -215,8 +215,8 @@ public class RobotContainer {
 
   private Command PlaceReefInit(ElevatorPosition elevatorPosition, ArmPosition armPosition) {
     return m_arm.setArmPositionCommand(ArmPosition.ElevatorUp)
-        .andThen(m_elevator.setElevatorPositionCommand(elevatorPosition)
-            .alongWith(m_arm.setArmPositionCommand(armPosition).beforeStarting(new WaitCommand(0.25))));
+        .andThen(m_elevator.setElevatorPositionCommand(elevatorPosition))
+        .andThen(m_arm.setArmPositionCommand(armPosition));
   }
 
   /**

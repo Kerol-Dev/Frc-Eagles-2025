@@ -38,10 +38,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousPeriodic() {
     RobotContainer.driverController.getHID().setRumble(RumbleType.kBothRumble, 0);
-
-    if (RobotContainer.coralMode && !m_robotContainer.m_Intake.getCoralIntakeSensor()
-        && !m_robotContainer.IntakeSourceGrabCommand().isScheduled())
-      m_robotContainer.IntakeSourceGrabCommand().schedule();
   }
 
   @Override

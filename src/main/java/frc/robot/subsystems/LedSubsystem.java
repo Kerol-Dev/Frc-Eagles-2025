@@ -17,7 +17,7 @@ public class LedSubsystem extends SubsystemBase {
     // Continuous ray position for smooth movement
     private double rayPosition = 0.0;
     // Speed in LED indices per second
-    private double raySpeed = 10.0;
+    private double raySpeed = 18.0;
 
     // Timer for delta time calculations
     private Timer timer = new Timer();

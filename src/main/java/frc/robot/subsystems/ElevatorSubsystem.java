@@ -79,11 +79,11 @@ public class ElevatorSubsystem extends SubsystemBase {
             case place_coral_l:
                 return 0.5;
             case place_coral_l2:
-                return 1.01;
+                return 0.95;
             case place_coral_l3:
-                return 2.22;
+                return 2.31;
             case place_coral_l4:
-                return 4.31;
+                return 4.3;
             default:
                 return 0.0;
         }
@@ -99,6 +99,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean isElevatorAtPosition() {
-        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.3);
+        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.2);
     }
 }
