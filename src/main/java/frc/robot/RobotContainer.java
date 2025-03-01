@@ -45,7 +45,7 @@ public class RobotContainer {
   public final IntakeSubsystem m_Intake = new IntakeSubsystem();
   public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
   private final PivotSubsystem m_arm = new PivotSubsystem();
-  private final LedSubsystem m_LedSubsystem = new LedSubsystem();
+  public final LedSubsystem m_LedSubsystem = new LedSubsystem();
 
   // Autonomous command chooser
   public static SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -85,7 +85,7 @@ public class RobotContainer {
     registerNamedCommand("GrabFromSource", IntakeSourceGrabCommand(),
         () -> !m_Intake.getCoralIntakeSensor(), true);
 
-    new EventTrigger("PlaceL4Init").onTrue(PlaceReefInit(ElevatorPosition.place_coral_l4));
+    new EventTrigger("PlaceL4Init").onTrue(PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4));
 
     registerNamedCommand("Idle", IdleSystemsCommand(), () -> !m_Intake.getCoralIntakeSensor(), true);
 
@@ -136,6 +136,9 @@ public class RobotContainer {
 
     // TODO: To remove
     driverController.x().onTrue(m_Intake.releaseCommand(true));
+
+    driverController.a().whileTrue(fullAutoTeleopTest())
+        .onFalse(resetCommandScheduler().andThen(IdleSystemsCommand()));
 
     driverController.povUp().onTrue(PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
         .andThen(IdleSystemsCommand()).andThen(resetCommandScheduler())
@@ -189,9 +192,8 @@ public class RobotContainer {
    * @return Place reef coral command
    */
   private Command PlaceReefCoralCommand(ElevatorPosition elevatorPosition, ArmPosition armPosition) {
-    return PlaceReefInit(elevatorPosition)
-        .andThen(m_arm.setArmPositionCommand(armPosition))
-        .andThen(new WaitCommand(0.2))
+    return PlaceReefInit(elevatorPosition, armPosition)
+        .andThen(new WaitCommand(0.05))
         .andThen(AutoReleaseCoral());
   }
 
@@ -211,9 +213,10 @@ public class RobotContainer {
     }).andThen(new WaitUntilCommand(() -> m_elevator.isElevatorAtPosition())).andThen(IdleSystemsCommand());
   }
 
-  private Command PlaceReefInit(ElevatorPosition elevatorPosition) {
+  private Command PlaceReefInit(ElevatorPosition elevatorPosition, ArmPosition armPosition) {
     return m_arm.setArmPositionCommand(ArmPosition.ElevatorUp)
-        .andThen(m_elevator.setElevatorPositionCommand(elevatorPosition));
+        .andThen(m_elevator.setElevatorPositionCommand(elevatorPosition)
+            .alongWith(m_arm.setArmPositionCommand(armPosition).beforeStarting(new WaitCommand(0.25))));
   }
 
   /**
@@ -247,9 +250,9 @@ public class RobotContainer {
    * 
    * @return Intake source grab command
    */
-  private Command IntakeSourceGrabCommand() {
-    return m_arm.setArmPositionCommand(ArmPosition.grab_coral_source)
-        .alongWith(m_elevator.setElevatorPositionCommand(ElevatorPosition.grab_coral_source))
+  public Command IntakeSourceGrabCommand() {
+    return m_arm.setArmPositionCommand(ArmPosition.idle)
+        .alongWith(m_elevator.setElevatorPositionCommand(ElevatorPosition.idle))
         .andThen(m_Intake.grabCommand(false))
         .andThen(new InstantCommand(() -> m_Intake.setIntakeSpeed(0)))
         .andThen(new InstantCommand(() -> triggerRumble(0.5)));
@@ -263,6 +266,29 @@ public class RobotContainer {
   public Command IdleSystemsCommand() {
     return m_arm.setArmPositionCommand(ArmPosition.idle)
         .andThen(m_elevator.setElevatorPositionCommand(ElevatorPosition.idle));
+  }
+
+  private Command fullAutoTeleopTest() {
+    return Commands.sequence(pathfindToHuman().andThen(IntakeSourceGrabCommand()),
+        m_robotDrive.goToPosePathfind("reef_i")
+            .andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3))
+            .andThen(IdleSystemsCommand()),
+        pathfindToHuman().andThen(IntakeSourceGrabCommand()),
+        m_robotDrive.goToPosePathfind("reef_j")
+            .andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3))
+            .andThen(IdleSystemsCommand()),
+        pathfindToHuman().andThen(IntakeSourceGrabCommand()),
+        m_robotDrive.goToPosePathfind("reef_k")
+            .andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3))
+            .andThen(IdleSystemsCommand()),
+        pathfindToHuman().andThen(IntakeSourceGrabCommand()),
+        m_robotDrive.goToPosePathfind("reef_l")
+            .andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3))
+            .andThen(IdleSystemsCommand()),
+        pathfindToHuman().andThen(IntakeSourceGrabCommand()),
+        m_robotDrive.goToPosePathfind("reef_a")
+            .andThen(PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3))
+            .andThen(IdleSystemsCommand()));
   }
 
   /**
@@ -300,11 +326,11 @@ public class RobotContainer {
   }
 
   // Pathfinding Commands
-  // private Command pathfindToHuman() {
-  // return m_robotDrive
-  // .goToPosePathfind(PathfindType.Human, false)
-  // .andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
-  // }
+  private Command pathfindToHuman() {
+    return m_robotDrive
+        .goToPosePathfind(PathfindType.Human, false)
+        .andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
+  }
 
   private Command pathfindToReef(boolean right) {
     return m_robotDrive

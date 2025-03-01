@@ -8,68 +8,90 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.vision.LimelightHelpers;
 
 public class LedSubsystem extends SubsystemBase {
-    private static AddressableLED addressableLED = new AddressableLED(2);
-    private static AddressableLEDBuffer addressableLEDBuffer = new AddressableLEDBuffer(20);
+    private AddressableLED addressableLED = new AddressableLED(2);
+    private AddressableLEDBuffer addressableLEDBuffer = new AddressableLEDBuffer(20);
 
-    // 4) Flag to toggle between red/orange flame or bluish flame
-    private static boolean useBlueFlame = false;
+    // Flag to toggle between red/orange flame and bluish flame
+    private boolean useBlueFlame = false;
 
-    // Variable to control the progress of the shooting ray effect
-    private static int rayProgress = 0;
+    // Continuous ray position for smooth movement
+    private double rayPosition = 0.0;
+    // Speed in LED indices per second
+    private double raySpeed = 10.0;
 
-    // Timer to control the speed of the ray movement
-    private static Timer timer = new Timer();
-    private static double lastTime = 0;
+    // Timer for delta time calculations
+    private Timer timer = new Timer();
+    private double lastTime = 0;
 
     public LedSubsystem() {
         addressableLED.setLength(addressableLEDBuffer.getLength());
         addressableLED.setData(addressableLEDBuffer);
         addressableLED.start();
-        timer.start();  // Start the timer when the subsystem is initialized
+        timer.start();
+        lastTime = timer.get();
     }
 
     @Override
     public void periodic() {
-        if (LimelightHelpers.getTargetCount("") < 1 || (RobotContainer.m_robotDrive.getSpeeds().vyMetersPerSecond > 1 && RobotContainer.m_robotDrive.getSpeeds().vxMetersPerSecond > 1 && RobotContainer.m_robotDrive.getSpeeds().omegaRadiansPerSecond > 1)) {
+        // Update flame mode based on target count or robot drive speeds
+        if (LimelightHelpers.getTargetCount("") < 1 ||
+            (RobotContainer.m_robotDrive.getSpeeds().vyMetersPerSecond > 1 &&
+             RobotContainer.m_robotDrive.getSpeeds().vxMetersPerSecond > 1 &&
+             RobotContainer.m_robotDrive.getSpeeds().omegaRadiansPerSecond > 1)) {
             useBlueFlame = true;
-        }
-        else {
+        } else {
             useBlueFlame = !RobotContainer.coralMode;
         }
-
-        // Update ray progress (this could be adjusted for speed of the effect)
-        rayProgress = (rayProgress + 1) % addressableLEDBuffer.getLength(); // Loop the ray effect
     }
 
     /**
-     * Updates the "shooting ray" animation each frame.
-     * The ray moves from the back (off) to the front (colored).
-     * Remember to call addressableLED.setData(addressableLEDBuffer) afterward.
+     * Smoothly updates the "shooting ray" animation.
+     * The ray moves continuously along the LED strip with a fading tail.
      */
-    public static void updateShootingRayEffect() {
-        // Only proceed if sufficient time has passed to update the ray position
-        if (timer.get() - lastTime >= 0.09) { // Update every 100 ms (adjust the speed as needed)
-            lastTime = timer.get(); // Update the last time
+    public void updateShootingRayEffect() {
+        double currentTime = timer.get();
+        double deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
 
-            // Clear the buffer first
-            for (int i = 0; i < addressableLEDBuffer.getLength(); i++) {
-                addressableLEDBuffer.setRGB(i, 0, 0, 0);  // Turn off all LEDs initially
+        int ledCount = addressableLEDBuffer.getLength();
+        // Update the ray position using delta time for smooth movement
+        rayPosition = (rayPosition + raySpeed * deltaTime) % ledCount;
+
+        // Tail width (in LED indices) controlling the gradient length
+        double tailWidth = 5.0;
+
+        // Loop through each LED in the strip
+        for (int i = 0; i < ledCount; i++) {
+            // Compute the distance to the ray position, accounting for wrap-around
+            double distance = Math.abs(i - rayPosition);
+            if (distance > ledCount / 2.0) {
+                distance = ledCount - distance;
             }
 
-            // Create the "shooting ray" effect by coloring a few LEDs at a time
-            for (int i = rayProgress; i < rayProgress + 14; i++) {
-                int index = i % addressableLEDBuffer.getLength(); // Wrap around the LED strip
-                addressableLEDBuffer.setRGB(index, 
-                    useBlueFlame ? 0 : 255,   // Red (0 if blue, 255 if red)
-                    0,                         // Green (always 0)
-                    useBlueFlame ? 255 : 0);   // Blue (255 if blue, 0 if red)
+            // Compute brightness with a linear fall-off (a simple gradient)
+            double brightness = 0.0;
+            if (distance < tailWidth) {
+                brightness = 1.0 - (distance / tailWidth);
             }
 
-            // Update the LEDs with the new data
-            addressableLED.setData(addressableLEDBuffer);
+            // (Optional) Uncomment to add a slight flicker effect
+            // brightness *= (0.9 + 0.1 * Math.random());
 
-            // Move the ray forward
-            rayProgress = (rayProgress + 1) % addressableLEDBuffer.getLength(); // Loop the ray effect
+            int r, g, b;
+            if (useBlueFlame) {
+                r = 0;
+                g = 0;
+                b = (int)(255 * brightness);
+            } else {
+                r = (int)(255 * brightness);
+                // Add a small green component to achieve an orange hue
+                g = (int)(50 * brightness);
+                b = 0;
+            }
+            addressableLEDBuffer.setRGB(i, r, g, b);
         }
+
+        // Push the updated buffer to the LED strip
+        addressableLED.setData(addressableLEDBuffer);
     }
 }

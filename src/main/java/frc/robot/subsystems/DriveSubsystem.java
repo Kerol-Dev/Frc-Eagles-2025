@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.pathfind.FieldPositions;
 import frc.robot.subsystems.pathfind.PathfindType;
@@ -133,14 +132,6 @@ public class DriveSubsystem extends SubsystemBase {
    * @param speeds The desired chassis speeds.
    */
   public void setSpeeds(ChassisSpeeds speeds) {
-
-    if(ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 2 && RobotContainer.coralMode)
-    {
-      speeds.vxMetersPerSecond /= 2;
-      speeds.vyMetersPerSecond /= 2;
-      speeds.omegaRadiansPerSecond /= 2;
-    }
-
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -278,6 +269,19 @@ public class DriveSubsystem extends SubsystemBase {
         target = fieldPositions.getClosestAlgeaPose(getPose());
       else
         target = fieldPositions.getPose("Processor");
+
+      if (target == null)
+        return;
+
+      AutoBuilder.pathfindToPose(target, constraints).schedule();
+    });
+  }
+
+  public Command goToPosePathfind(String namString) {
+    return Commands.runOnce(() -> {
+      Pose2d target;
+
+      target = fieldPositions.getPose(namString);
 
       if (target == null)
         return;

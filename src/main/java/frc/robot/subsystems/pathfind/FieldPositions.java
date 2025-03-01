@@ -113,7 +113,7 @@ public class FieldPositions {
         addFieldPosition(new Pose2d(3.697, 5.050, Rotation2d.fromDegrees(300)), "reef_l", 19, true);
 
         addFieldPosition(new Pose2d(1.166, 0.982, Rotation2d.fromDegrees(55)), "human_right", -1, false);
-        addFieldPosition(new Pose2d(0.736, 6.746, Rotation2d.fromDegrees(305)), "human_left", -1, false);
+        addFieldPosition(new Pose2d(0.644, 6.681, Rotation2d.fromDegrees(305)), "human_left", -1, false);
 
         addFieldPosition(new Pose2d(5.973, 0.762, Rotation2d.fromDegrees(270)), "processor", -1, false);
 

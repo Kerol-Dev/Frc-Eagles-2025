@@ -8,8 +8,8 @@
     "L4-Auto"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 3.0,
-  "defaultMaxAccel": 1.5,
+  "defaultMaxVel": 4.0,
+  "defaultMaxAccel": 5.0,
   "defaultMaxAngVel": 500.0,
   "defaultMaxAngAccel": 500.0,
   "defaultNominalVoltage": 12.0,

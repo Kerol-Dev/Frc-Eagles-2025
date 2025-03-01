@@ -5,7 +5,6 @@ public enum ArmPosition {
     ElevatorUp,
     grab_algae_reef_1,
     grab_algae_reef_2,
-    grab_coral_source,
     place_algae_processor,
     place_coral_l,
     place_coral_l2,
