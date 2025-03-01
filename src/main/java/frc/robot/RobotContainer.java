@@ -288,9 +288,10 @@ public class RobotContainer {
   // }
 
   private Command pathfindToReef(boolean right) {
-    return m_robotDrive
-        .goToPosePathfind(PathfindType.Reef, right)
-        .andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
+    // return m_robotDrive
+    //     .goToPosePathfind(PathfindType.Reef, right)
+    //     .andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
+    return m_robotDrive.alignToReef(right);
   }
 
   private Command pathFindToAlgae() {

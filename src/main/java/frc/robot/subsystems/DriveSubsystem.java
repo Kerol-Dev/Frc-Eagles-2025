@@ -179,7 +179,7 @@ public class DriveSubsystem extends SubsystemBase {
         xSpeed = xController.calculate(getPose().getX(), apriltagPose2d.getX());
         rSpeed = rController.calculate(getHeading().getDegrees(), angleSetpoint);
         System.out.println(ySpeed + " " + xSpeed + " " + rSpeed);
-        // setSpeeds(new ChassisSpeeds(xSpeed, ySpeed, rSpeed));
+        //drive(xSpeed, ySpeed, rSpeed, true, false);
       }
   
       @Override
@@ -260,6 +260,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontLeft.updateSmartDashboard();
     m_frontRight.updateSmartDashboard();
 
+    SmartDashboard.putBoolean("X Setpoint", xController.atSetpoint());
+    SmartDashboard.putBoolean("Y Setpoint", yController.atSetpoint());
+    SmartDashboard.putBoolean("R Setpoint", rController.atSetpoint());
+
     m_field.setRobotPose(getPose());
 
     SmartDashboard.putData(m_gyro);
@@ -306,7 +310,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param robotCentric Whether the driving is robot-centric.
    * @param slowSpeed    Whether to use slow speed mode.
    */
-  public void drive(double xSpeed, double ySpeed, double rot, boolean robotCentric, boolean slowSpeed) {
+  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean slowSpeed) {
     double xSpeedDelivered, ySpeedDelivered, rotDelivered;
 
     if (slowSpeed) {
@@ -320,7 +324,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-        robotCentric
+      fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
                 getHeading().plus(Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180)))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
