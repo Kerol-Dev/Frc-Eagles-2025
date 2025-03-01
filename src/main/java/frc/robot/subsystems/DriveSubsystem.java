@@ -14,6 +14,8 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+// import edu.wpi.first.math.geometry.Rotation3d;
+// import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -191,6 +193,65 @@ public class DriveSubsystem extends SubsystemBase {
       }
     };
   }
+
+//   public Command alignToReef(boolean right) {
+//   return new Command() {
+//     Pose3d apriltagPose2d;
+//     double ySpeed;
+//     double xSpeed;
+//     double rSpeed;
+//     double angleSetpoint;
+//     boolean cancel = false;
+
+//     @Override
+//     public void initialize() {
+//       cancel = LimelightHelpers.getTargetCount("") < 1;
+//       apriltagPose2d = LimelightHelpers.getBotPose3d_TargetSpace("");
+
+//       // Get the robot's current heading in radians.
+//       double headingRadians = Math.toRadians(apriltagPose2d.getRotation().toRotation2d().getRadians());
+//       // In WPILib, positive Y is left. So for a right offset, use -0.164 m.
+//       double lateralOffset = right ? -0.164 : 0.164;
+
+//       // Rotate the lateral offset by the robot's current heading to get the world-frame offset.
+//       // The offset vector in the robot frame is (0, lateralOffset). Rotated into field coordinates:
+//       double offsetX = -Math.sin(headingRadians) * lateralOffset;
+//       double offsetY =  Math.cos(headingRadians) * lateralOffset;
+
+//       // Apply the computed transform offset to the apriltag pose.
+//       apriltagPose2d = apriltagPose2d.plus(
+//           new Transform3d(offsetX, offsetY, 0, Rotation3d.kZero)
+//       );
+
+//       System.out.println(apriltagPose2d);
+
+//       ySpeed = yController.calculate(getPose().getY(), apriltagPose2d.getY());
+//       xSpeed = xController.calculate(getPose().getX(), apriltagPose2d.getX());
+//       angleSetpoint = fieldPositions.getTagRotation((int)LimelightHelpers.getFiducialID(""));
+//       rSpeed = rController.calculate(getHeading().getDegrees(), angleSetpoint);
+//     }
+
+//     @Override
+//     public void execute() {
+//       ySpeed = yController.calculate(getPose().getY(), apriltagPose2d.getY());
+//       xSpeed = xController.calculate(getPose().getX(), apriltagPose2d.getX());
+//       rSpeed = rController.calculate(getHeading().getDegrees(), angleSetpoint);
+//       System.out.println(ySpeed + " " + xSpeed + " " + rSpeed);
+//       // setSpeeds(new ChassisSpeeds(xSpeed, ySpeed, rSpeed));
+//     }
+
+//     @Override
+//     public void end(boolean interrupted) {
+//       setSpeeds(new ChassisSpeeds());
+//     }
+
+//     @Override
+//     public boolean isFinished() {
+//       return (xController.atSetpoint() && yController.atSetpoint() && rController.atSetpoint()) || cancel;
+//     }
+//   };
+// }
+
   
   @Override
   public void periodic() {
