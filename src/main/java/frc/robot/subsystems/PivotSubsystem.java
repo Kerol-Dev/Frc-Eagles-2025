@@ -33,7 +33,7 @@ public class PivotSubsystem extends SubsystemBase {
     public PivotSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kBrake);
-        config.closedLoop.pid(0.002, 0, 0);
+        config.closedLoop.pid(0.0025, 0, 0);
         armMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         armMotor.getEncoder().setPosition(0);

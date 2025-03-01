@@ -7,7 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Auto-L4-1"
+            "pathName": "L4-Place-1"
           }
         },
         {
@@ -17,22 +17,9 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Idle"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Auto-L4-2"
-                }
-              }
-            ]
+            "pathName": "L4-Grab-1"
           }
         },
         {
@@ -42,16 +29,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Auto-L4-3"
-                }
-              }
-            ]
+            "pathName": "L4-Place-2"
           }
         },
         {
@@ -61,28 +41,27 @@
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Idle"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Auto-L4-4"
-                }
-              }
-            ]
+            "pathName": "L4-Grab-2"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "GrabFromSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L4-Place-3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PlaceL4"
           }
         }
       ]
