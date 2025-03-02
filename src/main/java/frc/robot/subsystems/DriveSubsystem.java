@@ -9,7 +9,6 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -152,126 +151,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
-
-  public Command alignToReef(boolean right) {
-    return new Command() {
-      Pose2d apriltagPose2d;
-      double ySpeed;
-      double xSpeed;
-      double rSpeed;
-      double encoderEx = 0;
-      boolean cancel = false;
-      boolean started = false;
-      Pose2d apr;
-  
-      @Override
-      public void initialize() {
-        cancel = LimelightHelpers.getTargetCount("") < 1;
-        if(cancel)
-          return; 
-        apriltagPose2d = LimelightHelpers.getTargetPose3d_CameraSpace("").toPose2d();
-        System.out.println(apriltagPose2d);
-
-        apr = fieldPositions.getRightLeftReef((int)LimelightHelpers.getFiducialID(""), right, () -> DriverStation.getAlliance().get() == Alliance.Blue);
-        
-        encoderEx = m_frontLeft.getPosition().distanceMeters;
-  
-        ySpeed = yController.calculate(m_frontLeft.getPosition().distanceMeters - encoderEx, apriltagPose2d.getY());
-        xSpeed = xController.calculate(apriltagPose2d.getX(), apriltagPose2d.getX());
-        rSpeed = rController.calculate(getHeading().getDegrees(), apr.getRotation().getDegrees());
-        started = true;
-        isAligning = true;
-      }
-  
-      @Override
-      public void execute() {
-        apriltagPose2d = LimelightHelpers.getTargetPose3d_CameraSpace("").toPose2d();
-        System.out.println(apriltagPose2d);
-        ySpeed = yController.calculate(m_frontLeft.getPosition().distanceMeters - encoderEx);
-        xSpeed = xController.calculate(apriltagPose2d.getX(), right ? -0.164 : 0.164);
-        rSpeed = rController.calculate(getHeading().getDegrees(), apr.getRotation().getDegrees() - 360);
-
-        xSpeed = MathUtil.clamp(xSpeed, -0.2, 0.2);
-
-        ySpeed = MathUtil.clamp(ySpeed, -0.2, 0.2);
-        rSpeed = MathUtil.clamp(rSpeed, -0.2, 0.2);
-        
-         drive(0, ySpeed, rSpeed, false, false, false);
-      }
-  
-      @Override
-      public void end(boolean interrupted) {
-        started = false;
-        isAligning = false;
-        setSpeeds(new ChassisSpeeds());
-      }
-  
-      @Override
-      public boolean isFinished() {
-        System.out.println(((xController.atSetpoint() && yController.atSetpoint() && rController.atSetpoint() && started) || cancel) + " BITISS");
-        return (xController.atSetpoint() && yController.atSetpoint() && rController.atSetpoint() && started) || cancel;
-      }
-    };
-  }
-
-//   public Command alignToReef(boolean right) {
-//   return new Command() {
-//     Pose3d apriltagPose2d;
-//     double ySpeed;
-//     double xSpeed;
-//     double rSpeed;
-//     double angleSetpoint;
-//     boolean cancel = false;
-
-//     @Override
-//     public void initialize() {
-//       cancel = LimelightHelpers.getTargetCount("") < 1;
-//       apriltagPose2d = LimelightHelpers.getBotPose3d_TargetSpace("");
-
-//       // Get the robot's current heading in radians.
-//       double headingRadians = Math.toRadians(apriltagPose2d.getRotation().toRotation2d().getRadians());
-//       // In WPILib, positive Y is left. So for a right offset, use -0.164 m.
-//       double lateralOffset = right ? -0.164 : 0.164;
-
-//       // Rotate the lateral offset by the robot's current heading to get the world-frame offset.
-//       // The offset vector in the robot frame is (0, lateralOffset). Rotated into field coordinates:
-//       double offsetX = -Math.sin(headingRadians) * lateralOffset;
-//       double offsetY =  Math.cos(headingRadians) * lateralOffset;
-
-//       // Apply the computed transform offset to the apriltag pose.
-//       apriltagPose2d = apriltagPose2d.plus(
-//           new Transform3d(offsetX, offsetY, 0, Rotation3d.kZero)
-//       );
-
-//       System.out.println(apriltagPose2d);
-
-//       ySpeed = yController.calculate(getPose().getY(), apriltagPose2d.getY());
-//       xSpeed = xController.calculate(getPose().getX(), apriltagPose2d.getX());
-//       angleSetpoint = fieldPositions.getTagRotation((int)LimelightHelpers.getFiducialID(""));
-//       rSpeed = rController.calculate(getHeading().getDegrees(), angleSetpoint);
-//     }
-
-//     @Override
-//     public void execute() {
-//       ySpeed = yController.calculate(getPose().getY(), apriltagPose2d.getY());
-//       xSpeed = xController.calculate(getPose().getX(), apriltagPose2d.getX());
-//       rSpeed = rController.calculate(getHeading().getDegrees(), angleSetpoint);
-//       System.out.println(ySpeed + " " + xSpeed + " " + rSpeed);
-//       // setSpeeds(new ChassisSpeeds(xSpeed, ySpeed, rSpeed));
-//     }
-
-//     @Override
-//     public void end(boolean interrupted) {
-//       setSpeeds(new ChassisSpeeds());
-//     }
-
-//     @Override
-//     public boolean isFinished() {
-//       return (xController.atSetpoint() && yController.atSetpoint() && rController.atSetpoint()) || cancel;
-//     }
-//   };
-// }
-
   
   @Override
   public void periodic() {
@@ -286,7 +165,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_field.setRobotPose(getPose());
 
-    System.out.println(getHeading().getDegrees());
 
     SmartDashboard.putData(m_gyro);
     SmartDashboard.putData(m_field);

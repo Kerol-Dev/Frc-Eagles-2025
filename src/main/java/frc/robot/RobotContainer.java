@@ -90,6 +90,11 @@ public class RobotContainer {
             .andThen(IdleSystemsCommand()),
         () -> m_Intake.getCoralIntakeSensor(), true);
 
+    registerNamedCommand("PlaceL3",
+        PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3)
+            .andThen(IdleSystemsCommand()),
+        () -> m_Intake.getCoralIntakeSensor(), true);
+
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData(autoChooser);
   }
@@ -109,6 +114,9 @@ public class RobotContainer {
 
     driverController.b().onTrue(checkAndSwitchToCoralMode().andThen(m_Intake.grabCommand(false))
         .onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
+
+    driverController.a().whileTrue(AutoBuilder.buildAuto("L3"))
+    .onFalse(resetCommandScheduler().andThen(IdleSystemsCommand()));
 
     driverController.rightBumper().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReef(true)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));

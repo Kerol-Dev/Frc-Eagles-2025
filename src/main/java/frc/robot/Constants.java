@@ -116,18 +116,18 @@ public final class Constants {
     public static final boolean kElevatorMotorInverted = false;
     public static final boolean kElevatorMotorEncoderInverted = false;
 
-    public static final double kElevatorMotorForwardSoftLimit = 4.4;
+    public static final double kElevatorMotorForwardSoftLimit = 4.25;
     public static final double kElevatorMotorReverseSoftLimit = 0;
 
     public static final double kElevatorGearRatio = 5; // Gear ratio
 
     // Conversion factor from motor rotations to elevator rise in cm
     public static final double kElevatorMotorSensorToMechRatio = kElevatorGearRatio;
-    public static final double kElevatorMotorP = 0.5;
+    public static final double kElevatorMotorP = 0.6;
     public static final double kElevatorMotorI = 0;
     public static final double kElevatorMotorD = 0;
     public static final double kElevatorMaxSpeed = 0.9;
-    public static final double kElevatorMaxSpeedDown = 0.35;
+    public static final double kElevatorMaxSpeedDown = 0.25;
   }
 
   public static final class ArmConstants {

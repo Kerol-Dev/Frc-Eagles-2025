@@ -9,7 +9,7 @@ import frc.robot.subsystems.vision.LimelightHelpers;
 
 public class LedSubsystem extends SubsystemBase {
     private AddressableLED addressableLED = new AddressableLED(2);
-    private AddressableLEDBuffer addressableLEDBuffer = new AddressableLEDBuffer(20);
+    private AddressableLEDBuffer addressableLEDBuffer = new AddressableLEDBuffer(40);
 
     // Flag to toggle between red/orange flame and bluish flame
     private boolean useBlueFlame = false;
@@ -58,7 +58,37 @@ public class LedSubsystem extends SubsystemBase {
         double tailWidth = 5.0;
 
         // Loop through each LED in the strip
-        for (int i = 0; i < ledCount; i++) {
+        for (int i = 0; i < ledCount / 2; i++) {
+            // Compute the distance to the ray position, accounting for wrap-around
+            double distance = Math.abs(i - rayPosition);
+            if (distance > ledCount / 2.0) {
+                distance = ledCount - distance;
+            }
+
+            // Compute brightness with a linear fall-off (a simple gradient)
+            double brightness = 0.0;
+            if (distance < tailWidth) {
+                brightness = 1.0 - (distance / tailWidth);
+            }
+
+            // (Optional) Uncomment to add a slight flicker effect
+            // brightness *= (0.9 + 0.1 * Math.random());
+
+            int r, g, b;
+            if (useBlueFlame) {
+                r = 0;
+                g = 0;
+                b = (int)(255 * brightness);
+            } else {
+                r = (int)(255 * brightness);
+                // Add a small green component to achieve an orange hue
+                g = (int)(50 * brightness);
+                b = 0;
+            }
+            addressableLEDBuffer.setRGB(i, r, g, b);
+        }
+
+        for (int i = ledCount-1; i >= ledCount / 2; i--) {
             // Compute the distance to the ray position, accounting for wrap-around
             double distance = Math.abs(i - rayPosition);
             if (distance > ledCount / 2.0) {
