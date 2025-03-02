@@ -1,11 +1,13 @@
 package frc.robot.subsystems.pathfind;
 
 import java.util.ArrayList;
+import java.util.function.BooleanSupplier;
 
 import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 class FieldPosition {
     public Pose2d pose;
@@ -28,13 +30,17 @@ public class FieldPositions {
         fieldPositions.add(new FieldPosition(pose, name, tag, right));
     }
 
-    public Pose2d getRightLeftReef(int tag, boolean right) {
+    // Method to flip the blue pose to red pose
+    public Pose2d flipBlueToRed(Pose2d bluePose) {
+        return new Pose2d(new Translation2d(17.548 - bluePose.getX(), bluePose.getY()),
+                bluePose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+    }
 
+    public Pose2d getRightLeftReef(int tag, boolean right, BooleanSupplier isBlue) {
         for (FieldPosition position : fieldPositions) {
-            if(position.tag == tag)
-            {
-                if(position.right == right)
-                   return position.pose;
+            if (position.tag == tag) {
+                if (position.right == right)
+                    return isBlue.getAsBoolean() ? position.pose : flipBlueToRed(position.pose);
             }
         }
         return null;
@@ -43,8 +49,7 @@ public class FieldPositions {
     public double getTagRotation(int tag) {
 
         for (FieldPosition position : fieldPositions) {
-            if(position.tag == tag)
-            {
+            if (position.tag == tag) {
                 return position.pose.getRotation().getDegrees();
             }
         }
@@ -110,14 +115,14 @@ public class FieldPositions {
     }
 
     public FieldPositions() {
-        addFieldPosition(new Pose2d(3.198, 4.189, Rotation2d.fromDegrees(0)), "reef_a", 18, false);
-        addFieldPosition(new Pose2d(3.190, 3.852, Rotation2d.fromDegrees(0)), "reef_b", 18, true);
+        addFieldPosition(new Pose2d(3.198, 4.189, Rotation2d.fromDegrees(180)), "reef_a", 18, false);
+        addFieldPosition(new Pose2d(3.190, 3.852, Rotation2d.fromDegrees(180)), "reef_b", 18, true);
         addFieldPosition(new Pose2d(3.713, 2.992, Rotation2d.fromDegrees(60)), "reef_c", 17, false);
         addFieldPosition(new Pose2d(3.995, 2.835, Rotation2d.fromDegrees(60)), "reef_d", 17, true);
         addFieldPosition(new Pose2d(4.980, 2.840, Rotation2d.fromDegrees(120)), "reef_e", 22, false);
         addFieldPosition(new Pose2d(5.267, 3.003, Rotation2d.fromDegrees(120)), "reef_f", 22, true);
-        addFieldPosition(new Pose2d(5.768, 3.866, Rotation2d.fromDegrees(180)), "reef_g", 21, false);
-        addFieldPosition(new Pose2d(5.771, 4.187, Rotation2d.fromDegrees(180)), "reef_h", 21, true);
+        addFieldPosition(new Pose2d(5.768, 3.866, Rotation2d.fromDegrees(0)), "reef_g", 21, false);
+        addFieldPosition(new Pose2d(5.771, 4.187, Rotation2d.fromDegrees(0)), "reef_h", 21, true);
         addFieldPosition(new Pose2d(5.266, 5.053, Rotation2d.fromDegrees(240)), "reef_i", 20, false);
         addFieldPosition(new Pose2d(4.982, 5.222, Rotation2d.fromDegrees(240)), "reef_j", 20, true);
         addFieldPosition(new Pose2d(3.991, 5.219, Rotation2d.fromDegrees(300)), "reef_k", 19, false);

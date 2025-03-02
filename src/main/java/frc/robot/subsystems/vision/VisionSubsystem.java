@@ -33,9 +33,9 @@ public class VisionSubsystem extends SubsystemBase {
                         DriveSubsystem.m_frontRight.getPosition(), DriveSubsystem.m_rearLeft.getPosition(),
                         DriveSubsystem.m_rearRight.getPosition() });
 
-        if (RobotContainer.autoChooser.getSelected().getName().startsWith("M") &&
-                !DriverStation.isTeleopEnabled())
-            return;
+        // if (RobotContainer.autoChooser.getSelected().getName().startsWith("M") &&
+        //         !DriverStation.isTeleopEnabled())
+        //     return;
 
         LimelightHelpers.SetRobotOrientation("", DriveSubsystem.getHeading().getDegrees(), 0, 0, 0, 0, 0);
         if (LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("") != null

@@ -67,7 +67,8 @@ public class RobotContainer {
             -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
             -MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband),
             true,
-            slowSpeedEnabled),
+            slowSpeedEnabled
+            , true),
         m_robotDrive));
 
     // Configure button bindings
@@ -288,10 +289,9 @@ public class RobotContainer {
   // }
 
   private Command pathfindToReef(boolean right) {
-    // return m_robotDrive
-    //     .goToPosePathfind(PathfindType.Reef, right)
-    //     .andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
-    return m_robotDrive.alignToReef(right);
+    return m_robotDrive
+        .goToPosePathfind(PathfindType.Reef, right)
+        .andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
   }
 
   private Command pathFindToAlgae() {

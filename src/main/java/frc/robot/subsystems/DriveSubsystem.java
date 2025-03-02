@@ -9,6 +9,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -89,21 +90,21 @@ public class DriveSubsystem extends SubsystemBase {
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
   public FieldPositions fieldPositions = new FieldPositions();
 
-  PIDController xController = new PIDController(0.1, 0, 0);
-  PIDController yController = new PIDController(0.1, 0, 0);
-  PIDController rController = new PIDController(0.1, 0, 0);
+  PIDController xController = new PIDController(2, 0.0, 0.0);
+  PIDController yController = new PIDController(1.3, 0.0, 0.0);
+  PIDController rController = new PIDController(0.04, 0, 0);
 
-  private double kP = 3;
-  private double kI = 0;
+  private double kP = 2;
+  private double kI = 0.5;
   private double kD = 0;
 
   /*
    * Constructs the DriveSubsystem and configures autonomous settings.
    */
   public DriveSubsystem() {
-    xController.setTolerance(0.05);
-    yController.setTolerance(0.05);
-    rController.setTolerance(2);
+    xController.setTolerance(0.02);
+    yController.setTolerance(0.02);
+    rController.setTolerance(1);
     configureAutoBuilder();
   }
 
@@ -112,7 +113,7 @@ public class DriveSubsystem extends SubsystemBase {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
               new PIDConstants(kP, kI, kD),
-              new PIDConstants(1, 0.0, 0.0)),
+              new PIDConstants(2, 0.5, 0.0)),
           RobotConfig.fromGUISettings(), () -> {
             var alliance = DriverStation.getAlliance().get();
             return alliance == DriverStation.Alliance.Red;
@@ -158,38 +159,57 @@ public class DriveSubsystem extends SubsystemBase {
       double ySpeed;
       double xSpeed;
       double rSpeed;
-      double angleSetpoint;
+      double encoderEx = 0;
       boolean cancel = false;
+      boolean started = false;
+      Pose2d apr;
   
       @Override
       public void initialize() {
         cancel = LimelightHelpers.getTargetCount("") < 1;
-        apriltagPose2d = fieldPositions.getRightLeftReef((int)LimelightHelpers.getFiducialID(""), right);
-  
+        if(cancel)
+          return; 
+        apriltagPose2d = LimelightHelpers.getTargetPose3d_CameraSpace("").toPose2d();
         System.out.println(apriltagPose2d);
+
+        apr = fieldPositions.getRightLeftReef((int)LimelightHelpers.getFiducialID(""), right, () -> DriverStation.getAlliance().get() == Alliance.Blue);
+        
+        encoderEx = m_frontLeft.getPosition().distanceMeters;
   
-        ySpeed = yController.calculate(getPose().getY(), apriltagPose2d.getY());
-        xSpeed = xController.calculate(getPose().getX(), apriltagPose2d.getX());
-        rSpeed = rController.calculate(getHeading().getDegrees(), apriltagPose2d.getRotation().getDegrees());
+        ySpeed = yController.calculate(m_frontLeft.getPosition().distanceMeters - encoderEx, apriltagPose2d.getY());
+        xSpeed = xController.calculate(apriltagPose2d.getX(), apriltagPose2d.getX());
+        rSpeed = rController.calculate(getHeading().getDegrees(), apr.getRotation().getDegrees());
+        started = true;
+        isAligning = true;
       }
   
       @Override
       public void execute() {
-        ySpeed = yController.calculate(getPose().getY(), apriltagPose2d.getY());
-        xSpeed = xController.calculate(getPose().getX(), apriltagPose2d.getX());
-        rSpeed = rController.calculate(getHeading().getDegrees(), angleSetpoint);
-        System.out.println(ySpeed + " " + xSpeed + " " + rSpeed);
-        //drive(xSpeed, ySpeed, rSpeed, true, false);
+        apriltagPose2d = LimelightHelpers.getTargetPose3d_CameraSpace("").toPose2d();
+        System.out.println(apriltagPose2d);
+        ySpeed = yController.calculate(m_frontLeft.getPosition().distanceMeters - encoderEx);
+        xSpeed = xController.calculate(apriltagPose2d.getX(), right ? -0.164 : 0.164);
+        rSpeed = rController.calculate(getHeading().getDegrees(), apr.getRotation().getDegrees() - 360);
+
+        xSpeed = MathUtil.clamp(xSpeed, -0.2, 0.2);
+
+        ySpeed = MathUtil.clamp(ySpeed, -0.2, 0.2);
+        rSpeed = MathUtil.clamp(rSpeed, -0.2, 0.2);
+        
+         drive(0, ySpeed, rSpeed, false, false, false);
       }
   
       @Override
       public void end(boolean interrupted) {
+        started = false;
+        isAligning = false;
         setSpeeds(new ChassisSpeeds());
       }
   
       @Override
       public boolean isFinished() {
-        return (xController.atSetpoint() && yController.atSetpoint() && rController.atSetpoint()) || cancel;
+        System.out.println(((xController.atSetpoint() && yController.atSetpoint() && rController.atSetpoint() && started) || cancel) + " BITISS");
+        return (xController.atSetpoint() && yController.atSetpoint() && rController.atSetpoint() && started) || cancel;
       }
     };
   }
@@ -266,6 +286,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_field.setRobotPose(getPose());
 
+    System.out.println(getHeading().getDegrees());
+
     SmartDashboard.putData(m_gyro);
     SmartDashboard.putData(m_field);
   }
@@ -300,6 +322,8 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     visionSubsystem.resetOdometry(pose);
   }
+  
+  boolean isAligning = false;
 
   /**
    * Drives the robot with the given speeds and modes.
@@ -310,7 +334,9 @@ public class DriveSubsystem extends SubsystemBase {
    * @param robotCentric Whether the driving is robot-centric.
    * @param slowSpeed    Whether to use slow speed mode.
    */
-  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean slowSpeed) {
+  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean slowSpeed, boolean isJoystick) {
+    if(isAligning && isJoystick)
+       return;
     double xSpeedDelivered, ySpeedDelivered, rotDelivered;
 
     if (slowSpeed) {
@@ -378,7 +404,7 @@ public class DriveSubsystem extends SubsystemBase {
       Pose2d target;
 
       if (type == PathfindType.Reef)
-        target = fieldPositions.getRightLeftReef((int) LimelightHelpers.getFiducialID(""), right);
+        target = fieldPositions.getRightLeftReef((int) LimelightHelpers.getFiducialID(""), right, () -> DriverStation.getAlliance().get() == Alliance.Blue);
       else if (type == PathfindType.Human)
         target = fieldPositions.getClosestHumanPose(getPose());
       else if (type == PathfindType.Algea)
