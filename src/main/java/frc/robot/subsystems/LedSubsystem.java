@@ -34,10 +34,7 @@ public class LedSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // Update flame mode based on target count or robot drive speeds
-        if (LimelightHelpers.getTargetCount("") < 1 ||
-            (RobotContainer.m_robotDrive.getSpeeds().vyMetersPerSecond > 1 &&
-             RobotContainer.m_robotDrive.getSpeeds().vxMetersPerSecond > 1 &&
-             RobotContainer.m_robotDrive.getSpeeds().omegaRadiansPerSecond > 1)) {
+        if (LimelightHelpers.getTargetCount("") < 1) {
             useBlueFlame = true;
         } else {
             useBlueFlame = !RobotContainer.coralMode;
