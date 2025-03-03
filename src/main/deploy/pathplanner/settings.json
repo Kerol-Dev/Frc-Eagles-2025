@@ -5,11 +5,12 @@
   "pathFolders": [
     "L4",
     "L4-Mirror",
+    "L4-Mirror-Red",
     "L4-Red"
   ],
   "autoFolders": [],
   "defaultMaxVel": 2.0,
-  "defaultMaxAccel": 1.5,
+  "defaultMaxAccel": 2.0,
   "defaultMaxAngVel": 500.0,
   "defaultMaxAngAccel": 500.0,
   "defaultNominalVoltage": 12.0,
