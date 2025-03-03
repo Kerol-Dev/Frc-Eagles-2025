@@ -115,8 +115,8 @@ public class RobotContainer {
     driverController.b().onTrue(checkAndSwitchToCoralMode().andThen(m_Intake.grabCommand(false))
         .onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
 
-    driverController.a().whileTrue(AutoBuilder.buildAuto("L3"))
-    .onFalse(resetCommandScheduler().andThen(IdleSystemsCommand()));
+    driverController.a().whileTrue(new ConditionalCommand(AutoBuilder.buildAuto("L3"), AutoBuilder.buildAuto("L3-Mirrored"), () -> m_robotDrive.fieldPositions.getClosestHumanPose(m_robotDrive.getPose()).getRotation().getDegrees() == 305))
+    .onFalse(IdleSystemsCommand().andThen(resetCommandScheduler()));
 
     driverController.rightBumper().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReef(true)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
@@ -124,7 +124,6 @@ public class RobotContainer {
     driverController.leftBumper().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReef(false)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
 
-    // TODO: To remove
     driverController.x().onTrue(m_Intake.releaseCommand(true));
 
     driverController.povUp().onTrue(PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)

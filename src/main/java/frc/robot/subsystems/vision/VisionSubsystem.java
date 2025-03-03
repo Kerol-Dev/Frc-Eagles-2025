@@ -4,8 +4,10 @@ import org.photonvision.PhotonUtils;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Detector;
@@ -31,9 +33,9 @@ public class VisionSubsystem extends SubsystemBase {
                         DriveSubsystem.m_frontRight.getPosition(), DriveSubsystem.m_rearLeft.getPosition(),
                         DriveSubsystem.m_rearRight.getPosition() });
 
-        // if (RobotContainer.autoChooser.getSelected().getName().startsWith("M") &&
-        //         !DriverStation.isTeleopEnabled())
-        //     return;
+        if (RobotContainer.autoChooser.getSelected() != null && RobotContainer.autoChooser.getSelected().getName().startsWith("M") &&
+                !DriverStation.isTeleopEnabled())
+            return;
 
         LimelightHelpers.SetRobotOrientation("", DriveSubsystem.getHeading().getDegrees(), 0, 0, 0, 0, 0);
         if (LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("") != null

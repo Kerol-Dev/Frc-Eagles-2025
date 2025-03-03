@@ -3,7 +3,8 @@
   "robotLength": 0.87,
   "holonomicMode": true,
   "pathFolders": [
-    "L4"
+    "L4",
+    "L4-Mirror"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.5,

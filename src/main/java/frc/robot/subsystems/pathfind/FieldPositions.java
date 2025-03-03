@@ -115,14 +115,14 @@ public class FieldPositions {
     }
 
     public FieldPositions() {
-        addFieldPosition(new Pose2d(3.198, 4.189, Rotation2d.fromDegrees(180)), "reef_a", 18, false);
-        addFieldPosition(new Pose2d(3.190, 3.852, Rotation2d.fromDegrees(180)), "reef_b", 18, true);
+        addFieldPosition(new Pose2d(3.198, 4.189, Rotation2d.fromDegrees(0)), "reef_a", 18, false);
+        addFieldPosition(new Pose2d(3.190, 3.852, Rotation2d.fromDegrees(0)), "reef_b", 18, true);
         addFieldPosition(new Pose2d(3.713, 2.992, Rotation2d.fromDegrees(60)), "reef_c", 17, false);
         addFieldPosition(new Pose2d(3.995, 2.835, Rotation2d.fromDegrees(60)), "reef_d", 17, true);
         addFieldPosition(new Pose2d(4.980, 2.840, Rotation2d.fromDegrees(120)), "reef_e", 22, false);
         addFieldPosition(new Pose2d(5.267, 3.003, Rotation2d.fromDegrees(120)), "reef_f", 22, true);
-        addFieldPosition(new Pose2d(5.768, 3.866, Rotation2d.fromDegrees(0)), "reef_g", 21, false);
-        addFieldPosition(new Pose2d(5.771, 4.187, Rotation2d.fromDegrees(0)), "reef_h", 21, true);
+        addFieldPosition(new Pose2d(5.768, 3.866, Rotation2d.fromDegrees(180)), "reef_g", 21, false);
+        addFieldPosition(new Pose2d(5.771, 4.187, Rotation2d.fromDegrees(180)), "reef_h", 21, true);
         addFieldPosition(new Pose2d(5.266, 5.053, Rotation2d.fromDegrees(240)), "reef_i", 20, false);
         addFieldPosition(new Pose2d(4.982, 5.222, Rotation2d.fromDegrees(240)), "reef_j", 20, true);
         addFieldPosition(new Pose2d(3.991, 5.219, Rotation2d.fromDegrees(300)), "reef_k", 19, false);
