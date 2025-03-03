@@ -52,6 +52,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopPeriodic() {
+    m_robotContainer.periodic();
     if (ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 2) {
       slowSpeedEnabledAutomatically = true;
       m_robotContainer.slowSpeedEnabled = true;

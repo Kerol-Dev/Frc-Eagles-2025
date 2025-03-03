@@ -24,7 +24,7 @@ public final class Constants {
     public static final double kMaxAngularAcceleration = Math.PI * 2; // Maximum angular acceleration
 
     public static final double kMaxSpeedMetersPerSecondPathfind = 3; // Maximum robot speed
-    public static final double kMaxAccelerationPathfind = 1.5; // Maximum linear acceleration
+    public static final double kMaxAccelerationPathfind = 2; // Maximum linear acceleration
     public static final double kMaxAngularSpeedPathfind = Math.PI; // Maximum angular velocity (rad/s)
     public static final double kMaxAngularAccelerationPathfind = 1; // Maximum angular acceleration
 
@@ -126,8 +126,8 @@ public final class Constants {
     public static final double kElevatorMotorP = 0.6;
     public static final double kElevatorMotorI = 0;
     public static final double kElevatorMotorD = 0;
-    public static final double kElevatorMaxSpeed = 0.9;
-    public static final double kElevatorMaxSpeedDown = 0.25;
+    public static final double kElevatorMaxSpeed = 0.85;
+    public static final double kElevatorMaxSpeedDown = 0.27;
   }
 
   public static final class ArmConstants {

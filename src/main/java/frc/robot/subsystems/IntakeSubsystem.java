@@ -49,6 +49,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
             @Override
             public void end(boolean interrupted){
+                RobotContainer.triggerRumble(0.5);
                 setIntakeSpeed(0);
             }
 

@@ -93,8 +93,8 @@ public class DriveSubsystem extends SubsystemBase {
   PIDController yController = new PIDController(1.3, 0.0, 0.0);
   PIDController rController = new PIDController(0.04, 0, 0);
 
-  private double kP = 2;
-  private double kI = 0.5;
+  private double kP = 3;
+  private double kI = 0;
   private double kD = 0;
 
   /*
@@ -112,11 +112,8 @@ public class DriveSubsystem extends SubsystemBase {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
               new PIDConstants(kP, kI, kD),
-              new PIDConstants(2, 0.5, 0.0)),
-          RobotConfig.fromGUISettings(), () -> {
-            var alliance = DriverStation.getAlliance().get();
-            return alliance == DriverStation.Alliance.Red;
-          },
+              new PIDConstants(1.5, 0, 0.0)),
+          RobotConfig.fromGUISettings(), () -> false,
           this);
 
     } catch (Exception e) {
@@ -230,7 +227,7 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
       fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                getHeading().plus(Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 0 : 180)))
+                getHeading().plus(Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0)))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     setModuleStates(swerveModuleStates);
   }
@@ -337,7 +334,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The current heading as a Rotation2d.
    */
   public static Rotation2d getHeading() {
-    return m_gyro.getRotation2d().plus(Rotation2d.fromDegrees(180));
+    return m_gyro.getRotation2d().plus(Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 180 : 0));
   }
 
   public static SwerveModulePosition[] getModulePositions() {

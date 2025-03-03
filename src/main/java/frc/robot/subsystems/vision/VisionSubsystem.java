@@ -38,8 +38,7 @@ public class VisionSubsystem extends SubsystemBase {
             return;
 
         LimelightHelpers.SetRobotOrientation("", DriveSubsystem.getHeading().getDegrees(), 0, 0, 0, 0, 0);
-        if (LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("") != null
-                && LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("").pose.getX() != 0) {
+        if (LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("") != null && LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("").pose.getX() != 0) {
             poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("").pose,
                     LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("").timestampSeconds);
         }

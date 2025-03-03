@@ -1,5 +1,6 @@
 package frc.robot;
 
+
 import java.util.function.BooleanSupplier;
 
 // Import necessary libraries and classes
@@ -8,6 +9,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
@@ -115,8 +118,8 @@ public class RobotContainer {
     driverController.b().onTrue(checkAndSwitchToCoralMode().andThen(m_Intake.grabCommand(false))
         .onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
 
-    driverController.a().whileTrue(new ConditionalCommand(AutoBuilder.buildAuto("L3"), AutoBuilder.buildAuto("L3-Mirrored"), () -> m_robotDrive.fieldPositions.getClosestHumanPose(m_robotDrive.getPose()).getRotation().getDegrees() == 305))
-    .onFalse(IdleSystemsCommand().andThen(resetCommandScheduler()));
+    // driverController.a().whileTrue(autonomTeleop().andThen(resetCommandScheduler()))
+    //     .onFalse(IdleSystemsCommand().andThen(resetCommandScheduler()));
 
     driverController.rightBumper().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReef(true)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
@@ -154,6 +157,9 @@ public class RobotContainer {
     driverController.y()
         .onTrue(IdleSystemsCommand().andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()))
             .andThen(checkAndSwitchToCoralMode()));
+
+    timerRumble = new Timer();
+    timerRumble.start();
   }
 
   private Command checkAndSwitchToCoralMode() {
@@ -205,6 +211,19 @@ public class RobotContainer {
         .andThen(m_arm.setArmPositionCommand(armPosition));
   }
 
+  static edu.wpi.first.wpilibj.Timer timerRumble;
+  static double lastTime = 0;
+
+
+  public void periodic()
+  {
+    if(timerRumble.get() - lastTime > 0.5 && lastTime > 0)
+    {
+      lastTime = 0;
+      driverController.setRumble(RumbleType.kBothRumble, 0);
+    }
+  }
+
   /**
    * Command for grabbing algae at the reef.
    * 
@@ -230,6 +249,17 @@ public class RobotContainer {
         .andThen(new WaitUntilCommand(() -> !m_Intake.getAlgaeArmIntakeSensor()))
         .andThen(new InstantCommand(() -> triggerRumble(0.5)));
   }
+
+  // private Command autonomTeleop()
+  // {
+  //   return Commands.sequence(m_robotDrive.goToPosePathfind("reef_j"), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3), IdleSystemsCommand(),
+  //   m_robotDrive.goToPosePathfind(PathfindType.Human, false), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), IntakeSourceGrabCommand(),
+  //   m_robotDrive.goToPosePathfind("reef_k"), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3), IdleSystemsCommand(),
+  //   m_robotDrive.goToPosePathfind(PathfindType.Human, false), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), IntakeSourceGrabCommand(),
+  //   m_robotDrive.goToPosePathfind("reef_l"), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3), IdleSystemsCommand(),
+  //   m_robotDrive.goToPosePathfind(PathfindType.Human, false), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), IntakeSourceGrabCommand(),
+  //   m_robotDrive.goToPosePathfind("reef_a"), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3), IdleSystemsCommand());
+  // }
 
   /**
    * Command for grabbing from the intake source.
@@ -259,20 +289,16 @@ public class RobotContainer {
    * 
    * @param durationSeconds Duration in seconds
    */
-  private void triggerRumble(double durationSeconds) {
+
+  public static void triggerRumble(double durationSeconds) {
     if (DriverStation.isAutonomousEnabled())
       return;
 
-    driverController.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
-    new Thread(() -> {
-      try {
-        Thread.sleep((long) (durationSeconds * 1000));
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      } finally {
-        driverController.getHID().setRumble(GenericHID.RumbleType.kBothRumble, 0.0);
-      }
-    }).start();
+    if(lastTime == 0)
+    {
+      driverController.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
+      lastTime = timerRumble.get();
+    }
   }
 
   /**

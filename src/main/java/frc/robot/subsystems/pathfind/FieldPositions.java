@@ -5,9 +5,10 @@ import java.util.function.BooleanSupplier;
 
 import org.photonvision.PhotonUtils;
 
+import com.pathplanner.lib.util.FlippingUtil;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 
 class FieldPosition {
     public Pose2d pose;
@@ -32,8 +33,7 @@ public class FieldPositions {
 
     // Method to flip the blue pose to red pose
     public Pose2d flipBlueToRed(Pose2d bluePose) {
-        return new Pose2d(new Translation2d(17.548 - bluePose.getX(), bluePose.getY()),
-                bluePose.getRotation().rotateBy(Rotation2d.fromDegrees(180)));
+        return FlippingUtil.flipFieldPose(bluePose);
     }
 
     public Pose2d getRightLeftReef(int tag, boolean right, BooleanSupplier isBlue) {
@@ -127,6 +127,20 @@ public class FieldPositions {
         addFieldPosition(new Pose2d(4.982, 5.222, Rotation2d.fromDegrees(240)), "reef_j", 20, true);
         addFieldPosition(new Pose2d(3.991, 5.219, Rotation2d.fromDegrees(300)), "reef_k", 19, false);
         addFieldPosition(new Pose2d(3.697, 5.050, Rotation2d.fromDegrees(300)), "reef_l", 19, true);
+
+
+        addFieldPosition(new Pose2d(3.198, 4.189, Rotation2d.fromDegrees(0)), "reef_a", 7, false);
+        addFieldPosition(new Pose2d(3.190, 3.852, Rotation2d.fromDegrees(0)), "reef_b", 7, true);
+        addFieldPosition(new Pose2d(3.713, 2.992, Rotation2d.fromDegrees(60)), "reef_c", 8, false);
+        addFieldPosition(new Pose2d(3.995, 2.835, Rotation2d.fromDegrees(60)), "reef_d", 8, true);
+        addFieldPosition(new Pose2d(4.980, 2.840, Rotation2d.fromDegrees(120)), "reef_e", 9, false);
+        addFieldPosition(new Pose2d(5.267, 3.003, Rotation2d.fromDegrees(120)), "reef_f", 9, true);
+        addFieldPosition(new Pose2d(5.768, 3.866, Rotation2d.fromDegrees(180)), "reef_g", 10, false);
+        addFieldPosition(new Pose2d(5.771, 4.187, Rotation2d.fromDegrees(180)), "reef_h", 10, true);
+        addFieldPosition(new Pose2d(5.266, 5.053, Rotation2d.fromDegrees(240)), "reef_i", 11, false);
+        addFieldPosition(new Pose2d(4.982, 5.222, Rotation2d.fromDegrees(240)), "reef_j", 11, true);
+        addFieldPosition(new Pose2d(3.991, 5.219, Rotation2d.fromDegrees(300)), "reef_k", 6, false);
+        addFieldPosition(new Pose2d(3.697, 5.050, Rotation2d.fromDegrees(300)), "reef_l", 6, true);
 
         addFieldPosition(new Pose2d(1.166, 0.982, Rotation2d.fromDegrees(55)), "human_right", -1, false);
         addFieldPosition(new Pose2d(0.644, 6.681, Rotation2d.fromDegrees(305)), "human_left", -1, false);

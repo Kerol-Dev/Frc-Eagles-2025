@@ -51,18 +51,6 @@
           "data": {
             "name": "GrabFromSource"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "L4-Place-3"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "PlaceL4"
-          }
         }
       ]
     }
