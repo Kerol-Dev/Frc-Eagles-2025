@@ -101,6 +101,21 @@ public class FieldPositions {
         return closestHumanPose;
     }
 
+    public int getClosestTag(Pose2d robotPose) {
+        int closestTag = -1;
+        double closestDistance = Double.MAX_VALUE;
+        for (FieldPosition fieldPosition : fieldPositions) {
+            if (fieldPosition.name.contains("tag")) {
+                double distance = PhotonUtils.getDistanceToPose(robotPose, fieldPosition.pose);
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestTag = fieldPosition.tag;
+                }
+            }
+        }
+        return closestTag;
+    }
+
     public Pose2d getClosestAlgeaPose(Pose2d robotPose) {
         Pose2d closestAlgeaPose = null;
         double closestDistance = Double.MAX_VALUE;
@@ -162,5 +177,19 @@ public class FieldPositions {
         addFieldPosition(new Pose2d(5.763, 4.017, Rotation2d.fromDegrees(180)), "algea_d", 10, false);
         addFieldPosition(new Pose2d(5.137, 5.124, Rotation2d.fromDegrees(240)), "algea_e", 11, false);
         addFieldPosition(new Pose2d(3.849, 5.128, Rotation2d.fromDegrees(300)), "algea_f", 6, false);
+
+        // Adding field positions for reef AprilTags
+        addFieldPosition(new Pose2d(13.474446, 3.3012379999999997, Rotation2d.fromDegrees(30)), "tag_6", 6, false);
+        addFieldPosition(new Pose2d(13.890498, 4.0208200000000005, Rotation2d.fromDegrees(0)), "tag_7", 7, false);
+        addFieldPosition(new Pose2d(13.474446, 4.740402, Rotation2d.fromDegrees(30)), "tag_8", 8, false);
+        addFieldPosition(new Pose2d(12.643358, 4.740402, Rotation2d.fromDegrees(60)), "tag_9", 9, false);
+        addFieldPosition(new Pose2d(12.227305999999999, 4.0208200000000005, Rotation2d.fromDegrees(90)), "tag_10", 10, false);
+        addFieldPosition(new Pose2d(12.643358, 3.3012379999999997, Rotation2d.fromDegrees(60)), "tag_11", 11, false);
+        addFieldPosition(new Pose2d(4.073905999999999, 3.3012379999999997, Rotation2d.fromDegrees(60)), "tag_17", 17, false);
+        addFieldPosition(new Pose2d(3.6576, 4.0208200000000005, Rotation2d.fromDegrees(90)), "tag_18", 18, false);
+        addFieldPosition(new Pose2d(4.073905999999999, 4.740402, Rotation2d.fromDegrees(60)), "tag_19", 19, false);
+        addFieldPosition(new Pose2d(4.904739999999999, 4.740402, Rotation2d.fromDegrees(30)), "tag_20", 20, false);
+        addFieldPosition(new Pose2d(5.321046, 4.0208200000000005, Rotation2d.fromDegrees(0)), "tag_21", 21, false);
+        addFieldPosition(new Pose2d(4.904739999999999, 3.3012379999999997, Rotation2d.fromDegrees(30)), "tag_22", 22, false);
     }
 }

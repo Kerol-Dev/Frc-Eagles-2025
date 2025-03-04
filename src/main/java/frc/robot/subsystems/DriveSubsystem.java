@@ -279,7 +279,8 @@ public class DriveSubsystem extends SubsystemBase {
       Pose2d target;
 
       if (type == PathfindType.Reef)
-        target = fieldPositions.getRightLeftReef((int) LimelightHelpers.getFiducialID(""), right, () -> DriverStation.getAlliance().get() == Alliance.Blue);
+        // target = fieldPositions.getRightLeftReef((int) LimelightHelpers.getFiducialID(""), right, () -> DriverStation.getAlliance().get() == Alliance.Blue);
+        target = fieldPositions.getRightLeftReef(fieldPositions.getClosestTag(getPose()), right, () -> DriverStation.getAlliance().get() == Alliance.Blue);
       else if (type == PathfindType.Human)
         target = fieldPositions.getClosestHumanPose(getPose());
       else if (type == PathfindType.Algea)
