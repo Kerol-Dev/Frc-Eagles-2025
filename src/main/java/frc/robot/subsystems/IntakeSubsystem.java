@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmIntakeConstants;
+import frc.robot.subsystems.misc.ElevatorPosition;
 
 public class IntakeSubsystem extends SubsystemBase{
     private final TalonFX ArmIntakeMotor = new TalonFX(ArmIntakeConstants.kArmIntakeMotorCanID);
@@ -60,12 +61,12 @@ public class IntakeSubsystem extends SubsystemBase{
         };
     }
 
-    public Command releaseCommand(boolean isAlgae){
+    public Command releaseCommand(boolean isAlgae, ElevatorPosition position){
         return new Command(){
             @Override
             public void initialize(){
                 grab = false;
-                setIntakeSpeed(0.55 * (isAlgae ? -1 : 1));
+                setIntakeSpeed((position == ElevatorPosition.place_coral_l ? 0.2 : 0.55) * (isAlgae ? -1 : 1));
             }
 
             @Override

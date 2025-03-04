@@ -93,8 +93,8 @@ public class DriveSubsystem extends SubsystemBase {
   PIDController yController = new PIDController(1.3, 0.0, 0.0);
   PIDController rController = new PIDController(0.04, 0, 0);
 
-  private double kP = 3;
-  private double kI = 0;
+  private double kP = 2.25;
+  private double kI = 0.5;
   private double kD = 0;
 
   /*
@@ -112,7 +112,7 @@ public class DriveSubsystem extends SubsystemBase {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
               new PIDConstants(kP, kI, kD),
-              new PIDConstants(1.5, 0, 0.0)),
+              new PIDConstants(1, 0, 0.0)),
           RobotConfig.fromGUISettings(), () -> false,
           this);
 
@@ -310,7 +310,7 @@ public class DriveSubsystem extends SubsystemBase {
   boolean movedOnce = false;
 
   public boolean finishedPath() {
-    if (!movedOnce && Math.abs(getSpeeds().vyMetersPerSecond) > 0.1 && Math.abs(getSpeeds().vxMetersPerSecond) > 0.1)
+    if (!movedOnce && Math.abs(getSpeeds().vyMetersPerSecond) > 0.5 && Math.abs(getSpeeds().vxMetersPerSecond) > 0.5)
       movedOnce = true;
 
     if (Math.abs(getSpeeds().vyMetersPerSecond) < 0.1 && movedOnce && Math.abs(getSpeeds().vxMetersPerSecond) < 0.1) {

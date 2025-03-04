@@ -13,6 +13,18 @@
         {
           "type": "named",
           "data": {
+            "name": "PlaceL4Right"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "PlaceL4"
           }
         },
@@ -32,6 +44,18 @@
           "type": "path",
           "data": {
             "pathName": "L4-Place-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PlaceL4Left"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
           }
         },
         {

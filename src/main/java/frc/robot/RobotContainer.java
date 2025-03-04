@@ -98,6 +98,9 @@ public class RobotContainer {
             .andThen(IdleSystemsCommand()),
         () -> m_Intake.getCoralIntakeSensor(), true);
 
+    registerNamedCommand("PlaceL4Right", pathfindToReef(true), () -> m_Intake.getCoralIntakeSensor(), true);
+    registerNamedCommand("PlaceL4Left", pathfindToReef(false), () -> m_Intake.getCoralIntakeSensor(), true);
+
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData(autoChooser);
   }
@@ -127,7 +130,11 @@ public class RobotContainer {
     driverController.leftBumper().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReef(false)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
 
-    driverController.x().onTrue(m_Intake.releaseCommand(true));
+    driverController.x().onTrue(m_Intake.releaseCommand(true, ElevatorPosition.grab_algae_reef_1));
+
+    driverController.a().onTrue(PlaceReefCoralCommand(ElevatorPosition.place_coral_l, ArmPosition.place_coral_l)
+        .andThen(IdleSystemsCommand()).andThen(resetCommandScheduler())
+        .onlyIf(() -> m_Intake.getCoralIntakeSensor()));
 
     driverController.povUp().onTrue(PlaceReefCoralCommand(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
         .andThen(IdleSystemsCommand()).andThen(resetCommandScheduler())
@@ -186,11 +193,11 @@ public class RobotContainer {
   private Command PlaceReefCoralCommand(ElevatorPosition elevatorPosition, ArmPosition armPosition) {
     return PlaceReefInit(elevatorPosition, armPosition)
         .andThen(new WaitCommand(0.1))
-        .andThen(AutoReleaseCoral());
+        .andThen(AutoReleaseCoral(elevatorPosition));
   }
 
-  private Command AutoReleaseCoral() {
-    return m_Intake.releaseCommand(false)
+  private Command AutoReleaseCoral(ElevatorPosition position) {
+    return m_Intake.releaseCommand(false, position)
         .andThen(new InstantCommand(() -> triggerRumble(0.5)));
   }
 
@@ -245,7 +252,7 @@ public class RobotContainer {
   private Command DropAlgaeProcessorCommand() {
     return m_elevator.setElevatorPositionCommand(ElevatorPosition.place_algae_processor)
         .alongWith(m_arm.setArmPositionCommand(ArmPosition.place_algae_processor))
-        .andThen(m_Intake.releaseCommand(true))
+        .andThen(m_Intake.releaseCommand(true, ElevatorPosition.place_algae_processor))
         .andThen(new WaitUntilCommand(() -> !m_Intake.getAlgaeArmIntakeSensor()))
         .andThen(new InstantCommand(() -> triggerRumble(0.5)));
   }
@@ -323,9 +330,8 @@ public class RobotContainer {
 
   private Command pathfindToReef(boolean right) {
     return m_robotDrive
-        .goToPosePathfind(PathfindType.Reef, right)
-        .andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
-  }
+        .goToPosePathfind(PathfindType.Reef, right);
+    }
 
   private Command pathFindToAlgae() {
     return m_robotDrive.goToPosePathfind(PathfindType.Algea, false);

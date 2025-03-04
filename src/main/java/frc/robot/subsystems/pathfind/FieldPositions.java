@@ -9,6 +9,8 @@ import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 class FieldPosition {
     public Pose2d pose;
@@ -66,7 +68,7 @@ public class FieldPositions {
     }
 
     public Pose2d getPose(FieldPosition fieldPosition) {
-        return fieldPosition.pose;
+        return DriverStation.getAlliance().get() == Alliance.Blue ? fieldPosition.pose : flipBlueToRed(fieldPosition.pose);
     }
 
     public Pose2d getClosestReefPose(Pose2d robotPose) {
@@ -77,7 +79,7 @@ public class FieldPositions {
                 double distance = PhotonUtils.getDistanceToPose(robotPose, getPose(fieldPosition));
                 if (distance < closestDistance) {
                     closestDistance = distance;
-                    closestReefPose = fieldPosition.pose;
+                    closestReefPose = getPose(fieldPosition);
                 }
             }
         }
@@ -107,7 +109,7 @@ public class FieldPositions {
                 double distance = PhotonUtils.getDistanceToPose(robotPose, getPose(fieldPosition));
                 if (distance < closestDistance) {
                     closestDistance = distance;
-                    closestAlgeaPose = fieldPosition.pose;
+                    closestAlgeaPose = getPose(fieldPosition);
                 }
             }
         }
@@ -147,11 +149,18 @@ public class FieldPositions {
 
         addFieldPosition(new Pose2d(5.973, 0.762, Rotation2d.fromDegrees(270)), "processor", -1, false);
 
-        addFieldPosition(new Pose2d(3.206, 4.035, Rotation2d.fromDegrees(0)), "algea_a", -1, false);
-        addFieldPosition(new Pose2d(3.851, 2.917, Rotation2d.fromDegrees(60)), "algea_b", -1, false);
-        addFieldPosition(new Pose2d(5.125, 2.919, Rotation2d.fromDegrees(120)), "algea_c", -1, false);
-        addFieldPosition(new Pose2d(5.763, 4.017, Rotation2d.fromDegrees(180)), "algea_d", -1, false);
-        addFieldPosition(new Pose2d(5.137, 5.124, Rotation2d.fromDegrees(240)), "algea_e", -1, false);
-        addFieldPosition(new Pose2d(3.849, 5.128, Rotation2d.fromDegrees(300)), "algea_f", -1, false);
+        addFieldPosition(new Pose2d(3.206, 4.035, Rotation2d.fromDegrees(0)), "algea_a", 18, false);
+        addFieldPosition(new Pose2d(3.851, 2.917, Rotation2d.fromDegrees(60)), "algea_b", 17, false);
+        addFieldPosition(new Pose2d(5.125, 2.919, Rotation2d.fromDegrees(120)), "algea_c", 22, false);
+        addFieldPosition(new Pose2d(5.763, 4.017, Rotation2d.fromDegrees(180)), "algea_d", 21, false);
+        addFieldPosition(new Pose2d(5.137, 5.124, Rotation2d.fromDegrees(240)), "algea_e", 20, false);
+        addFieldPosition(new Pose2d(3.849, 5.128, Rotation2d.fromDegrees(300)), "algea_f", 19, false);
+
+        addFieldPosition(new Pose2d(3.206, 4.035, Rotation2d.fromDegrees(0)), "algea_a", 7, false);
+        addFieldPosition(new Pose2d(3.851, 2.917, Rotation2d.fromDegrees(60)), "algea_b", 8, false);
+        addFieldPosition(new Pose2d(5.125, 2.919, Rotation2d.fromDegrees(120)), "algea_c", 9, false);
+        addFieldPosition(new Pose2d(5.763, 4.017, Rotation2d.fromDegrees(180)), "algea_d", 10, false);
+        addFieldPosition(new Pose2d(5.137, 5.124, Rotation2d.fromDegrees(240)), "algea_e", 11, false);
+        addFieldPosition(new Pose2d(3.849, 5.128, Rotation2d.fromDegrees(300)), "algea_f", 6, false);
     }
 }
