@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
@@ -14,8 +17,11 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.subsystems.misc.ElevatorPosition;
 
+@AutoLog
 public class ElevatorSubsystem extends SubsystemBase {
+    @AutoLogOutput
     public static final TalonFX elevatorMotor = new TalonFX(ElevatorConstants.kElevatorMotorCanID);
+    @AutoLogOutput
     public final TalonFX elevatorMotor2 = new TalonFX(ElevatorConstants.kElevatorMotorCanID2);
 
     private double elevatorGoalPosition = 0;

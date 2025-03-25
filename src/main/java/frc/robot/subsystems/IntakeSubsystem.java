@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -12,11 +15,14 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmIntakeConstants;
 import frc.robot.subsystems.misc.ElevatorPosition;
 
+@AutoLog
 public class IntakeSubsystem extends SubsystemBase{
+    @AutoLogOutput
     private final TalonFX ArmIntakeMotor = new TalonFX(ArmIntakeConstants.kArmIntakeMotorCanID);
     public static final DigitalInput coralArmIntakeSensor = new DigitalInput(ArmIntakeConstants.kCoralArmIntakeSensorPort);
     private final DigitalInput algaeArmIntakeSensor = new DigitalInput(ArmIntakeConstants.kAlgaeArmIntakeSensorPort);
     private boolean grab = false;
+    
     public IntakeSubsystem(){
         TalonFXConfiguration configuration = new TalonFXConfiguration();
         configuration.MotorOutput.Inverted = ArmIntakeConstants.kArmIntakeMotorInverted ? InvertedValue.Clockwise_Positive : InvertedValue.CounterClockwise_Positive;

@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import org.littletonrobotics.junction.AutoLog;
 import org.photonvision.PhotonUtils;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -9,7 +10,6 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -38,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * It controls the four swerve modules and handles field-relative and
  * robot-relative driving.
  */
+@AutoLog
 public class DriveSubsystem extends SubsystemBase {
 
   // Swerve modules for each corner of the robot
@@ -89,10 +90,6 @@ public class DriveSubsystem extends SubsystemBase {
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
   public FieldPositions fieldPositions = new FieldPositions();
 
-  PIDController xController = new PIDController(2, 0.0, 0.0);
-  PIDController yController = new PIDController(1.3, 0.0, 0.0);
-  PIDController rController = new PIDController(0.04, 0, 0);
-
   private double kP = 2.25;
   private double kI = 0.5;
   private double kD = 0;
@@ -101,9 +98,7 @@ public class DriveSubsystem extends SubsystemBase {
    * Constructs the DriveSubsystem and configures autonomous settings.
    */
   public DriveSubsystem() {
-    xController.setTolerance(0.02);
-    yController.setTolerance(0.02);
-    rController.setTolerance(1);
+  
     configureAutoBuilder();
   }
 
@@ -156,14 +151,9 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontLeft.updateSmartDashboard();
     m_frontRight.updateSmartDashboard();
 
-    SmartDashboard.putBoolean("X Setpoint", xController.atSetpoint());
-    SmartDashboard.putBoolean("Y Setpoint", yController.atSetpoint());
-    SmartDashboard.putBoolean("R Setpoint", rController.atSetpoint());
-
     m_field.setRobotPose(getPose());
 
 
-    SmartDashboard.putData(m_gyro);
     SmartDashboard.putData(m_field);
   }
 

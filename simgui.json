@@ -1,9 +1,11 @@
 {
   "NTProvider": {
     "types": {
+      "/AdvantageKit/RealOutputs/PathPlanner": "Alerts",
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Alerts": "Alerts",
       "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/PathPlanner": "Alerts",
       "/SmartDashboard/SendableChooser[1]": "String Chooser",
       "/SmartDashboard/VisionSystemSim-Main/Sim Field": "Field2d",
       "/SmartDashboard/navX-Sensor[4]": "Gyro"

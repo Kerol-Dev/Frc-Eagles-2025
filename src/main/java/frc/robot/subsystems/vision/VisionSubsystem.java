@@ -1,5 +1,6 @@
 package frc.robot.subsystems.vision;
 
+import org.littletonrobotics.junction.AutoLog;
 import org.photonvision.PhotonUtils;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,6 +13,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Detector;
 
+@AutoLog
 public class VisionSubsystem extends SubsystemBase {
     /** Pose estimator for swerve drive using vision data */
     SwerveDrivePoseEstimator poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
