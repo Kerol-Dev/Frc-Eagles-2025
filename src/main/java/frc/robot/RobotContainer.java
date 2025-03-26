@@ -1,6 +1,5 @@
 package frc.robot;
 
-
 import java.util.function.BooleanSupplier;
 
 // Import necessary libraries and classes
@@ -21,6 +20,7 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.misc.ArmPosition;
 import frc.robot.subsystems.misc.ElevatorPosition;
+import frc.robot.subsystems.pathfind.AlignToAprilTagOffsetCommand;
 import frc.robot.subsystems.pathfind.PathfindType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -70,8 +70,7 @@ public class RobotContainer {
             -MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
             -MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband),
             true,
-            slowSpeedEnabled
-            , true),
+            slowSpeedEnabled, true),
         m_robotDrive));
 
     // Configure button bindings
@@ -120,9 +119,6 @@ public class RobotContainer {
 
     driverController.b().onTrue(checkAndSwitchToCoralMode().andThen(m_Intake.grabCommand(false))
         .onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
-
-    // driverController.a().whileTrue(autonomTeleop().andThen(resetCommandScheduler()))
-    //     .onFalse(IdleSystemsCommand().andThen(resetCommandScheduler()));
 
     driverController.rightBumper().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReef(true)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
@@ -221,11 +217,8 @@ public class RobotContainer {
   static edu.wpi.first.wpilibj.Timer timerRumble;
   static double lastTime = 0;
 
-
-  public void periodic()
-  {
-    if(timerRumble.get() - lastTime > 0.5 && lastTime > 0)
-    {
+  public void periodic() {
+    if (timerRumble.get() - lastTime > 0.5 && lastTime > 0) {
       lastTime = 0;
       driverController.setRumble(RumbleType.kBothRumble, 0);
     }
@@ -256,17 +249,6 @@ public class RobotContainer {
         .andThen(new WaitUntilCommand(() -> !m_Intake.getAlgaeArmIntakeSensor()))
         .andThen(new InstantCommand(() -> triggerRumble(0.5)));
   }
-
-  // private Command autonomTeleop()
-  // {
-  //   return Commands.sequence(m_robotDrive.goToPosePathfind("reef_j"), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3), IdleSystemsCommand(),
-  //   m_robotDrive.goToPosePathfind(PathfindType.Human, false), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), IntakeSourceGrabCommand(),
-  //   m_robotDrive.goToPosePathfind("reef_k"), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3), IdleSystemsCommand(),
-  //   m_robotDrive.goToPosePathfind(PathfindType.Human, false), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), IntakeSourceGrabCommand(),
-  //   m_robotDrive.goToPosePathfind("reef_l"), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3), IdleSystemsCommand(),
-  //   m_robotDrive.goToPosePathfind(PathfindType.Human, false), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), IntakeSourceGrabCommand(),
-  //   m_robotDrive.goToPosePathfind("reef_a"), new WaitUntilCommand(() -> m_robotDrive.finishedPath()), PlaceReefCoralCommand(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3), IdleSystemsCommand());
-  // }
 
   /**
    * Command for grabbing from the intake source.
@@ -301,8 +283,7 @@ public class RobotContainer {
     if (DriverStation.isAutonomousEnabled())
       return;
 
-    if(lastTime == 0)
-    {
+    if (lastTime == 0) {
       driverController.setRumble(GenericHID.RumbleType.kBothRumble, 1.0);
       lastTime = timerRumble.get();
     }
@@ -322,19 +303,19 @@ public class RobotContainer {
   }
 
   // Pathfinding Commands
-  // private Command pathfindToHuman() {
-  // return m_robotDrive
-  // .goToPosePathfind(PathfindType.Human, false)
-  // .andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
-  // }
+  @SuppressWarnings("unused")
+  private Command pathfindToHuman() {
+    return m_robotDrive
+        .goToPosePathfind(PathfindType.Human, false)
+        .andThen(new WaitUntilCommand(() -> m_robotDrive.finishedPath()));
+  }
 
   private Command pathfindToReef(boolean right) {
-    return m_robotDrive
-        .goToPosePathfind(PathfindType.Reef, right);
-    }
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, right, false);
+  }
 
   private Command pathFindToAlgae() {
-    return m_robotDrive.goToPosePathfind(PathfindType.Algea, false);
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, false, true);
   }
 
   private Command pathfindToProcessor() {

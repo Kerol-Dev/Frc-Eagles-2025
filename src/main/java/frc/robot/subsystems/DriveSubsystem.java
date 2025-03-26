@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.AutoLog;
-import org.photonvision.PhotonUtils;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -14,8 +13,6 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-// import edu.wpi.first.math.geometry.Rotation3d;
-// import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -24,6 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.pathfind.FieldPositions;
 import frc.robot.subsystems.pathfind.PathfindType;
@@ -40,6 +38,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  */
 @AutoLog
 public class DriveSubsystem extends SubsystemBase {
+  // ONLY FOR SIMULATION
+  /*
+   * public static final SimulatedSwerveModule m_frontLeft = new
+   * SimulatedSwerveModule(
+   * 0.1);
+   * 
+   * public static final SimulatedSwerveModule m_frontRight= new
+   * SimulatedSwerveModule(
+   * 0);
+   * 
+   * public static final SimulatedSwerveModule m_rearLeft = new
+   * SimulatedSwerveModule(
+   * 0);
+   * 
+   * public static final SimulatedSwerveModule m_rearRight = new
+   * SimulatedSwerveModule(
+   * 0);
+   */
 
   // Swerve modules for each corner of the robot
   public static final SwerveModule m_frontLeft = new SwerveModule(
@@ -81,6 +97,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Field visualization and gyro
   public final Field2d m_field = new Field2d();
   public static AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
+  public static double robotAngleSim = 0;
 
   // Slew rate limiters for smooth control
   private SlewRateLimiter m_magXLimiter = new SlewRateLimiter(DriveConstants.kMaxAcceleration);
@@ -88,17 +105,16 @@ public class DriveSubsystem extends SubsystemBase {
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kMaxAngularAcceleration);
 
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
-  public FieldPositions fieldPositions = new FieldPositions();
+  public static FieldPositions fieldPositions = new FieldPositions();
 
-  private double kP = 2.25;
-  private double kI = 0.5;
+  private double kP = 3;
+  private double kI = 0;
   private double kD = 0;
 
   /*
    * Constructs the DriveSubsystem and configures autonomous settings.
    */
   public DriveSubsystem() {
-  
     configureAutoBuilder();
   }
 
@@ -107,7 +123,7 @@ public class DriveSubsystem extends SubsystemBase {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
               new PIDConstants(kP, kI, kD),
-              new PIDConstants(1, 0, 0.0)),
+              new PIDConstants(3, 0, 0.0)),
           RobotConfig.fromGUISettings(), () -> false,
           this);
 
@@ -135,6 +151,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param speeds The desired chassis speeds.
    */
   public void setSpeeds(ChassisSpeeds speeds) {
+    robotAngleSim += speeds.omegaRadiansPerSecond * 2;
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -143,16 +160,19 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
-  
+
   @Override
   public void periodic() {
-    m_rearLeft.updateSmartDashboard();
-    m_rearRight.updateSmartDashboard();
     m_frontLeft.updateSmartDashboard();
-    m_frontRight.updateSmartDashboard();
+    // Simulation only
+    /*
+     * m_rearLeft.updateMotorPosition(1.5);
+     * m_rearRight.updateMotorPosition(1.5);
+     * m_frontLeft.updateMotorPosition(1.5);
+     * m_frontRight.updateMotorPosition(1.5);
+     */
 
     m_field.setRobotPose(getPose());
-
 
     SmartDashboard.putData(m_field);
   }
@@ -187,8 +207,6 @@ public class DriveSubsystem extends SubsystemBase {
   public void resetOdometry(Pose2d pose) {
     visionSubsystem.resetOdometry(pose);
   }
-  
-  boolean isAligning = false;
 
   /**
    * Drives the robot with the given speeds and modes.
@@ -199,10 +217,11 @@ public class DriveSubsystem extends SubsystemBase {
    * @param robotCentric Whether the driving is robot-centric.
    * @param slowSpeed    Whether to use slow speed mode.
    */
-  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean slowSpeed, boolean isJoystick) {
-    if(isAligning && isJoystick)
-       return;
+  public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean slowSpeed,
+      boolean isJoystick) {
     double xSpeedDelivered, ySpeedDelivered, rotDelivered;
+
+    robotAngleSim += rot * 2;
 
     if (slowSpeed) {
       xSpeedDelivered = m_magXLimiter.calculate(xSpeed * 0.3) * DriveConstants.kMaxSpeedMetersPerSecond;
@@ -215,7 +234,7 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-      fieldRelative
+        fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
                 getHeading().plus(Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0)))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
@@ -243,19 +262,6 @@ public class DriveSubsystem extends SubsystemBase {
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
   }
 
-  public Pose2d getClosestPose(Pose2d... poses) {
-    Pose2d closestPose = null;
-    double closestDistance = Double.MAX_VALUE;
-    for (Pose2d pose2d : poses) {
-      double distance = PhotonUtils.getDistanceToPose(getPose(), pose2d);
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestPose = pose2d;
-      }
-    }
-    return closestPose;
-  }
-
   PathConstraints constraints = new PathConstraints(DriveConstants.kMaxSpeedMetersPerSecondPathfind,
       DriveConstants.kMaxAccelerationPathfind,
       DriveConstants.kMaxAngularSpeedPathfind,
@@ -269,8 +275,8 @@ public class DriveSubsystem extends SubsystemBase {
       Pose2d target;
 
       if (type == PathfindType.Reef)
-        // target = fieldPositions.getRightLeftReef((int) LimelightHelpers.getFiducialID(""), right, () -> DriverStation.getAlliance().get() == Alliance.Blue);
-        target = fieldPositions.getRightLeftReef(fieldPositions.getClosestTag(getPose()), right, () -> DriverStation.getAlliance().get() == Alliance.Blue);
+        target = fieldPositions.getRightLeftReef(fieldPositions.getClosestTag(getPose()), right,
+            () -> DriverStation.getAlliance().get() == Alliance.Blue);
       else if (type == PathfindType.Human)
         target = fieldPositions.getClosestHumanPose(getPose());
       else if (type == PathfindType.Algea)
@@ -325,7 +331,12 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The current heading as a Rotation2d.
    */
   public static Rotation2d getHeading() {
-    return m_gyro.getRotation2d().plus(Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 180 : 0));
+    if (Robot.isSimulation())
+      return Rotation2d.fromDegrees(robotAngleSim)
+          .plus(Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 180 : 0));
+    ;
+    return m_gyro.getRotation2d()
+        .plus(Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 180 : 0));
   }
 
   public static SwerveModulePosition[] getModulePositions() {

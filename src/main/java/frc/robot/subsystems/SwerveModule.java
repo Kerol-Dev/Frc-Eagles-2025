@@ -28,7 +28,6 @@ import frc.robot.Constants.ModuleConstants;
  */
 @AutoLog
 public class SwerveModule {
-
   // Motor controllers for driving and turning
   public final TalonFX m_drivingMotor;
   public final SparkMax m_turningSparkMax;
