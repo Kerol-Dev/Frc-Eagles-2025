@@ -3,14 +3,12 @@
   "robotLength": 0.87,
   "holonomicMode": true,
   "pathFolders": [
-    "L4",
-    "L4-Mirror",
-    "L4-Mirror-Red",
-    "L4-Red"
+    "L4-Blue",
+    "L4-Blue-Mirrored"
   ],
   "autoFolders": [],
-  "defaultMaxVel": 2.0,
-  "defaultMaxAccel": 1.5,
+  "defaultMaxVel": 4.0,
+  "defaultMaxAccel": 5.0,
   "defaultMaxAngVel": 300.0,
   "defaultMaxAngAccel": 300.0,
   "defaultNominalVoltage": 12.0,

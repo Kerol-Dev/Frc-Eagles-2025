@@ -91,7 +91,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             case place_coral_l4:
                 return 4.23;
             default:
-                return 0.0;
+                return 0.05;
         }
     }
 

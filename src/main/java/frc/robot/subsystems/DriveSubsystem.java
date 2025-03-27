@@ -124,7 +124,7 @@ public class DriveSubsystem extends SubsystemBase {
           new PPHolonomicDriveController(
               new PIDConstants(kP, kI, kD),
               new PIDConstants(3, 0, 0.0)),
-          RobotConfig.fromGUISettings(), () -> false,
+          RobotConfig.fromGUISettings(), () -> DriverStation.getAlliance().get() == Alliance.Red,
           this);
 
     } catch (Exception e) {

@@ -7,10 +7,14 @@ import frc.robot.subsystems.vision.LimelightHelpers;
 
 import org.littletonrobotics.junction.Logger;
 
+import com.pathplanner.lib.util.FlippingUtil;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Pose3d;
 
@@ -21,11 +25,13 @@ public class AlignToAprilTagOffsetCommand extends Command {
     private final PIDController thetaController = new PIDController(5.0, 0, 0);
     private boolean isRight = false;
     private boolean isAlgae = false;
+    private boolean isReef = false;
 
-    public AlignToAprilTagOffsetCommand(DriveSubsystem swerve, boolean isRight, boolean isAlgae) {
+    public AlignToAprilTagOffsetCommand(DriveSubsystem swerve, boolean isRight, boolean isAlgae, boolean isReef) {
         this.swerve = swerve;
         this.isRight = isRight;
         this.isAlgae = isAlgae;
+        this.isReef = isReef;
         addRequirements(swerve);
 
         xController.setTolerance(0.02);
@@ -37,21 +43,30 @@ public class AlignToAprilTagOffsetCommand extends Command {
     @Override
     public void execute() {
         if (!LimelightHelpers.getTV("")) {
-        swerve.stop();
-        return;
+            swerve.stop();
+            return;
         }
 
         // Tag pose relative to camera
-        Pose3d tagPose = VisionConstants.fieldLayout.getTagPose(DriveSubsystem.fieldPositions.getClosestTag(DriveSubsystem.getRPose3d().toPose2d())).get();
+        Pose3d tagPose = VisionConstants.fieldLayout
+                .getTagPose(DriveSubsystem.fieldPositions.getClosestTag(DriveSubsystem.getRPose3d().toPose2d())).get();
+
+        if (!isReef) {
+            tagPose = new Pose3d(
+                    DriveSubsystem.fieldPositions.getClosestHumanPose(DriveSubsystem.getRPose3d().toPose2d()));
+            if (DriverStation.getAlliance().get() == Alliance.Red) {
+                tagPose = new Pose3d(FlippingUtil.flipFieldPose(tagPose.toPose2d()));
+            }
+        }
+
         Translation3d tagTranslation = tagPose.getTranslation();
         Rotation3d tagRotation = tagPose.getRotation();
 
         // Calculate desired camera position with offset
         Translation3d offset = new Translation3d(
-                0.5, // 0.5m in front of the tag
-                isAlgae ? 0 : (isRight ? 0.164 : -0.164), // 0.164m to the right or left of the tag
-                0
-        );
+                0.5 * (!isReef ? 0 : 1), // 0.5m in front of the tag
+                (isAlgae || !isReef) ? 0 : (isRight ? 0.164 : -0.164), // 0.164m to the right or left of the tag
+                0);
 
         // Apply rotation to offset
         Translation3d rotatedOffset = offset.rotateBy(tagRotation);
@@ -65,24 +80,26 @@ public class AlignToAprilTagOffsetCommand extends Command {
 
         // Calculate error in camera space
         double errorX = desiredCameraPosition.getX() - robotTranslation.getX();
-        double errorZ = desiredCameraPosition.getY() - robotTranslation.getY();
+        double errorY = desiredCameraPosition.getY() - robotTranslation.getY();
         // Yaw correction to face tag
         double yawError = tagRotation.getZ() - DriveSubsystem.getHeading().getRadians();
 
         Logger.recordOutput("Align/Error_X", errorX);
-        Logger.recordOutput("Align/Error_Z", errorZ);
+        Logger.recordOutput("Align/Error_Y", errorY);
         Logger.recordOutput("Align/Error_Yaw", yawError);
 
-        // PID speed commands
-        double forwardSpeed = xController.calculate(errorZ, 0); // Forward/backward
-        double strafeSpeed = yController.calculate(errorX, 0); // Left/right
-        double thetaSpeed = thetaController.calculate(yawError, 0); // rotation
+        Logger.recordOutput("Align/X_Setpoint", xController.atSetpoint());
+        Logger.recordOutput("Align/Y_Setpoint", yController.atSetpoint());
+        Logger.recordOutput("Align/Yaw_Setpoint", thetaController.atSetpoint());
 
-        thetaSpeed = Math.toRadians(thetaSpeed);
+        // PID speed commands
+        double forwardSpeed = yController.calculate(errorY, 0); // Forward/backward
+        double strafeSpeed = xController.calculate(errorX, 0); // Left/right
+        double thetaSpeed = thetaController.calculate(yawError, 0); // rotation
 
         // Use gyro heading for field-relative drive
         Rotation2d robotHeading = DriveSubsystem.getHeading();
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-strafeSpeed, -forwardSpeed, -thetaSpeed * 10,
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-strafeSpeed, -forwardSpeed, -thetaSpeed,
                 robotHeading);
         swerve.setSpeeds(speeds);
     }

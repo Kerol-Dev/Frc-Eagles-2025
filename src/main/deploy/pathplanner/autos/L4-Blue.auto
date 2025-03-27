@@ -7,19 +7,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L4-Place-1"
+            "pathName": "L4-Blue-1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "PlaceL4"
+            "name": "AlignRight"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "L4-Grab-1"
+            "pathName": "L4-Blue-2"
           }
         },
         {
@@ -31,25 +31,61 @@
         {
           "type": "path",
           "data": {
-            "pathName": "L4-Place-2"
+            "pathName": "L4-Blue-3"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "PlaceL4"
+            "name": "AlignRight"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "L4-Grab-2"
+            "pathName": "L4-Blue-4"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "GrabFromSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L4-Blue-5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignLeft"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L4-Blue-6"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "GrabFromSource"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L4-Blue-7"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "AlignLeft"
           }
         }
       ]
