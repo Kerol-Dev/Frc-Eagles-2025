@@ -1,8 +1,6 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.AutoLog;
-import org.littletonrobotics.junction.AutoLogOutput;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -17,7 +15,6 @@ import frc.robot.subsystems.misc.ElevatorPosition;
 
 @AutoLog
 public class IntakeSubsystem extends SubsystemBase{
-    @AutoLogOutput
     private final TalonFX ArmIntakeMotor = new TalonFX(ArmIntakeConstants.kArmIntakeMotorCanID);
     public static final DigitalInput coralArmIntakeSensor = new DigitalInput(ArmIntakeConstants.kCoralArmIntakeSensorPort);
     private final DigitalInput algaeArmIntakeSensor = new DigitalInput(ArmIntakeConstants.kAlgaeArmIntakeSensorPort);
@@ -33,7 +30,6 @@ public class IntakeSubsystem extends SubsystemBase{
     public void periodic() {
         SmartDashboard.putBoolean("Coral Sensor", getCoralIntakeSensor());
         SmartDashboard.putBoolean("Algea Sensor", getAlgaeArmIntakeSensor());
-        SmartDashboard.putNumber("Coral Temp", ArmIntakeMotor.getDeviceTemp().getValueAsDouble());
 
         if(getAlgaeArmIntakeSensor() && !RobotContainer.coralMode && grab)
         {
@@ -47,7 +43,7 @@ public class IntakeSubsystem extends SubsystemBase{
     }
 
     public Command grabCommand(boolean isAlgae){
-        return new Command(){
+        Command command = new Command(){
             @Override
             public void initialize(){
                 grab = true;
@@ -65,6 +61,8 @@ public class IntakeSubsystem extends SubsystemBase{
                 return isAlgae ? getAlgaeArmIntakeSensor() : getCoralIntakeSensor();
             }
         };
+        command.addRequirements(this);
+        return command;
     }
 
     public Command releaseCommand(boolean isAlgae, ElevatorPosition position){

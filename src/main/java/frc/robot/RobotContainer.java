@@ -73,7 +73,7 @@ public class RobotContainer {
             slowSpeedEnabled, true),
         m_robotDrive));
 
-    m_Intake.setDefaultCommand(m_Intake.grabCommand(false).onlyWhile(() -> !m_Intake.getCoralIntakeSensor() && coralMode));
+    m_Intake.setDefaultCommand(m_Intake.grabCommand(false));
 
     // Configure button bindings
     configureButtonBindings();

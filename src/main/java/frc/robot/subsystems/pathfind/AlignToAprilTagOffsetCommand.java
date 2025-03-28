@@ -3,12 +3,9 @@ package frc.robot.subsystems.pathfind;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.vision.LimelightHelpers;
-
+import frc.robot.subsystems.vision.VisionSubsystem;
 import org.littletonrobotics.junction.Logger;
-
 import com.pathplanner.lib.util.FlippingUtil;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -42,7 +39,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
 
     @Override
     public void execute() {
-        if (!LimelightHelpers.getTV("")) {
+        if (!VisionSubsystem.latestVisionDetectionValid()) {
             swerve.stop();
             return;
         }
@@ -97,9 +94,10 @@ public class AlignToAprilTagOffsetCommand extends Command {
         double strafeSpeed = xController.calculate(errorX, 0); // Left/right
         double thetaSpeed = thetaController.calculate(yawError, 0); // rotation
 
+        thetaSpeed = Math.toRadians(thetaSpeed);
         // Use gyro heading for field-relative drive
         Rotation2d robotHeading = DriveSubsystem.getHeading();
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-strafeSpeed, -forwardSpeed, -thetaSpeed,
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-strafeSpeed, -forwardSpeed, -thetaSpeed * 10,
                 robotHeading);
         swerve.setSpeeds(speeds);
     }

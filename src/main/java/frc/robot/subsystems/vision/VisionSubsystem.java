@@ -22,6 +22,8 @@ public class VisionSubsystem extends SubsystemBase {
     SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
             DriveSubsystem.getHeading(), DriveSubsystem.getModulePositions(), new Pose2d());
 
+    public static double lastVisionUpdatePassTime = 0;
+
     /**
      * Constructor initializes the vision system and cameras.
      */
@@ -38,6 +40,7 @@ public class VisionSubsystem extends SubsystemBase {
      * Periodic update for simulation, including updating pose estimations.
      */
     public void periodic() {
+        updateLastVisionUpdatePassTime();
         m_poseEstimator.update(
                 DriveSubsystem.getHeading(),
                 DriveSubsystem.getModulePositions());
@@ -88,6 +91,24 @@ public class VisionSubsystem extends SubsystemBase {
                         mt2.timestampSeconds);
             }
         }
+    }
+
+    /**
+     * Updates the last vision update pass time if the Limelight has a valid target.
+     */
+    public void updateLastVisionUpdatePassTime() {
+        if (LimelightHelpers.getTV("")) {
+            lastVisionUpdatePassTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
+        }
+    }
+
+    /**
+     * Gets the time in seconds since the last vision detection.
+     * 
+     * @return Seconds since the last vision detection.
+     */
+    public static boolean latestVisionDetectionValid() {
+        return edu.wpi.first.wpilibj.Timer.getFPGATimestamp() - lastVisionUpdatePassTime < 5 && lastVisionUpdatePassTime > 0;
     }
 
     public static boolean getLimelightObjectTarget() {

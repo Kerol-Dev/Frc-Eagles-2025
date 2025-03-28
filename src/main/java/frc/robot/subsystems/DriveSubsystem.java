@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.AutoLog;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -39,23 +40,22 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 @AutoLog
 public class DriveSubsystem extends SubsystemBase {
   // ONLY FOR SIMULATION
-  /*
-   * public static final SimulatedSwerveModule m_frontLeft = new
-   * SimulatedSwerveModule(
-   * 0.1);
-   * 
-   * public static final SimulatedSwerveModule m_frontRight= new
-   * SimulatedSwerveModule(
-   * 0);
-   * 
-   * public static final SimulatedSwerveModule m_rearLeft = new
-   * SimulatedSwerveModule(
-   * 0);
-   * 
-   * public static final SimulatedSwerveModule m_rearRight = new
-   * SimulatedSwerveModule(
-   * 0);
-   */
+
+  // public static final SimulatedSwerveModule m_frontLeft = new
+  // SimulatedSwerveModule(
+  // 0.1);
+
+  // public static final SimulatedSwerveModule m_frontRight = new
+  // SimulatedSwerveModule(
+  // 0);
+
+  // public static final SimulatedSwerveModule m_rearLeft = new
+  // SimulatedSwerveModule(
+  // 0);
+
+  // public static final SimulatedSwerveModule m_rearRight = new
+  // SimulatedSwerveModule(
+  // 0);
 
   // Swerve modules for each corner of the robot
   public static final SwerveModule m_frontLeft = new SwerveModule(
@@ -124,7 +124,7 @@ public class DriveSubsystem extends SubsystemBase {
           new PPHolonomicDriveController(
               new PIDConstants(kP, kI, kD),
               new PIDConstants(3, 0, 0.0)),
-          RobotConfig.fromGUISettings(), () -> DriverStation.getAlliance().get() == Alliance.Red,
+          RobotConfig.fromGUISettings(), () -> !isAllianceBlue(),
           this);
 
     } catch (Exception e) {
@@ -145,11 +145,6 @@ public class DriveSubsystem extends SubsystemBase {
         m_rearRight.getState());
   }
 
-  /**
-   * Sets the desired speeds for the robot.
-   * 
-   * @param speeds The desired chassis speeds.
-   */
   public void setSpeeds(ChassisSpeeds speeds) {
     robotAngleSim += speeds.omegaRadiansPerSecond * 2;
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
@@ -165,12 +160,11 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     m_frontLeft.updateSmartDashboard();
     // Simulation only
-    /*
-     * m_rearLeft.updateMotorPosition(1.5);
-     * m_rearRight.updateMotorPosition(1.5);
-     * m_frontLeft.updateMotorPosition(1.5);
-     * m_frontRight.updateMotorPosition(1.5);
-     */
+
+    // m_rearLeft.updateMotorPosition(1.5);
+    // m_rearRight.updateMotorPosition(1.5);
+    // m_frontLeft.updateMotorPosition(1.5);
+    // m_frontRight.updateMotorPosition(1.5);
 
     m_field.setRobotPose(getPose());
 
@@ -236,7 +230,7 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
         fieldRelative
             ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                getHeading().plus(Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Red ? 180 : 0)))
+                getHeading().plus(Rotation2d.fromDegrees(!isAllianceBlue() ? 180 : 0)))
             : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
     setModuleStates(swerveModuleStates);
   }
@@ -276,7 +270,7 @@ public class DriveSubsystem extends SubsystemBase {
 
       if (type == PathfindType.Reef)
         target = fieldPositions.getRightLeftReef(fieldPositions.getClosestTag(getPose()), right,
-            () -> DriverStation.getAlliance().get() == Alliance.Blue);
+            () -> isAllianceBlue());
       else if (type == PathfindType.Human)
         target = fieldPositions.getClosestHumanPose(getPose());
       else if (type == PathfindType.Algea)
@@ -325,6 +319,10 @@ public class DriveSubsystem extends SubsystemBase {
     m_gyro.reset();
   }
 
+  public static boolean isAllianceBlue() {
+    return DriverStation.getAlliance().isEmpty() ? true : DriverStation.getAlliance().get() == Alliance.Blue;
+  }
+
   /**
    * Retrieves the current heading of the robot.
    * 
@@ -333,10 +331,10 @@ public class DriveSubsystem extends SubsystemBase {
   public static Rotation2d getHeading() {
     if (Robot.isSimulation())
       return Rotation2d.fromDegrees(robotAngleSim)
-          .plus(Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 180 : 0));
+          .plus(Rotation2d.fromDegrees(isAllianceBlue() ? 180 : 0));
     ;
     return m_gyro.getRotation2d()
-        .plus(Rotation2d.fromDegrees(DriverStation.getAlliance().get() == Alliance.Blue ? 180 : 0));
+        .plus(Rotation2d.fromDegrees(isAllianceBlue() ? 180 : 0));
   }
 
   public static SwerveModulePosition[] getModulePositions() {

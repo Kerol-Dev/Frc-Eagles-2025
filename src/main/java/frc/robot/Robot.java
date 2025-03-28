@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.vision.LimelightHelpers;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -49,7 +50,7 @@ public class Robot extends LoggedRobot {
     DriveSubsystem.resetEncoders();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    if (m_autonomousCommand != null) {
+    if (m_autonomousCommand != null && (LimelightHelpers.getTV("") || RobotContainer.autoChooser.getSelected().getName().startsWith("M"))) {
       m_autonomousCommand.schedule();
     }
   }
@@ -72,7 +73,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopPeriodic() {
     m_robotContainer.periodic();
-    if (ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 2) {
+    if (ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 2.5) {
       slowSpeedEnabledAutomatically = true;
       m_robotContainer.slowSpeedEnabled = true;
     } else if (slowSpeedEnabledAutomatically) {

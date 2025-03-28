@@ -1,8 +1,6 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.AutoLog;
-import org.littletonrobotics.junction.AutoLogOutput;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
@@ -19,9 +17,7 @@ import frc.robot.subsystems.misc.ElevatorPosition;
 
 @AutoLog
 public class ElevatorSubsystem extends SubsystemBase {
-    @AutoLogOutput
     public static final TalonFX elevatorMotor = new TalonFX(ElevatorConstants.kElevatorMotorCanID);
-    @AutoLogOutput
     public final TalonFX elevatorMotor2 = new TalonFX(ElevatorConstants.kElevatorMotorCanID2);
 
     private double elevatorGoalPosition = 0;
@@ -69,7 +65,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Elevator Position", elevatorMotor.getPosition().getValueAsDouble());
         SmartDashboard.putNumber("Elevator Goal", elevatorGoalPosition);
-        SmartDashboard.putNumber("Elevator temp", elevatorMotor.getDeviceTemp().getValueAsDouble());
     }
 
     private double getElevatorPositionValue(ElevatorPosition position) {

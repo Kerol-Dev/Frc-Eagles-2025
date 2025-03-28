@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.AutoLog;
-import org.littletonrobotics.junction.AutoLogOutput;
 
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
@@ -27,7 +26,6 @@ import frc.robot.subsystems.misc.ArmPosition;
 @AutoLog
 public class PivotSubsystem extends SubsystemBase {
     // Motor responsible for rotating the arm
-    @AutoLogOutput
     private final SparkMax armMotor = new SparkMax(ArmConstants.kArmMotorCanID, MotorType.kBrushless);
     SparkClosedLoopController armMotorController = armMotor.getClosedLoopController();
     private double armGoalPosition = 0;
@@ -76,7 +74,6 @@ public class PivotSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Arm Position", armMotor.getEncoder().getPosition());
         SmartDashboard.putNumber("Arm Goal", armGoalPosition);
-        SmartDashboard.putNumber("Arm temp", armMotor.getMotorTemperature());
     }
 
     /**
