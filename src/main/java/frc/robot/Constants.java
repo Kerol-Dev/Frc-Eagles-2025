@@ -141,12 +141,28 @@ public final class Constants {
     public static final double kArmMotorForwardSoftLimit = -300;
     public static final double kArmMotorReverseSoftLimit = -600;
 
-    public static final double kArmMotorSensorToMechRatio = 500; // 360 / Gear Ratio
+    public static final double kArmMotorSensorToMechRatio = 500;
 
-    public static final double kArmMotorP = 0.001;
+    public static final double kArmMotorP = 0.0025;
     public static final double kArmMotorI = 0;
     public static final double kArmMotorD = 0;
     public static final double kArmMotorMaxSpeed = 1;
+  }
+
+  public static final class ClimbConstants {
+    public static final int kClimbMotorCanID = 31;
+
+    public static final boolean kClimbMotorInverted = false;
+
+    public static final double kClimbMotorForwardSoftLimit = 500;
+    public static final double kClimbMotorReverseSoftLimit = 0;
+
+    public static final double kClimbMotorSensorToMechRatio = 1/170;
+
+    public static final double kClimbMotorP = 0.001;
+    public static final double kClimbMotorI = 0;
+    public static final double kClimbMotorD = 0;
+    public static final double kClimbMotorMaxSpeed = 1;
   }
 
   public static final class ArmIntakeConstants {

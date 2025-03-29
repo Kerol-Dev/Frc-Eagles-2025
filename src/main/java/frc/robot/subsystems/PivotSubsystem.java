@@ -36,7 +36,7 @@ public class PivotSubsystem extends SubsystemBase {
     public PivotSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kBrake);
-        config.closedLoop.pid(0.0025, 0, 0);
+        config.closedLoop.pid(ArmConstants.kArmMotorP, ArmConstants.kArmMotorI, ArmConstants.kArmMotorD);
         armMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
 
         armMotor.getEncoder().setPosition(0);
@@ -56,10 +56,6 @@ public class PivotSubsystem extends SubsystemBase {
                 setArmPosition(getArmPositionValue(positionSelection));
             }
 
-            @Override
-            public void execute() {
-                isArmAtPosition();
-            }
             @Override
             public boolean isFinished() {
                 return isArmAtPosition();
@@ -93,7 +89,7 @@ public class PivotSubsystem extends SubsystemBase {
                 return -7000.0;
             case place_algae_processor:
                 return -7000.0;
-            case place_coral_l:
+            case place_coral_l1:
                 return -20.0;
             case place_coral_l2:
                 return -20.0;

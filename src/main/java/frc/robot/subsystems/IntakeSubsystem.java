@@ -70,7 +70,7 @@ public class IntakeSubsystem extends SubsystemBase{
             @Override
             public void initialize(){
                 grab = false;
-                setIntakeSpeed((position == ElevatorPosition.place_coral_l ? 0.2 : 0.55) * (isAlgae ? -1 : 1));
+                setIntakeSpeed((position == ElevatorPosition.place_coral_l1 ? 0.2 : 0.55) * (isAlgae ? -1 : 1));
             }
 
             @Override
