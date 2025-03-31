@@ -1,6 +1,7 @@
 package frc.robot.subsystems.vision;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -41,6 +42,7 @@ public class VisionSubsystem extends SubsystemBase {
      */
     public void periodic() {
         updateLastVisionUpdatePassTime();
+        
         m_poseEstimator.update(
                 DriveSubsystem.getHeading(),
                 DriveSubsystem.getModulePositions());
@@ -91,6 +93,8 @@ public class VisionSubsystem extends SubsystemBase {
                         mt2.timestampSeconds);
             }
         }
+
+        Logger.recordOutput("Vision/Visible ID Count", LimelightHelpers.getRawFiducials("").length);
     }
 
     /**

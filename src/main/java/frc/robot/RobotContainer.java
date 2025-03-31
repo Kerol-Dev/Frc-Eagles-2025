@@ -2,6 +2,7 @@ package frc.robot;
 
 import java.util.function.BooleanSupplier;
 
+
 // Import necessary libraries and classes
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -300,6 +301,29 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
+  }
+
+  /**
+   * Returns the name of the currently pressed joystick button.
+   * 
+   * @return The name of the pressed button, or "None" if no button is pressed.
+   */
+  public String getPressedJoystickButtonName() {
+    if (driverController.a().getAsBoolean()) return "A";
+    if (driverController.b().getAsBoolean()) return "B";
+    if (driverController.x().getAsBoolean()) return "X";
+    if (driverController.y().getAsBoolean()) return "Y";
+    if (driverController.start().getAsBoolean()) return "Start";
+    if (driverController.back().getAsBoolean()) return "Back";
+    if (driverController.leftBumper().getAsBoolean()) return "Left Bumper";
+    if (driverController.rightBumper().getAsBoolean()) return "Right Bumper";
+    if (driverController.leftTrigger().getAsBoolean()) return "Left Trigger";
+    if (driverController.rightTrigger().getAsBoolean()) return "Right Trigger";
+    if (driverController.povUp().getAsBoolean()) return "POV Up";
+    if (driverController.povDown().getAsBoolean()) return "POV Down";
+    if (driverController.povLeft().getAsBoolean()) return "POV Left";
+    if (driverController.povRight().getAsBoolean()) return "POV Right";
+    return "None";
   }
 
   // Pathfinding Commands

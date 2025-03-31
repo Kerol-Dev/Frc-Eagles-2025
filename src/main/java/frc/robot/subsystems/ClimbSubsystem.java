@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
@@ -16,7 +17,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
@@ -69,8 +69,8 @@ public class ClimbSubsystem extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Climb Position", climbMotor.getEncoder().getPosition());
-        SmartDashboard.putBoolean("Climb Engaged", climbEngaged);
+        Logger.recordOutput("Climb/Climb Position", climbMotor.getEncoder().getPosition());
+        Logger.recordOutput("Climb/Climb Engaged", climbEngaged);
     }
 
 

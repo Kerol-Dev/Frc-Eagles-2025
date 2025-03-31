@@ -3,9 +3,9 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -39,6 +39,7 @@ public class SwerveModule {
   private double m_chassisAngularOffset = 0;
   public double encoderOffset;
   private Rotation2d encoderOffset2d;
+  private String name;
 
   // Desired state of the swerve module
   private SwerveModuleState m_desiredState = new SwerveModuleState(0.0, new Rotation2d());
@@ -55,8 +56,9 @@ public class SwerveModule {
    * @param encoderInverted      Whether the encoder is inverted
    */
   public SwerveModule(int drivingCANId, int turningCANId, int cancoderID, boolean drivingMotorReversed,
-      boolean turningMotorReversed, double encoderOffset, boolean encoderInverted) {
+      boolean turningMotorReversed, double encoderOffset, boolean encoderInverted, String name) {
 
+    this.name = name;
     encoderOffset2d = Rotation2d.fromDegrees(encoderOffset);
     this.encoderOffset = encoderOffset;
 
@@ -139,8 +141,8 @@ public class SwerveModule {
    * Updates the SmartDashboard with encoder information.
    */
   public void updateSmartDashboard() {
-    SmartDashboard.putNumber("Cancoder " + m_canEncoder.getDeviceID(), getCanCoder().getDegrees());
-    SmartDashboard.putNumber("NeoAngle " + m_canEncoder.getDeviceID(),
+    Logger.recordOutput("Swerve/" + name + "/Cancoder " + m_canEncoder.getDeviceID(), getCanCoder().getDegrees());
+    Logger.recordOutput("Swerve/" + name + "/NeoAngle " + m_canEncoder.getDeviceID(),
         Math.toDegrees((Math.abs(m_turningSparkMax.getEncoder().getPosition()) % (2.0 * Math.PI))));
   }
 

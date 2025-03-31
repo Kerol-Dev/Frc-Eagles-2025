@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
@@ -8,7 +10,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
@@ -63,8 +64,8 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Elevator Position", elevatorMotor.getPosition().getValueAsDouble());
-        SmartDashboard.putNumber("Elevator Goal", elevatorGoalPosition);
+        Logger.recordOutput("Elevator/Elevator Position", elevatorMotor.getPosition().getValueAsDouble());
+        Logger.recordOutput("Elevator/Elevator Goal", elevatorGoalPosition);
     }
 
     private double getElevatorPositionValue(ElevatorPosition position) {

@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
@@ -16,7 +17,6 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
@@ -68,8 +68,8 @@ public class PivotSubsystem extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Arm Position", armMotor.getEncoder().getPosition());
-        SmartDashboard.putNumber("Arm Goal", armGoalPosition);
+        Logger.recordOutput("Arm/Arm Position", armMotor.getEncoder().getPosition());
+        Logger.recordOutput("Arm/Arm Goal", armGoalPosition);
     }
 
     /**
@@ -128,6 +128,6 @@ public class PivotSubsystem extends SubsystemBase {
      * @return True if the arm is at the goal position, false otherwise.
      */
     public boolean isArmAtPosition() {
-        return MathUtil.isNear(armGoalPosition, armMotor.getEncoder().getPosition(), 30);
+        return MathUtil.isNear(armGoalPosition, armMotor.getEncoder().getPosition(), 25);
     }
 }

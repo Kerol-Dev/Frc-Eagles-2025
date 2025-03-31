@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
@@ -65,7 +66,7 @@ public class DriveSubsystem extends SubsystemBase {
       false,
       true,
       DriveConstants.kFrontLeftcanCoderOffset,
-      false);
+      false, "FL");
 
   public static final SwerveModule m_frontRight = new SwerveModule(
       DriveConstants.kFrontRightDrivingCanId,
@@ -74,7 +75,7 @@ public class DriveSubsystem extends SubsystemBase {
       false,
       true,
       DriveConstants.kFrontRightcanCoderOffset,
-      false);
+      false, "FR");
 
   public static final SwerveModule m_rearLeft = new SwerveModule(
       DriveConstants.kRearLeftDrivingCanId,
@@ -83,7 +84,7 @@ public class DriveSubsystem extends SubsystemBase {
       false,
       true,
       DriveConstants.kRearLeftcanCoderOffset,
-      false);
+      false, "RL");
 
   public static final SwerveModule m_rearRight = new SwerveModule(
       DriveConstants.kRearRightDrivingCanId,
@@ -92,7 +93,7 @@ public class DriveSubsystem extends SubsystemBase {
       false,
       true,
       DriveConstants.kRearRightcanCoderOffset,
-      false);
+      false, "RR");
 
   // Field visualization and gyro
   public final Field2d m_field = new Field2d();
@@ -168,7 +169,9 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_field.setRobotPose(getPose());
 
+    Logger.recordOutput("Drive/Robot Pose", getPose());
     SmartDashboard.putData(m_field);
+    Logger.recordOutput("Vision/Visible ID Count", LimelightHelpers.getRawFiducials("").length);
   }
 
   /**
