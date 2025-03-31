@@ -9,10 +9,12 @@ import com.pathplanner.lib.util.FlippingUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 
 public class AlignToAprilTagOffsetCommand extends Command {
@@ -20,15 +22,11 @@ public class AlignToAprilTagOffsetCommand extends Command {
     private final PIDController xController = new PIDController(5, 0, 0);
     private final PIDController yController = new PIDController(5, 0, 0);
     private final PIDController thetaController = new PIDController(5.0, 0, 0);
-    private boolean isRight = false;
-    private boolean isAlgae = false;
-    private boolean isReef = false;
+    private String alignType;
 
-    public AlignToAprilTagOffsetCommand(DriveSubsystem swerve, boolean isRight, boolean isAlgae, boolean isReef) {
+    public AlignToAprilTagOffsetCommand(DriveSubsystem swerve, String alignType) {
         this.swerve = swerve;
-        this.isRight = isRight;
-        this.isAlgae = isAlgae;
-        this.isReef = isReef;
+        this.alignType = alignType;
         addRequirements(swerve);
 
         xController.setTolerance(0.02);
@@ -39,7 +37,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
 
     @Override
     public void execute() {
-        if (!VisionSubsystem.latestVisionDetectionValid()) {
+        if (!VisionSubsystem.latestVisionDetectionValid() && !alignType.equals("net")) {
             swerve.stop();
             return;
         }
@@ -48,9 +46,16 @@ public class AlignToAprilTagOffsetCommand extends Command {
         Pose3d tagPose = VisionConstants.fieldLayout
                 .getTagPose(DriveSubsystem.fieldPositions.getClosestTag(DriveSubsystem.getRPose3d().toPose2d())).get();
 
-        if (!isReef) {
+        if (alignType.equals("human")) {
             tagPose = new Pose3d(
                     DriveSubsystem.fieldPositions.getClosestHumanPose(DriveSubsystem.getRPose3d().toPose2d()));
+            if (DriverStation.getAlliance().get() == Alliance.Red) {
+                tagPose = new Pose3d(FlippingUtil.flipFieldPose(tagPose.toPose2d()));
+            }
+        }
+        else if(alignType.equals("net"))
+        {
+            tagPose = new Pose3d(new Pose2d(new Translation2d(7.596, 6.551), Rotation2d.fromDegrees(0)));
             if (DriverStation.getAlliance().get() == Alliance.Red) {
                 tagPose = new Pose3d(FlippingUtil.flipFieldPose(tagPose.toPose2d()));
             }
@@ -60,10 +65,10 @@ public class AlignToAprilTagOffsetCommand extends Command {
         Rotation3d tagRotation = tagPose.getRotation();
 
         // Calculate desired camera position with offset
-        Translation3d offset = new Translation3d(
-                0.5 * (!isReef ? 0 : 1), // 0.5m in front of the tag
-                (isAlgae || !isReef) ? 0 : (isRight ? 0.164 : -0.164), // 0.164m to the right or left of the tag
-                0);
+        double forwardOffset = (alignType.contains("net") || alignType.contains("human")) ? 0 : 0.5; // 0.5m in front of the tag for non-human alignments
+        double lateralOffset = alignType.contains("reef") ? 0 
+            : (alignType.contains("right") ? 0.164 : -0.164); // 0.164m to the right or left of the tag
+        Translation3d offset = new Translation3d(forwardOffset, lateralOffset, 0);
 
         // Apply rotation to offset
         Translation3d rotatedOffset = offset.rotateBy(tagRotation);

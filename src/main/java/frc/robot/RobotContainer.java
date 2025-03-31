@@ -2,7 +2,6 @@ package frc.robot;
 
 import java.util.function.BooleanSupplier;
 
-
 // Import necessary libraries and classes
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -145,15 +144,17 @@ public class RobotContainer {
 
     driverController.x().onTrue(m_Intake.releaseCommand(true, ElevatorPosition.grab_algae_reef_1));
 
-    driverController.a().onTrue(m_Climb.toggleClimbEngaged());
+    driverController.a().and(driverController.leftStick()).onTrue(m_Climb.toggleClimbEngaged());
 
     driverController.povUp()
-        .onTrue(PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4, "povUp"));
+        .onTrue(new ConditionalCommand(
+            PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4, "povUp"),
+            PlaceAlgaeNetCommand(), () -> coralMode));
     driverController.povRight()
         .onTrue(PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3, "povRight"));
-    driverController.povLeft()
-        .onTrue(PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l2, ArmPosition.place_coral_l2, "povLeft"));
     driverController.povDown()
+        .onTrue(PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l2, ArmPosition.place_coral_l2, "povLeft"));
+    driverController.povLeft()
         .onTrue(PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l1, ArmPosition.place_coral_l1, "povDown"));
 
     driverController.leftTrigger()
@@ -198,6 +199,14 @@ public class RobotContainer {
         SwitchObjectMode(),
         new InstantCommand(),
         () -> coralMode);
+  }
+
+  private Command PlaceAlgaeNetCommand() {
+    return pathfindToNet().andThen(m_arm.setArmPositionCommand(ArmPosition.ElevatorUp)
+        .andThen(m_elevator.setElevatorPositionCommand(ElevatorPosition.place_algae_net))
+        .andThen(m_arm.setArmPositionCommand(ArmPosition.place_algae_net))
+        .andThen(m_Intake.releaseCommand(true, ElevatorPosition.place_algae_net))
+        .andThen(IdleSystemsCommand()));
   }
 
   private Command PlaceAutomaticReefSequence(ElevatorPosition elevatorPosition, ArmPosition armPosition,
@@ -309,34 +318,53 @@ public class RobotContainer {
    * @return The name of the pressed button, or "None" if no button is pressed.
    */
   public String getPressedJoystickButtonName() {
-    if (driverController.a().getAsBoolean()) return "A";
-    if (driverController.b().getAsBoolean()) return "B";
-    if (driverController.x().getAsBoolean()) return "X";
-    if (driverController.y().getAsBoolean()) return "Y";
-    if (driverController.start().getAsBoolean()) return "Start";
-    if (driverController.back().getAsBoolean()) return "Back";
-    if (driverController.leftBumper().getAsBoolean()) return "Left Bumper";
-    if (driverController.rightBumper().getAsBoolean()) return "Right Bumper";
-    if (driverController.leftTrigger().getAsBoolean()) return "Left Trigger";
-    if (driverController.rightTrigger().getAsBoolean()) return "Right Trigger";
-    if (driverController.povUp().getAsBoolean()) return "POV Up";
-    if (driverController.povDown().getAsBoolean()) return "POV Down";
-    if (driverController.povLeft().getAsBoolean()) return "POV Left";
-    if (driverController.povRight().getAsBoolean()) return "POV Right";
+    if (driverController.a().getAsBoolean())
+      return "A";
+    if (driverController.b().getAsBoolean())
+      return "B";
+    if (driverController.x().getAsBoolean())
+      return "X";
+    if (driverController.y().getAsBoolean())
+      return "Y";
+    if (driverController.start().getAsBoolean())
+      return "Start";
+    if (driverController.back().getAsBoolean())
+      return "Back";
+    if (driverController.leftBumper().getAsBoolean())
+      return "Left Bumper";
+    if (driverController.rightBumper().getAsBoolean())
+      return "Right Bumper";
+    if (driverController.leftTrigger().getAsBoolean())
+      return "Left Trigger";
+    if (driverController.rightTrigger().getAsBoolean())
+      return "Right Trigger";
+    if (driverController.povUp().getAsBoolean())
+      return "POV Up";
+    if (driverController.povDown().getAsBoolean())
+      return "POV Down";
+    if (driverController.povLeft().getAsBoolean())
+      return "POV Left";
+    if (driverController.povRight().getAsBoolean())
+      return "POV Right";
     return "None";
   }
 
   // Pathfinding Commands
   @SuppressWarnings("unused")
   private Command pathfindToHuman() {
-    return new AlignToAprilTagOffsetCommand(m_robotDrive, false, false, false);
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, "human");
+  }
+
+  private Command pathfindToNet()
+  {
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, "net");
   }
 
   private Command pathfindToReef(boolean right) {
-    return new AlignToAprilTagOffsetCommand(m_robotDrive, right, false, true);
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"));
   }
 
   private Command pathFindToAlgae() {
-    return new AlignToAprilTagOffsetCommand(m_robotDrive, false, true, true);
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, "algae");
   }
 }

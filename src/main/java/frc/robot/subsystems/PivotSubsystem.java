@@ -87,6 +87,8 @@ public class PivotSubsystem extends SubsystemBase {
                 return -7000.0;
             case grab_algae_reef_2:
                 return -7000.0;
+            case place_algae_net:
+                return -2500.0;
             case place_algae_processor:
                 return -7000.0;
             case place_coral_l1:
