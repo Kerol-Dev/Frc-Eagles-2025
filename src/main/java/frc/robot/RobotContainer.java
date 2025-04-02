@@ -355,13 +355,14 @@ public class RobotContainer {
     return new AlignToAprilTagOffsetCommand(m_robotDrive, "human");
   }
 
-  private Command pathfindToNet()
-  {
+  private Command pathfindToNet() {
     return new AlignToAprilTagOffsetCommand(m_robotDrive, "net");
   }
 
   private Command pathfindToReef(boolean right) {
-    return new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"));
+    return new InstantCommand(() -> resetPovPressCountsExcept("povRight"))
+        .andThen(PlaceReefInit(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3))
+        .andThen(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left")));
   }
 
   private Command pathFindToAlgae() {

@@ -65,7 +65,8 @@ public class AlignToAprilTagOffsetCommand extends Command {
         Rotation3d tagRotation = tagPose.getRotation();
 
         // Calculate desired camera position with offset
-        double forwardOffset = (alignType.contains("net") || alignType.contains("human")) ? 0 : 0.5; // 0.5m in front of the tag for non-human alignments
+        //CAMERA DISTANCE: 0.24M
+        double forwardOffset = (alignType.contains("net") || alignType.contains("human")) ? 0 : 0.435; // 0.5m in front of the tag for non-human alignments
         double lateralOffset = alignType.contains("reef") ? 0 
             : (alignType.contains("right") ? 0.164 : -0.164); // 0.164m to the right or left of the tag
         Translation3d offset = new Translation3d(forwardOffset, lateralOffset, 0);
