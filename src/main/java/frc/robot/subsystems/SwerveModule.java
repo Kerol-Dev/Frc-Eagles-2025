@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
@@ -26,7 +25,6 @@ import frc.robot.Constants.ModuleConstants;
 /**
  * Represents a single swerve module with driving and turning capabilities.
  */
-@AutoLog
 public class SwerveModule {
   // Motor controllers for driving and turning
   public final TalonFX m_drivingMotor;

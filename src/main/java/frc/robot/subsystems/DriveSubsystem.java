@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -38,7 +37,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
  * It controls the four swerve modules and handles field-relative and
  * robot-relative driving.
  */
-@AutoLog
 public class DriveSubsystem extends SubsystemBase {
   // ONLY FOR SIMULATION
 
@@ -171,7 +169,6 @@ public class DriveSubsystem extends SubsystemBase {
 
     Logger.recordOutput("Drive/Robot Pose", getPose());
     SmartDashboard.putData(m_field);
-    Logger.recordOutput("Vision/Visible ID Count", LimelightHelpers.getRawFiducials("").length);
   }
 
   /**

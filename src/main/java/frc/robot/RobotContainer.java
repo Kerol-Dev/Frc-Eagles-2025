@@ -133,8 +133,9 @@ public class RobotContainer {
   private void configureButtonBindings() {
     driverController.start().onTrue(new InstantCommand(() -> m_robotDrive.zeroHeading()));
 
-    driverController.b().onTrue(checkAndSwitchToCoralMode().andThen(m_Intake.grabCommand(false))
-        .onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
+    driverController.b()
+        .onTrue(checkAndSwitchToCoralMode().andThen(m_Intake.grabCommand(false).alongWith(pathfindToHuman()))
+            .onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
 
     driverController.rightBumper().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReef(true)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
@@ -144,7 +145,7 @@ public class RobotContainer {
 
     driverController.x().onTrue(m_Intake.releaseCommand(true, ElevatorPosition.grab_algae_reef_1));
 
-    driverController.a().and(driverController.leftStick()).onTrue(m_Climb.toggleClimbEngaged());
+    driverController.back().onTrue(m_Climb.toggleClimbEngaged());
 
     driverController.povUp()
         .onTrue(new ConditionalCommand(

@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -14,7 +13,6 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmIntakeConstants;
 import frc.robot.subsystems.misc.ElevatorPosition;
 
-@AutoLog
 public class IntakeSubsystem extends SubsystemBase{
     private final TalonFX ArmIntakeMotor = new TalonFX(ArmIntakeConstants.kArmIntakeMotorCanID);
     public static final DigitalInput coralArmIntakeSensor = new DigitalInput(ArmIntakeConstants.kCoralArmIntakeSensorPort);

@@ -4,7 +4,6 @@
  */
 package frc.robot.subsystems;
 
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.spark.SparkClosedLoopController;
@@ -21,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
 
-@AutoLog
 public class ClimbSubsystem extends SubsystemBase {
     // Motor responsible for rotating the arm
     private final SparkMax climbMotor = new SparkMax(ClimbConstants.kClimbMotorCanID, MotorType.kBrushless);

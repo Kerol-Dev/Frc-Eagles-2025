@@ -1,6 +1,5 @@
 package frc.robot.subsystems.vision;
 
-import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.PhotonUtils;
 
@@ -17,7 +16,6 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightResults;
 import frc.robot.subsystems.vision.LimelightHelpers.LimelightTarget_Detector;
 
-@AutoLog
 public class VisionSubsystem extends SubsystemBase {
     /** Pose estimator for swerve drive using vision data */
     SwerveDrivePoseEstimator m_poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kDriveKinematics,
@@ -42,7 +40,7 @@ public class VisionSubsystem extends SubsystemBase {
      */
     public void periodic() {
         updateLastVisionUpdatePassTime();
-        
+
         m_poseEstimator.update(
                 DriveSubsystem.getHeading(),
                 DriveSubsystem.getModulePositions());
@@ -50,48 +48,22 @@ public class VisionSubsystem extends SubsystemBase {
         if (Robot.isSimulation())
             return;
 
-        boolean useMegaTag2 = true; // set to false to use MegaTag1
         boolean doRejectUpdate = false;
-        if (useMegaTag2 == false) {
-            LimelightHelpers.PoseEstimate mt1 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
 
-            if (mt1.tagCount == 1 && mt1.rawFiducials.length == 1) {
-                if (mt1.rawFiducials[0].ambiguity > .7) {
-                    doRejectUpdate = true;
-                }
-                if (mt1.rawFiducials[0].distToCamera > 3) {
-                    doRejectUpdate = true;
-                }
-            }
-            if (mt1.tagCount == 0) {
-                doRejectUpdate = true;
-            }
-
-            if (!doRejectUpdate) {
-                m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 9999999));
-                m_poseEstimator.addVisionMeasurement(
-                        mt1.pose,
-                        mt1.timestampSeconds);
-            }
-        } else if (useMegaTag2 == true) {
-            LimelightHelpers.SetRobotOrientation("limelight",
-                    m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-            LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-            if (Math.abs(DriveSubsystem.m_gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees
-                                                                 // per second,
-            // ignore vision updates
-            {
-                doRejectUpdate = true;
-            }
-            if (mt2.tagCount == 0) {
-                doRejectUpdate = true;
-            }
-            if (!doRejectUpdate) {
-                m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
-                m_poseEstimator.addVisionMeasurement(
-                        mt2.pose,
-                        mt2.timestampSeconds);
-            }
+        LimelightHelpers.SetRobotOrientation("",
+                m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("");
+        if (Math.abs(DriveSubsystem.m_gyro.getRate()) > 720) {
+            doRejectUpdate = true;
+        }
+        if (mt2.tagCount == 0) {
+            doRejectUpdate = true;
+        }
+        if (!doRejectUpdate) {
+            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+            m_poseEstimator.addVisionMeasurement(
+                    mt2.pose,
+                    mt2.timestampSeconds);
         }
 
         Logger.recordOutput("Vision/Visible ID Count", LimelightHelpers.getRawFiducials("").length);
@@ -112,7 +84,8 @@ public class VisionSubsystem extends SubsystemBase {
      * @return Seconds since the last vision detection.
      */
     public static boolean latestVisionDetectionValid() {
-        return edu.wpi.first.wpilibj.Timer.getFPGATimestamp() - lastVisionUpdatePassTime < 5 && lastVisionUpdatePassTime > 0;
+        return edu.wpi.first.wpilibj.Timer.getFPGATimestamp() - lastVisionUpdatePassTime < 5
+                && lastVisionUpdatePassTime > 0;
     }
 
     public static boolean getLimelightObjectTarget() {
