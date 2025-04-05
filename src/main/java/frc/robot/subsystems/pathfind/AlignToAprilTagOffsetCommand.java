@@ -6,6 +6,8 @@ import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.util.FlippingUtil;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -19,9 +21,9 @@ import edu.wpi.first.math.geometry.Pose3d;
 
 public class AlignToAprilTagOffsetCommand extends Command {
     private final DriveSubsystem swerve;
-    private final PIDController xController = new PIDController(5, 0, 0);
-    private final PIDController yController = new PIDController(5, 0, 0);
-    private final PIDController thetaController = new PIDController(5.0, 0, 0);
+    private final PIDController xController = new PIDController(5, 0.2, 0);
+    private final PIDController yController = new PIDController(5, 0.2, 0);
+    private final PIDController thetaController = new PIDController(3, 0, 0);
     private String alignType;
 
     public AlignToAprilTagOffsetCommand(DriveSubsystem swerve, String alignType) {
@@ -31,7 +33,6 @@ public class AlignToAprilTagOffsetCommand extends Command {
 
         xController.setTolerance(0.02);
         yController.setTolerance(0.02);
-        thetaController.setTolerance(0.05);
         thetaController.enableContinuousInput(0, Math.PI * 2);
     }
 
@@ -55,7 +56,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
         }
         else if(alignType.equals("net"))
         {
-            tagPose = new Pose3d(new Pose2d(new Translation2d(7.596, 6.551), Rotation2d.fromDegrees(0)));
+            tagPose = new Pose3d(new Pose2d(new Translation2d(6.798, 6.670), Rotation2d.fromDegrees(0)));
             if (DriverStation.getAlliance().get() == Alliance.Red) {
                 tagPose = new Pose3d(FlippingUtil.flipFieldPose(tagPose.toPose2d()));
             }
@@ -67,7 +68,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
         // Calculate desired camera position with offset
         //CAMERA DISTANCE: 0.24M
         double forwardOffset = (alignType.contains("net") || alignType.contains("human")) ? 0 : 0.435; // 0.5m in front of the tag for non-human alignments
-        double lateralOffset = alignType.contains("reef") ? 0 
+        double lateralOffset = !alignType.contains("reef") ? 0 
             : (alignType.contains("right") ? 0.164 : -0.164); // 0.164m to the right or left of the tag
         Translation3d offset = new Translation3d(forwardOffset, lateralOffset, 0);
 
@@ -85,7 +86,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
         double errorX = desiredCameraPosition.getX() - robotTranslation.getX();
         double errorY = desiredCameraPosition.getY() - robotTranslation.getY();
         // Yaw correction to face tag
-        double yawError = tagRotation.getZ() - DriveSubsystem.getHeading().getRadians();
+        double yawError = tagRotation.getZ() + Math.toRadians(-5) - DriveSubsystem.getHeading().getRadians();
 
         Logger.recordOutput("Align/Error_X", errorX);
         Logger.recordOutput("Align/Error_Y", errorY);
@@ -100,17 +101,20 @@ public class AlignToAprilTagOffsetCommand extends Command {
         double strafeSpeed = xController.calculate(errorX, 0); // Left/right
         double thetaSpeed = thetaController.calculate(yawError, 0); // rotation
 
+        forwardSpeed = MathUtil.clamp(forwardSpeed, -0.8, 0.8);
+        strafeSpeed = MathUtil.clamp(strafeSpeed, -0.8, 0.8);
+
         thetaSpeed = Math.toRadians(thetaSpeed);
         // Use gyro heading for field-relative drive
         Rotation2d robotHeading = DriveSubsystem.getHeading();
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-strafeSpeed, -forwardSpeed, -thetaSpeed * 10,
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-strafeSpeed, -forwardSpeed, thetaSpeed,
                 robotHeading);
         swerve.setSpeeds(speeds);
     }
 
     @Override
     public boolean isFinished() {
-        return xController.atSetpoint() && yController.atSetpoint() && thetaController.atSetpoint();
+        return xController.atSetpoint() && yController.atSetpoint();
     }
 
     @Override

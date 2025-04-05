@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -61,7 +62,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kFrontLeftDrivingCanId,
       DriveConstants.kFrontLeftTurningCanId,
       DriveConstants.kFrontLeftcanCoderIDCanId,
-      false,
+      true,
       true,
       DriveConstants.kFrontLeftcanCoderOffset,
       false, "FL");
@@ -70,7 +71,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kFrontRightDrivingCanId,
       DriveConstants.kFrontRightTurningCanId,
       DriveConstants.kFrontRightcanCoderIDCanId,
-      false,
+      true,
       true,
       DriveConstants.kFrontRightcanCoderOffset,
       false, "FR");
@@ -79,7 +80,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearLeftDrivingCanId,
       DriveConstants.kRearLeftTurningCanId,
       DriveConstants.kRearLeftcanCoderIDCanId,
-      false,
+      true,
       true,
       DriveConstants.kRearLeftcanCoderOffset,
       false, "RL");
@@ -88,7 +89,7 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kRearRightDrivingCanId,
       DriveConstants.kRearRightTurningCanId,
       DriveConstants.kRearRightcanCoderIDCanId,
-      false,
+      true,
       true,
       DriveConstants.kRearRightcanCoderOffset,
       false, "RR");
@@ -106,7 +107,7 @@ public class DriveSubsystem extends SubsystemBase {
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
   public static FieldPositions fieldPositions = new FieldPositions();
 
-  private double kP = 3;
+  private double kP = 2;
   private double kI = 0;
   private double kD = 0;
 
@@ -115,6 +116,7 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public DriveSubsystem() {
     configureAutoBuilder();
+    PathfindingCommand.warmupCommand().schedule();
   }
 
   public void configureAutoBuilder() {
@@ -158,6 +160,9 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     m_frontLeft.updateSmartDashboard();
+    m_frontRight.updateSmartDashboard();
+    m_rearLeft.updateSmartDashboard();
+    m_rearRight.updateSmartDashboard();
     // Simulation only
 
     // m_rearLeft.updateMotorPosition(1.5);
@@ -169,6 +174,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     Logger.recordOutput("Drive/Robot Pose", getPose());
     SmartDashboard.putData(m_field);
+    SmartDashboard.putData(m_gyro);
   }
 
   /**
@@ -332,7 +338,7 @@ public class DriveSubsystem extends SubsystemBase {
     if (Robot.isSimulation())
       return Rotation2d.fromDegrees(robotAngleSim)
           .plus(Rotation2d.fromDegrees(isAllianceBlue() ? 180 : 0));
-    ;
+    
     return m_gyro.getRotation2d()
         .plus(Rotation2d.fromDegrees(isAllianceBlue() ? 180 : 0));
   }

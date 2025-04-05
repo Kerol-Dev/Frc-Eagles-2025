@@ -3,6 +3,7 @@ package frc.robot.subsystems.misc;
 public enum ArmPosition {
     idle,
     ElevatorUp,
+    ElevatorUpAlgae,
     grab_algae_reef_1,
     grab_algae_reef_2,
     place_algae_net,

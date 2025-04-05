@@ -20,8 +20,8 @@ public final class Constants {
    */
   public static final class DriveConstants {
 
-    public static final double kMaxSpeedMetersPerSecond = 4.8; // Maximum robot speed
-    public static final double kMaxAcceleration = 4; // Maximum linear acceleration
+    public static final double kMaxSpeedMetersPerSecond = 4.5; // Maximum robot speed
+    public static final double kMaxAcceleration = 3; // Maximum linear acceleration
     public static final double kMaxAngularSpeed = Math.PI * 1.2; // Maximum angular velocity (rad/s)
     public static final double kMaxAngularAcceleration = Math.PI * 2; // Maximum angular acceleration
 
@@ -58,10 +58,10 @@ public final class Constants {
     public static final int kRearLeftcanCoderIDCanId = 21;
 
     // Offset values for CANCoders
-    public static final float kFrontRightcanCoderOffset = 272.63f;
-    public static final float kFrontLeftcanCoderOffset = 138.9f;
-    public static final float kRearRightcanCoderOffset = 266.8f;
-    public static final float kRearLeftcanCoderOffset = 247.3f;
+    public static final float kFrontRightcanCoderOffset = 236.5f;
+    public static final float kFrontLeftcanCoderOffset = 177.6f;
+    public static final float kRearRightcanCoderOffset = 2.28f;
+    public static final float kRearLeftcanCoderOffset = 90.3f;
 
     // Gyro configuration
     public static final boolean kGyroReversed = false;
@@ -71,7 +71,7 @@ public final class Constants {
    * Constants related to individual swerve modules.
    */
   public static final class ModuleConstants {
-    public static final double kWheelDiameterMeters = 0.103; // Wheel diameter in meters
+    public static final double kWheelDiameterMeters = 0.101; // Wheel diameter in meters
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI; // Circumference
 
     public static final double kDrivingMotorReduction = 6.5; // Gear reduction for driving motor
@@ -118,7 +118,7 @@ public final class Constants {
     public static final boolean kElevatorMotorInverted = false;
     public static final boolean kElevatorMotorEncoderInverted = false;
 
-    public static final double kElevatorMotorForwardSoftLimit = 4.25;
+    public static final double kElevatorMotorForwardSoftLimit = 4.26;
     public static final double kElevatorMotorReverseSoftLimit = 0;
 
     public static final double kElevatorGearRatio = 5; // Gear ratio
@@ -129,7 +129,7 @@ public final class Constants {
     public static final double kElevatorMotorI = 0;
     public static final double kElevatorMotorD = 0;
     public static final double kElevatorMaxSpeed = 0.85;
-    public static final double kElevatorMaxSpeedDown = 0.3031;
+    public static final double kElevatorMaxSpeedDown = 0.25;
   }
 
   public static final class ArmConstants {
@@ -167,8 +167,8 @@ public final class Constants {
 
   public static final class ArmIntakeConstants {
     public static final int kArmIntakeMotorCanID = 7;
-    public static final int kCoralArmIntakeSensorPort = 1;
-    public static final int kAlgaeArmIntakeSensorPort = 0;
+    public static final int kCoralArmIntakeSensorPort = 3;
+    public static final int kAlgaeArmIntakeSensorPort = 2;
 
     public static final boolean kArmIntakeMotorInverted = true;
   }

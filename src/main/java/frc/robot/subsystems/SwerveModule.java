@@ -142,7 +142,7 @@ public class SwerveModule {
     Logger.recordOutput("Swerve/" + name + "/Cancoder " + m_canEncoder.getDeviceID(), getCanCoder().getDegrees());
     Logger.recordOutput("Swerve/" + name + "/NeoAngle " + m_canEncoder.getDeviceID(),
         Math.toDegrees((Math.abs(m_turningSparkMax.getEncoder().getPosition()) % (2.0 * Math.PI))));
-  }
+  } 
 
   /**
    * Sets the desired state of the swerve module.

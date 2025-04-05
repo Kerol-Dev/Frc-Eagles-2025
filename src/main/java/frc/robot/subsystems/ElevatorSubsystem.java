@@ -17,18 +17,19 @@ import frc.robot.subsystems.misc.ElevatorPosition;
 
 public class ElevatorSubsystem extends SubsystemBase {
     public static final TalonFX elevatorMotor = new TalonFX(ElevatorConstants.kElevatorMotorCanID);
-    public final TalonFX elevatorMotor2 = new TalonFX(ElevatorConstants.kElevatorMotorCanID2);
+    public static final TalonFX elevatorMotor2 = new TalonFX(ElevatorConstants.kElevatorMotorCanID2);
 
     private double elevatorGoalPosition = 0;
 
-    public ElevatorSubsystem() {
+    public static void setElevatorConfiguration(boolean isCoral)
+    {
         TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
         // set slot 0 gains
         talonFXConfiguration.Slot0.kP = ElevatorConstants.kElevatorMotorP;
         talonFXConfiguration.Slot0.kI = ElevatorConstants.kElevatorMotorI;
         talonFXConfiguration.Slot0.kD = ElevatorConstants.kElevatorMotorD;
         talonFXConfiguration.MotorOutput.PeakForwardDutyCycle = ElevatorConstants.kElevatorMaxSpeed;
-        talonFXConfiguration.MotorOutput.PeakReverseDutyCycle = -ElevatorConstants.kElevatorMaxSpeedDown;
+        talonFXConfiguration.MotorOutput.PeakReverseDutyCycle = -ElevatorConstants.kElevatorMaxSpeedDown  / (isCoral ? 1 : 4);
         talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ElevatorConstants.kElevatorMotorForwardSoftLimit;
         talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
@@ -38,7 +39,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         elevatorMotor.getConfigurator().apply(talonFXConfiguration);
         elevatorMotor2.setControl(new Follower(elevatorMotor.getDeviceID(), false));
-
+    }
+    public ElevatorSubsystem() {
+        setElevatorConfiguration(true);
         elevatorMotor.setPosition(0);
     }
 
@@ -71,7 +74,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             case idle:
                 return RobotContainer.coralMode ? 0.05 : 0.4;
             case grab_algae_reef_1:
-                return 1.5;
+                return 1.6;
             case grab_algae_reef_2:
                 return 2.9;
             case place_algae_net:
@@ -83,9 +86,9 @@ public class ElevatorSubsystem extends SubsystemBase {
             case place_coral_l2:
                 return 1.0;
             case place_coral_l3:
-                return 2.26;
+                return 2.31;
             case place_coral_l4:
-                return 4.23;
+                return 4.26;
             default:
                 return 0.05;
         }

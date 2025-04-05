@@ -40,6 +40,11 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
+  public void disabledPeriodic() {
+    RobotContainer.driverController.setRumble(RumbleType.kBothRumble, 0);
+  }
+
+  @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
     m_robotContainer.m_LedSubsystem.updateShootingRayEffect();

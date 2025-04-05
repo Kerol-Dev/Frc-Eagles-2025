@@ -22,7 +22,7 @@ import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmConstants;
 import frc.robot.subsystems.misc.ArmPosition;
 
-public class PivotSubsystem extends SubsystemBase {
+public class ArmSubsystem extends SubsystemBase {
     // Motor responsible for rotating the arm
     private final SparkMax armMotor = new SparkMax(ArmConstants.kArmMotorCanID, MotorType.kBrushless);
     SparkClosedLoopController armMotorController = armMotor.getClosedLoopController();
@@ -31,7 +31,7 @@ public class PivotSubsystem extends SubsystemBase {
     /**
      * Constructor that configures the arm motor settings.
      */
-    public PivotSubsystem() {
+    public ArmSubsystem() {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kBrake);
         config.closedLoop.pid(ArmConstants.kArmMotorP, ArmConstants.kArmMotorI, ArmConstants.kArmMotorD);
@@ -95,10 +95,12 @@ public class PivotSubsystem extends SubsystemBase {
                 return -20.0;
             case ElevatorUp:
                 return -200.0;
+            case ElevatorUpAlgae:
+                return -7200.0;
             case place_coral_l3:
                 return -20.0;
             case place_coral_l4:
-                return -1800.0;
+                return -20.0;
             default:
                 return -20.0;
         }

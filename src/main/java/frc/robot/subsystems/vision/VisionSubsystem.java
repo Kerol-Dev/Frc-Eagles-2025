@@ -51,8 +51,12 @@ public class VisionSubsystem extends SubsystemBase {
         boolean doRejectUpdate = false;
 
         LimelightHelpers.SetRobotOrientation("",
-                m_poseEstimator.getEstimatedPosition().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+                DriveSubsystem.getHeading().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("");
+
+        if (mt2 == null)
+            return;
+
         if (Math.abs(DriveSubsystem.m_gyro.getRate()) > 720) {
             doRejectUpdate = true;
         }
@@ -60,12 +64,13 @@ public class VisionSubsystem extends SubsystemBase {
             doRejectUpdate = true;
         }
         if (!doRejectUpdate) {
-            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 0));
             m_poseEstimator.addVisionMeasurement(
                     mt2.pose,
                     mt2.timestampSeconds);
         }
 
+        Logger.recordOutput("Valid Pose Estimation", latestVisionDetectionValid());
         Logger.recordOutput("Vision/Visible ID Count", LimelightHelpers.getRawFiducials("").length);
     }
 
