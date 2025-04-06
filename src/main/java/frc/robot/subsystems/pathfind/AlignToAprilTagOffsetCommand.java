@@ -21,7 +21,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 
 public class AlignToAprilTagOffsetCommand extends Command {
     private final DriveSubsystem swerve;
-    private final PIDController xController = new PIDController(5, 0.2, 0);
+    private final PIDController xController = new PIDController(7, 0.2, 0);
     private final PIDController yController = new PIDController(5, 0.2, 0);
     private final PIDController thetaController = new PIDController(3, 0, 0);
     private String alignType;
@@ -53,9 +53,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
             if (DriverStation.getAlliance().get() == Alliance.Red) {
                 tagPose = new Pose3d(FlippingUtil.flipFieldPose(tagPose.toPose2d()));
             }
-        }
-        else if(alignType.equals("net"))
-        {
+        } else if (alignType.equals("net")) {
             tagPose = new Pose3d(new Pose2d(new Translation2d(6.798, 6.670), Rotation2d.fromDegrees(0)));
             if (DriverStation.getAlliance().get() == Alliance.Red) {
                 tagPose = new Pose3d(FlippingUtil.flipFieldPose(tagPose.toPose2d()));
@@ -66,10 +64,13 @@ public class AlignToAprilTagOffsetCommand extends Command {
         Rotation3d tagRotation = tagPose.getRotation();
 
         // Calculate desired camera position with offset
-        //CAMERA DISTANCE: 0.24M
-        double forwardOffset = (alignType.contains("net") || alignType.contains("human")) ? 0 : 0.435; // 0.5m in front of the tag for non-human alignments
-        double lateralOffset = !alignType.contains("reef") ? 0 
-            : (alignType.contains("right") ? 0.164 : -0.164); // 0.164m to the right or left of the tag
+        // CAMERA DISTANCE: 0.24M
+        double forwardOffset = (alignType.contains("net") || alignType.contains("human")) ? 0 : 0.435; // 0.5m in front
+                                                                                                       // of the tag for
+                                                                                                       // non-human
+                                                                                                       // alignments
+        double lateralOffset = !alignType.contains("reef") ? 0
+                : (alignType.contains("right") ? 0.164 : -0.164); // 0.164m to the right or left of the tag
         Translation3d offset = new Translation3d(forwardOffset, lateralOffset, 0);
 
         // Apply rotation to offset
@@ -86,7 +87,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
         double errorX = desiredCameraPosition.getX() - robotTranslation.getX();
         double errorY = desiredCameraPosition.getY() - robotTranslation.getY();
         // Yaw correction to face tag
-        double yawError = tagRotation.getZ() + Math.toRadians(-5) - DriveSubsystem.getHeading().getRadians();
+        double yawError = tagRotation.getZ() -Math.toRadians(5) - DriveSubsystem.getHeading().getRadians();
 
         Logger.recordOutput("Align/Error_X", errorX);
         Logger.recordOutput("Align/Error_Y", errorY);
@@ -100,6 +101,13 @@ public class AlignToAprilTagOffsetCommand extends Command {
         double forwardSpeed = yController.calculate(errorY, 0); // Forward/backward
         double strafeSpeed = xController.calculate(errorX, 0); // Left/right
         double thetaSpeed = thetaController.calculate(yawError, 0); // rotation
+
+        if(tagRotation.getAngle() == 180 || tagRotation.getAngle() == 0)
+        {
+            forwardSpeed *= 0.75;
+        }
+        else
+        strafeSpeed *= 0.75;
 
         forwardSpeed = MathUtil.clamp(forwardSpeed, -0.8, 0.8);
         strafeSpeed = MathUtil.clamp(strafeSpeed, -0.8, 0.8);

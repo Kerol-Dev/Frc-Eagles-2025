@@ -65,6 +65,21 @@ public final class Constants {
 
     // Gyro configuration
     public static final boolean kGyroReversed = false;
+
+    // Auto constants
+    public static final double X_REEF_ALIGNMENT_P = 0.1;
+    public static final double Y_REEF_ALIGNMENT_P = 0.1;
+    public static final double ROT_REEF_ALIGNMENT_P = 0.005;
+
+    public static final double ROT_SETPOINT_REEF_ALIGNMENT = 0; // Rotation
+    public static final double ROT_TOLERANCE_REEF_ALIGNMENT = 1;
+    public static final double X_SETPOINT_REEF_ALIGNMENT = -0.435; // Vertical pose
+    public static final double X_TOLERANCE_REEF_ALIGNMENT = 0.02;
+    public static final double Y_SETPOINT_REEF_ALIGNMENT = 0.16; // Horizontal pose
+    public static final double Y_TOLERANCE_REEF_ALIGNMENT = 0.02;
+
+    public static final double DONT_SEE_TAG_WAIT_TIME = 0.5;
+    public static final double POSE_VALIDATION_TIME = 0.3;
   }
 
   /**
@@ -157,7 +172,7 @@ public final class Constants {
     public static final double kClimbMotorForwardSoftLimit = 500;
     public static final double kClimbMotorReverseSoftLimit = 0;
 
-    public static final double kClimbMotorSensorToMechRatio = 1/170;
+    public static final double kClimbMotorSensorToMechRatio = 1 / 170;
 
     public static final double kClimbMotorP = 0.001;
     public static final double kClimbMotorI = 0;

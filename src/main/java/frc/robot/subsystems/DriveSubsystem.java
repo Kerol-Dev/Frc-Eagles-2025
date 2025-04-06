@@ -107,7 +107,7 @@ public class DriveSubsystem extends SubsystemBase {
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
   public static FieldPositions fieldPositions = new FieldPositions();
 
-  private double kP = 2;
+  private double kP = 3;
   private double kI = 0;
   private double kD = 0;
 
@@ -172,6 +172,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     m_field.setRobotPose(getPose());
 
+    Logger.recordOutput("Gyro X Speed", m_gyro.getVelocityX());
     Logger.recordOutput("Drive/Robot Pose", getPose());
     SmartDashboard.putData(m_field);
     SmartDashboard.putData(m_gyro);

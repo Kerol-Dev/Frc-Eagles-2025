@@ -156,8 +156,8 @@ public class FieldPositions {
         addFieldPosition(new Pose2d(5.771, 4.187, Rotation2d.fromDegrees(180)), "reef_h", 10, true);
         addFieldPosition(new Pose2d(5.266, 5.053, Rotation2d.fromDegrees(240)), "reef_i", 11, false);
         addFieldPosition(new Pose2d(4.982, 5.222, Rotation2d.fromDegrees(240)), "reef_j", 11, true);
-        addFieldPosition(new Pose2d(3.991, 5.219, Rotation2d.fromDegrees(300)), "reef_k", 6, false);
-        addFieldPosition(new Pose2d(3.697, 5.050, Rotation2d.fromDegrees(300)), "reef_l", 6, true);
+        addFieldPosition(new Pose2d(3.991, 5.219, Rotation2d.fromDegrees(295)), "reef_k", 6, false);
+        addFieldPosition(new Pose2d(3.697, 5.050, Rotation2d.fromDegrees(295)), "reef_l", 6, true);
 
         addFieldPosition(new Pose2d(1.127, 1.029, Rotation2d.fromDegrees(235)), "human_right", -1, false);
         addFieldPosition(new Pose2d(1.097, 6.984, Rotation2d.fromDegrees(125)), "human_left", -1, false);

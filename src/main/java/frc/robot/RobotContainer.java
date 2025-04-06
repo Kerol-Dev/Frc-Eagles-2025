@@ -21,6 +21,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.misc.ArmPosition;
 import frc.robot.subsystems.misc.ElevatorPosition;
 import frc.robot.subsystems.pathfind.AlignToAprilTagOffsetCommand;
+import frc.robot.subsystems.pathfind.AlignToReefTagRelative;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -108,12 +109,12 @@ public class RobotContainer {
         () -> m_Intake.getCoralIntakeSensor(), true);
 
     registerNamedCommand("AlignRight",
-        pathfindToReef(true).andThen(PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
+        pathfindToReefL4(true).andThen(PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
             .andThen(AutoReleaseCoral(ElevatorPosition.place_coral_l4))),
         () -> m_Intake.getCoralIntakeSensor(), true);
 
     registerNamedCommand("AlignLeft",
-        pathfindToReef(false).andThen(PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
+        pathfindToReefL4(false).andThen(PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
             .andThen(AutoReleaseCoral(ElevatorPosition.place_coral_l4))),
         () -> m_Intake.getCoralIntakeSensor(), true);
 
@@ -208,12 +209,6 @@ public class RobotContainer {
         () -> coralMode);
   }
 
-  private Command PlaceAlgaeNetCommand() {
-    return pathfindToNet().andThen(m_arm.setArmPositionCommand(ArmPosition.ElevatorUpAlgae)
-        .andThen(m_elevator.setElevatorPositionCommand(ElevatorPosition.place_algae_net))
-        .andThen(m_arm.setArmPositionCommand(ArmPosition.place_algae_net)));
-  }
-
   private Command PlaceAutomaticReefSequence(ElevatorPosition elevatorPosition, ArmPosition armPosition,
       String povName) {
     return new InstantCommand(() -> resetPovPressCountsExcept(povName))
@@ -233,7 +228,7 @@ public class RobotContainer {
   private Command SwitchObjectMode() {
     return new InstantCommand(() -> {
       coralMode = !coralMode;
-      ElevatorSubsystem.setElevatorConfiguration(coralMode) ;
+      ElevatorSubsystem.setElevatorConfiguration(coralMode);
       if (coralMode) {
         m_elevator.setElevatorPosition(0.4);
       } else {
@@ -362,20 +357,16 @@ public class RobotContainer {
     return new AlignToAprilTagOffsetCommand(m_robotDrive, "human");
   }
 
-  private Command pathfindToNet() {
-    return new AlignToAprilTagOffsetCommand(m_robotDrive, "net");
-  }
-
-  private Command pathfindToReef(boolean right) {
+  private Command pathfindToReefL4(boolean right) {
     return new InstantCommand(() -> resetPovPressCountsExcept("povRight"))
         .andThen(PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4))
-        .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left")));
+        // .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ?
+        // "right" : "left")));
+        .alongWith(new AlignToReefTagRelative(right, m_robotDrive));
   }
 
   private Command pathfindToReefL3(boolean right) {
-    return new InstantCommand(() -> resetPovPressCountsExcept("povRight"))
-        .andThen(PlaceReefInit(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3))
-        .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"))).withTimeout(1.5);
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"));
   }
 
   private Command pathFindToAlgae() {

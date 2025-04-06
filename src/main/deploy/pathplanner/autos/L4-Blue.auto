@@ -77,30 +77,6 @@
           "data": {
             "name": "AlignLeftL3"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "L4-Blue-6"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "GrabFromSource"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "L4-Blue-7"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "AlignLeft"
-          }
         }
       ]
     }
