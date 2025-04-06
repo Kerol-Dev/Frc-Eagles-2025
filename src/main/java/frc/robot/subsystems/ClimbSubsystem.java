@@ -33,9 +33,9 @@ public class ClimbSubsystem extends SubsystemBase {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kBrake);
         config.closedLoop.pid(ClimbConstants.kClimbMotorP, ClimbConstants.kClimbMotorI, ClimbConstants.kClimbMotorD);
-        config.softLimit.forwardSoftLimitEnabled(true);
+        config.softLimit.forwardSoftLimitEnabled(false);
         config.softLimit.forwardSoftLimit(ClimbConstants.kClimbMotorForwardSoftLimit);
-        config.softLimit.reverseSoftLimitEnabled(true);
+        config.softLimit.reverseSoftLimitEnabled(false);
         config.softLimit.reverseSoftLimit(ClimbConstants.kClimbMotorReverseSoftLimit);
         climbMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         climbMotor.getEncoder().setPosition(0);
@@ -60,6 +60,16 @@ public class ClimbSubsystem extends SubsystemBase {
                 return isClimbAtPosition();
             }
         };
+    }
+
+    public void setClimbSpeed(double speed)
+    {
+        climbMotor.set(speed);
+    }
+
+    public void stop()
+    {
+        climbMotor.stopMotor();
     }
 
     /**

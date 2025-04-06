@@ -43,6 +43,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     public ElevatorSubsystem() {
         setElevatorConfiguration(true);
         elevatorMotor.setPosition(0);
+        elevatorMotor2.setPosition(0);
     }
 
     public Command setElevatorPositionCommand(ElevatorPosition positionSelection) {
@@ -84,7 +85,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             case place_coral_l1:
                 return 0.5;
             case place_coral_l2:
-                return 1.0;
+                return 1;
             case place_coral_l3:
                 return 2.31;
             case place_coral_l4:

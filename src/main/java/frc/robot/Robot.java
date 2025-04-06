@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.vision.LimelightHelpers;
+import frc.robot.subsystems.vision.VisionSubsystem;
 
 public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
@@ -55,7 +56,7 @@ public class Robot extends LoggedRobot {
     DriveSubsystem.resetEncoders();
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
-    if (m_autonomousCommand != null && (LimelightHelpers.getTV("") || RobotContainer.autoChooser.getSelected().getName().startsWith("M"))) {
+    if (m_autonomousCommand != null && (VisionSubsystem.getLimelightObjectTarget() || RobotContainer.autoChooser.getSelected().getName().startsWith("M"))) {
       m_autonomousCommand.schedule();
     }
   }

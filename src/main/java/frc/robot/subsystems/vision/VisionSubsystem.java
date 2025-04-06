@@ -54,6 +54,10 @@ public class VisionSubsystem extends SubsystemBase {
                 DriveSubsystem.getHeading().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("");
 
+        LimelightHelpers.SetRobotOrientation("limelight-right",
+                DriveSubsystem.getHeading().getDegrees(), 0, 0, 0, 0, 0);
+        LimelightHelpers.PoseEstimate mt2Right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
+
         if (mt2 == null)
             return;
 
@@ -70,6 +74,25 @@ public class VisionSubsystem extends SubsystemBase {
                     mt2.timestampSeconds);
         }
 
+        doRejectUpdate = false;
+
+        if (mt2Right == null)
+            return;
+
+        if (Math.abs(DriveSubsystem.m_gyro.getRate()) > 720) {
+            doRejectUpdate = true;
+        }
+        if (mt2Right.tagCount == 0) {
+            doRejectUpdate = true;
+        }
+        if (!doRejectUpdate) {
+            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 0));
+            m_poseEstimator.addVisionMeasurement(
+                mt2Right.pose,
+                mt2Right.timestampSeconds);
+        }
+
+
         Logger.recordOutput("Valid Pose Estimation", latestVisionDetectionValid());
         Logger.recordOutput("Vision/Visible ID Count", LimelightHelpers.getRawFiducials("").length);
     }
@@ -78,7 +101,7 @@ public class VisionSubsystem extends SubsystemBase {
      * Updates the last vision update pass time if the Limelight has a valid target.
      */
     public void updateLastVisionUpdatePassTime() {
-        if (LimelightHelpers.getTV("")) {
+        if (LimelightHelpers.getTV("") || LimelightHelpers.getTV("limelight-right")) {
             lastVisionUpdatePassTime = edu.wpi.first.wpilibj.Timer.getFPGATimestamp();
         }
     }
@@ -94,7 +117,7 @@ public class VisionSubsystem extends SubsystemBase {
     }
 
     public static boolean getLimelightObjectTarget() {
-        return LimelightHelpers.getTV("");
+        return LimelightHelpers.getTV("")|| LimelightHelpers.getTV("limelight-right");
     }
 
     public Pose2d GetRobotPoseEstimated() {

@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.ArmSubsystem;
+// import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
@@ -147,7 +148,7 @@ public class RobotContainer {
     driverController.b().onTrue(checkAndSwitchToCoralMode().andThen(m_Intake.grabCommand(false))
         .onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
 
-    driverController.a().whileTrue(pathfindToHuman().onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
+    // driverController.a().whileTrue(pathfindToHuman().onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
 
     driverController.rightBumper().onTrue(
         checkAndSwitchToCoralMode().andThen(pathfindToReefL3(true)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
@@ -158,6 +159,9 @@ public class RobotContainer {
     driverController.x()
         .onTrue(m_Intake.releaseCommand(true, ElevatorPosition.grab_algae_reef_1).andThen(IdleSystemsCommand()));
 
+    // driverController.x().whileTrue(new RunCommand(() -> m_Climb.setClimbSpeed(-1), m_Climb)).onFalse(new InstantCommand(() -> m_Climb.stop(), m_Climb));
+
+    // driverController.a().whileTrue(new RunCommand(() -> m_Climb.setClimbSpeed(1), m_Climb)).onFalse(new InstantCommand(() -> m_Climb.stop(), m_Climb));
     // driverController.back().onTrue(m_Climb.toggleClimbEngaged());
 
     driverController.povUp()
@@ -172,12 +176,12 @@ public class RobotContainer {
         .onTrue(PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l1, ArmPosition.place_coral_l1, "povLeft"));
 
     driverController.leftTrigger()
-        .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae()
+        .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae().withTimeout(1.5)
             .alongWith(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1))))
         .onFalse(IdleSystemsCommand());
 
     driverController.rightTrigger()
-        .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae()
+        .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae().withTimeout(1.5)
             .alongWith(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2))))
         .onFalse(IdleSystemsCommand());
 

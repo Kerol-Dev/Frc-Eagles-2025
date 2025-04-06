@@ -3,7 +3,9 @@ package frc.robot.subsystems.pathfind;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.vision.LimelightHelpers;
 import frc.robot.subsystems.vision.VisionSubsystem;
+
 import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.util.FlippingUtil;
 
@@ -21,19 +23,27 @@ import edu.wpi.first.math.geometry.Pose3d;
 
 public class AlignToAprilTagOffsetCommand extends Command {
     private final DriveSubsystem swerve;
-    private final PIDController xController = new PIDController(7, 0.2, 0);
-    private final PIDController yController = new PIDController(5, 0.2, 0);
-    private final PIDController thetaController = new PIDController(3, 0, 0);
+    private final PIDController xController = new PIDController(7, 0, 0);
+    private final PIDController yController = new PIDController(7, 0, 0);
+    private final PIDController thetaController = new PIDController(6, 0, 0);
     private String alignType;
+    int id = 0;
+    edu.wpi.first.wpilibj.Timer timer;
 
     public AlignToAprilTagOffsetCommand(DriveSubsystem swerve, String alignType) {
         this.swerve = swerve;
         this.alignType = alignType;
+        timer = new edu.wpi.first.wpilibj.Timer();
         addRequirements(swerve);
 
-        xController.setTolerance(0.03);
-        yController.setTolerance(0.03);
+        xController.setTolerance(0.015);
+        yController.setTolerance(0.015);
         thetaController.enableContinuousInput(0, Math.PI * 2);
+    }
+
+    @Override
+    public void initialize() {
+        timer.restart();
     }
 
     @Override
@@ -47,6 +57,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
         Pose3d tagPose = VisionConstants.fieldLayout
                 .getTagPose(DriveSubsystem.fieldPositions.getClosestTag(DriveSubsystem.getRPose3d().toPose2d())).get();
 
+        id = DriveSubsystem.fieldPositions.getClosestTag(DriveSubsystem.getRPose3d().toPose2d());
         if (alignType.equals("human")) {
             tagPose = new Pose3d(
                     DriveSubsystem.fieldPositions.getClosestHumanPose(DriveSubsystem.getRPose3d().toPose2d()));
@@ -65,7 +76,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
 
         // Calculate desired camera position with offset
         // CAMERA DISTANCE: 0.24M
-        double forwardOffset = (alignType.contains("net") || alignType.contains("human")) ? 0 : 0.435; // 0.5m in front
+        double forwardOffset = (alignType.contains("net") || alignType.contains("human")) ? 0 : 0.37; // 0.5m in front
                                                                                                        // of the tag for
                                                                                                        // non-human
                                                                                                        // alignments
@@ -87,7 +98,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
         double errorX = desiredCameraPosition.getX() - robotTranslation.getX();
         double errorY = desiredCameraPosition.getY() - robotTranslation.getY();
         // Yaw correction to face tag
-        double yawError = tagRotation.getZ() -Math.toRadians(5) - DriveSubsystem.getHeading().getRadians();
+        double yawError = tagRotation.getZ() - DriveSubsystem.getHeading().getRadians();
 
         Logger.recordOutput("Align/Error_X", errorX);
         Logger.recordOutput("Align/Error_Y", errorY);
@@ -96,18 +107,22 @@ public class AlignToAprilTagOffsetCommand extends Command {
         Logger.recordOutput("Align/X_Setpoint", xController.atSetpoint());
         Logger.recordOutput("Align/Y_Setpoint", yController.atSetpoint());
         Logger.recordOutput("Align/Yaw_Setpoint", thetaController.atSetpoint());
+        Logger.recordOutput("Align/Get_Target", VisionSubsystem.getLimelightObjectTarget());
 
         // PID speed commands
         double forwardSpeed = yController.calculate(errorY, 0); // Forward/backward
         double strafeSpeed = xController.calculate(errorX, 0); // Left/right
         double thetaSpeed = thetaController.calculate(yawError, 0); // rotation
 
-        if(tagRotation.getAngle() == 180 || tagRotation.getAngle() == 0)
+        if(id == 6)
         {
-            forwardSpeed *= 0.75;
+            strafeSpeed *= 0.7;
         }
         else
-        strafeSpeed *= 0.75;
+        {
+            forwardSpeed *= 0.7;
+        }
+       
 
         forwardSpeed = MathUtil.clamp(forwardSpeed, -0.8, 0.8);
         strafeSpeed = MathUtil.clamp(strafeSpeed, -0.8, 0.8);
@@ -115,14 +130,14 @@ public class AlignToAprilTagOffsetCommand extends Command {
         thetaSpeed = Math.toRadians(thetaSpeed);
         // Use gyro heading for field-relative drive
         Rotation2d robotHeading = DriveSubsystem.getHeading();
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-strafeSpeed, -forwardSpeed, thetaSpeed,
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-strafeSpeed, -forwardSpeed, thetaSpeed ,
                 robotHeading);
         swerve.setSpeeds(speeds);
     }
 
     @Override
     public boolean isFinished() {
-        return xController.atSetpoint() && yController.atSetpoint();
+        return xController.atSetpoint() && yController.atSetpoint() && VisionSubsystem.getLimelightObjectTarget();
     }
 
     @Override

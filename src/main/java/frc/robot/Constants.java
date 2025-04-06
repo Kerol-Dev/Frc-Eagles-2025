@@ -128,7 +128,7 @@ public final class Constants {
 
   public static final class ElevatorConstants {
     public static final int kElevatorMotorCanID = 5;
-    public static final int kElevatorMotorCanID2 = 6;
+    public static final int kElevatorMotorCanID2 = 22;
 
     public static final boolean kElevatorMotorInverted = false;
     public static final boolean kElevatorMotorEncoderInverted = false;
@@ -165,7 +165,7 @@ public final class Constants {
   }
 
   public static final class ClimbConstants {
-    public static final int kClimbMotorCanID = 31;
+    public static final int kClimbMotorCanID = 21;
 
     public static final boolean kClimbMotorInverted = false;
 
