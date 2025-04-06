@@ -21,7 +21,6 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.misc.ArmPosition;
 import frc.robot.subsystems.misc.ElevatorPosition;
 import frc.robot.subsystems.pathfind.AlignToAprilTagOffsetCommand;
-import frc.robot.subsystems.pathfind.AlignToReefTagRelative;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
@@ -77,7 +76,7 @@ public class RobotContainer {
             slowSpeedEnabled, true),
         m_robotDrive));
 
-    // m_Intake.setDefaultCommand(m_Intake.grabCommand(false));
+    m_Intake.setDefaultCommand(m_Intake.grabCommand(false).onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
 
     // Configure button bindings
     configureButtonBindings();
@@ -120,6 +119,11 @@ public class RobotContainer {
 
     registerNamedCommand("AlignLeftL3",
         pathfindToReefL3(false).andThen(PlaceReefInit(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3)
+            .andThen(AutoReleaseCoral(ElevatorPosition.place_coral_l3))),
+        () -> m_Intake.getCoralIntakeSensor(), true);
+
+    registerNamedCommand("AlignRightL3",
+        pathfindToReefL3(true).andThen(PlaceReefInit(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3)
             .andThen(AutoReleaseCoral(ElevatorPosition.place_coral_l3))),
         () -> m_Intake.getCoralIntakeSensor(), true);
 
@@ -360,13 +364,13 @@ public class RobotContainer {
   private Command pathfindToReefL4(boolean right) {
     return new InstantCommand(() -> resetPovPressCountsExcept("povRight"))
         .andThen(PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4))
-        // .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ?
-        // "right" : "left")));
-        .alongWith(new AlignToReefTagRelative(right, m_robotDrive));
+        .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left")));
   }
 
   private Command pathfindToReefL3(boolean right) {
-    return new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"));
+    return new InstantCommand(() -> resetPovPressCountsExcept("povRight"))
+        .andThen(PlaceReefInit(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3))
+        .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left")));
   }
 
   private Command pathFindToAlgae() {

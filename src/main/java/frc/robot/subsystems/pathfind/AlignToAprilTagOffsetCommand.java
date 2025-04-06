@@ -31,8 +31,8 @@ public class AlignToAprilTagOffsetCommand extends Command {
         this.alignType = alignType;
         addRequirements(swerve);
 
-        xController.setTolerance(0.02);
-        yController.setTolerance(0.02);
+        xController.setTolerance(0.03);
+        yController.setTolerance(0.03);
         thetaController.enableContinuousInput(0, Math.PI * 2);
     }
 
