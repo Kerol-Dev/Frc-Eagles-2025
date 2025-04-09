@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -168,7 +169,9 @@ public class RobotContainer {
     driverController.back().onTrue(new InstantCommand(() -> climbMode = !climbMode));
 
     driverController.povUp()
-        .onTrue(PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4, "povUp"));
+        .onTrue(new ConditionalCommand(
+            PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4, "povUp"),
+            PlaceAutomaticNetSequence(), () -> coralMode));
     driverController.povRight()
         .onTrue(PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3, "povRight"));
     driverController.povDown()
@@ -216,6 +219,25 @@ public class RobotContainer {
         SwitchObjectMode().onlyIf(() -> !m_Intake.getCoralIntakeSensor()),
         new InstantCommand(),
         () -> coralMode);
+  }
+
+  private Command PlaceAutomaticNetSequence() {
+    return new InstantCommand(() -> resetPovPressCountsExcept("povUp"))
+        .andThen(new ConditionalCommand(pathFindToNet(),
+            PlaceNetCommand().andThen(new InstantCommand(() -> activePovPressCount = 0)),
+            () -> activePovPressCount < 2))
+        .onlyIf(() -> m_Intake.getCoralIntakeSensor());
+  }
+
+  private Command PlaceNetCommand() {
+    return m_elevator.setElevatorPositionCommand(ElevatorPosition.place_algae_net)
+        .andThen(m_arm.setArmPositionCommand(ArmPosition.place_algae_net))
+        .andThen(m_arm.setArmPositionCommand(ArmPosition.drop_algae_net)
+            .alongWith(new SequentialCommandGroup(new WaitCommand(0.25),
+                m_Intake.releaseCommand(false, ElevatorPosition.place_algae_net))))
+        .andThen(new InstantCommand(() -> triggerRumble(0.5)))
+        .andThen(new WaitCommand(0.2))
+        .andThen(IdleSystemsCommand());
   }
 
   private Command PlaceAutomaticReefSequence(ElevatorPosition elevatorPosition,
@@ -331,7 +353,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     return autoChooser.getSelected();
   }
-  
+
   private Command pathfindToReefL4(boolean right) {
     return PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
         .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"), false));
@@ -351,5 +373,10 @@ public class RobotContainer {
   private Command pathFindToAlgae() {
     return new AlignToAprilTagOffsetCommand(m_robotDrive, "algae", true)
         .until(() -> m_Intake.getAlgaeArmIntakeSensor());
+  }
+
+  private Command pathFindToNet() {
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, "net", true)
+        .onlyIf(() -> m_Intake.getAlgaeArmIntakeSensor());
   }
 }

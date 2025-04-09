@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import org.littletonrobotics.junction.Logger;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -107,7 +106,7 @@ public class DriveSubsystem extends SubsystemBase {
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
   public static FieldPositions fieldPositions = new FieldPositions();
 
-  private double kP = 2;
+  private double kP = 5;
   private double kI = 0;
   private double kD = 0;
 
@@ -116,7 +115,6 @@ public class DriveSubsystem extends SubsystemBase {
    */
   public DriveSubsystem() {
     configureAutoBuilder();
-    PathfindingCommand.warmupCommand().schedule();
   }
 
   public void configureAutoBuilder() {
@@ -124,7 +122,7 @@ public class DriveSubsystem extends SubsystemBase {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
               new PIDConstants(kP, kI, kD),
-              new PIDConstants(3, 0, 0.0)),
+              new PIDConstants(5, 0, 0.0)),
           RobotConfig.fromGUISettings(), () -> !isAllianceBlue(),
           this);
 

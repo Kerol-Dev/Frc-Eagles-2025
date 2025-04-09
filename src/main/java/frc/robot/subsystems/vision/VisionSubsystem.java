@@ -7,6 +7,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
@@ -41,6 +42,32 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() {
         updateLastVisionUpdatePassTime();
 
+        if(DriverStation.isDisabled())
+        {
+            if(LimelightHelpers.getTV(""))
+            {
+                LimelightHelpers.setLEDMode_ForceOn("");
+            }
+            else
+            {
+                LimelightHelpers.setLEDMode_ForceOff("");
+            }
+
+            if(LimelightHelpers.getTV("limelight-right"))
+            {
+                LimelightHelpers.setLEDMode_ForceOn("limelight-right");
+            }
+            else
+            {
+                LimelightHelpers.setLEDMode_ForceOff("limelight-right");
+            }
+        }
+        else
+        {
+            LimelightHelpers.setLEDMode_ForceOff("");
+            LimelightHelpers.setLEDMode_ForceOff("limelight-right");
+        }
+
         m_poseEstimator.update(
                 DriveSubsystem.getHeading(),
                 DriveSubsystem.getModulePositions());
@@ -51,11 +78,11 @@ public class VisionSubsystem extends SubsystemBase {
         boolean doRejectUpdate = false;
 
         LimelightHelpers.SetRobotOrientation("",
-                DriveSubsystem.getHeading().getDegrees() + 3, 0, 0, 0, 0, 0);
+                DriveSubsystem.getHeading().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("");
 
         LimelightHelpers.SetRobotOrientation("limelight-right",
-                DriveSubsystem.getHeading().getDegrees() + 3, 0, 0, 0, 0, 0);
+                DriveSubsystem.getHeading().getDegrees(), 0, 0, 0, 0, 0);
         LimelightHelpers.PoseEstimate mt2Right = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight-right");
 
         if (mt2 == null)

@@ -59,7 +59,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
                 tagPose = new Pose3d(FlippingUtil.flipFieldPose(tagPose.toPose2d()));
             }
         } else if (alignType.equals("net")) {
-            tagPose = new Pose3d(new Pose2d(new Translation2d(6.798, 6.670), Rotation2d.fromDegrees(0)));
+            tagPose = new Pose3d(new Pose2d(new Translation2d(7.932, 7.520), Rotation2d.fromDegrees(180)));
             if (DriverStation.getAlliance().get() == Alliance.Red) {
                 tagPose = new Pose3d(FlippingUtil.flipFieldPose(tagPose.toPose2d()));
             }

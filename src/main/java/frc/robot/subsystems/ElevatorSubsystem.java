@@ -75,7 +75,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double getElevatorPositionValue(ElevatorPosition position) {
         switch (position) {
             case idle:
-                return RobotContainer.coralMode ? 0.00 : 0.4;
+                return RobotContainer.coralMode ? 0.02 : 0.4;
             case grab_algae_reef_1:
                 return 1.6;
             case grab_algae_reef_2:
@@ -93,7 +93,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             case place_coral_l4:
                 return 4.26;
             default:
-                return 0.0;
+                return 0.02;
         }
     }
 
