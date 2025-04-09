@@ -100,6 +100,11 @@ public class RobotContainer {
 
     registerNamedCommand("Idle", IdleSystemsCommand(), () -> true, coralMode);
 
+    registerNamedCommand("PlaceNet", pathFindToNet().andThen(PlaceNetCommand()), () -> m_Intake.getAlgaeArmIntakeSensor(), false);
+    
+    registerNamedCommand("RemoveAlgae", pathFindToAlgae()
+    .alongWith(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1)), () -> !m_Intake.getCoralIntakeSensor(), false);
+
     registerNamedCommand("PlaceL4",
         PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
             .andThen(AutoReleaseCoral(ElevatorPosition.place_coral_l4)),

@@ -13,7 +13,43 @@
         {
           "type": "named",
           "data": {
-            "name": "AlignLeftL4"
+            "name": "AlignRightL4"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L4-Middle-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RemoveAlgae"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L4-Middle-3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Idle"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L4-Middle-4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "PlaceNet"
           }
         }
       ]
