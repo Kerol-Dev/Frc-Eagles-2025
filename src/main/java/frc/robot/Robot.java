@@ -85,8 +85,6 @@ public class Robot extends LoggedRobot {
       slowSpeedEnabledAutomatically = false;
       m_robotContainer.slowSpeedEnabled = false;
     }
-
-    Logger.recordOutput("Joystick/Active Button", m_robotContainer.getPressedJoystickButtonName());
   }
 
   @Override
