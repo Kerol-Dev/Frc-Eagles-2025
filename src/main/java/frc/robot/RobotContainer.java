@@ -60,8 +60,8 @@ public class RobotContainer {
   private boolean climbMode = false;
 
   // Track button press counts
-  // private String lastActivePov = "";
-  // private int activePovPressCount = 0;
+  private String lastActivePov = "";
+  private int activePovPressCount = 0;
 
   /**
    * Constructor for the RobotContainer.
@@ -196,13 +196,13 @@ public class RobotContainer {
    * 
    * @param activePov The POV button to exclude from reset
    */
-  // private void resetPovPressCountsExcept(String activePov) {
-  // if (!activePov.equals(lastActivePov)) {
-  // lastActivePov = activePov;
-  // activePovPressCount = 0;
-  // }
-  // activePovPressCount++;
-  // }
+  private void resetPovPressCountsExcept(String activePov) {
+    if (!activePov.equals(lastActivePov)) {
+      lastActivePov = activePov;
+      activePovPressCount = 0;
+    }
+    activePovPressCount++;
+  }
 
   private Command checkAndSwitchToCoralMode() {
     return new ConditionalCommand(
@@ -218,22 +218,23 @@ public class RobotContainer {
         () -> coralMode);
   }
 
+  private Command PlaceAutomaticReefSequence(ElevatorPosition elevatorPosition,
+      ArmPosition armPosition,
+      String povName) {
+    return new InstantCommand(() -> resetPovPressCountsExcept(povName))
+        .andThen(new ConditionalCommand(PlaceReefInit(elevatorPosition, armPosition),
+            AutoReleaseCoral(elevatorPosition).andThen(new InstantCommand(() -> activePovPressCount = 0)),
+            () -> activePovPressCount < 2))
+        .onlyIf(() -> m_Intake.getCoralIntakeSensor());
+  }
+
   // private Command PlaceAutomaticReefSequence(ElevatorPosition elevatorPosition,
   // ArmPosition armPosition,
   // String povName) {
-  // return new InstantCommand(() -> resetPovPressCountsExcept(povName))
-  // .andThen(new ConditionalCommand(PlaceReefInit(elevatorPosition, armPosition),
-  // AutoReleaseCoral(elevatorPosition).andThen(new InstantCommand(() ->
-  // activePovPressCount = 0)),
-  // () -> activePovPressCount < 2))
+  // return PlaceReefInit(elevatorPosition,
+  // armPosition).andThen(AutoReleaseCoral(elevatorPosition))
   // .onlyIf(() -> m_Intake.getCoralIntakeSensor());
   // }
-
-  private Command PlaceAutomaticReefSequence(ElevatorPosition elevatorPosition, ArmPosition armPosition,
-      String povName) {
-    return PlaceReefInit(elevatorPosition, armPosition).andThen(AutoReleaseCoral(elevatorPosition))
-        .onlyIf(() -> m_Intake.getCoralIntakeSensor());
-  }
 
   private Command AutoReleaseCoral(ElevatorPosition position) {
     return m_Intake.releaseCommand(false, position)
@@ -379,10 +380,13 @@ public class RobotContainer {
   }
 
   private Command pathfindToReefTeleop(boolean right) {
-    return new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"), true).until(() -> !m_Intake.getCoralIntakeSensor());
+    return PlaceReefInit(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3)
+        .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"), true)
+            .until(() -> !m_Intake.getCoralIntakeSensor()));
   }
 
   private Command pathFindToAlgae() {
-    return new AlignToAprilTagOffsetCommand(m_robotDrive, "algae", true).until(() -> m_Intake.getAlgaeArmIntakeSensor());
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, "algae", true)
+        .until(() -> m_Intake.getAlgaeArmIntakeSensor());
   }
 }
