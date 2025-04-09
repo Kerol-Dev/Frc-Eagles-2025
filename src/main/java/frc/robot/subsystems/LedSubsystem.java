@@ -9,7 +9,7 @@ import frc.robot.subsystems.vision.LimelightHelpers;
 
 public class LedSubsystem extends SubsystemBase {
     private AddressableLED addressableLED = new AddressableLED(2);
-    private AddressableLEDBuffer addressableLEDBuffer = new AddressableLEDBuffer(40);
+    private AddressableLEDBuffer addressableLEDBuffer = new AddressableLEDBuffer(11);
 
     // Flag to toggle between red/orange flame and bluish flame
     private boolean useBlueFlame = false;

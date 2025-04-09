@@ -3,7 +3,6 @@ package frc.robot.subsystems.pathfind;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.vision.LimelightHelpers;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 import org.littletonrobotics.junction.Logger;
@@ -28,22 +27,17 @@ public class AlignToAprilTagOffsetCommand extends Command {
     private final PIDController thetaController = new PIDController(6, 0, 0);
     private String alignType;
     int id = 0;
-    edu.wpi.first.wpilibj.Timer timer;
+    boolean isTeleop = false;
 
-    public AlignToAprilTagOffsetCommand(DriveSubsystem swerve, String alignType) {
+    public AlignToAprilTagOffsetCommand(DriveSubsystem swerve, String alignType, boolean isTeleop) {
         this.swerve = swerve;
         this.alignType = alignType;
-        timer = new edu.wpi.first.wpilibj.Timer();
+        this.isTeleop = isTeleop;
         addRequirements(swerve);
 
         xController.setTolerance(0.015);
         yController.setTolerance(0.015);
         thetaController.enableContinuousInput(0, Math.PI * 2);
-    }
-
-    @Override
-    public void initialize() {
-        timer.restart();
     }
 
     @Override
@@ -76,7 +70,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
 
         // Calculate desired camera position with offset
         // CAMERA DISTANCE: 0.24M
-        double forwardOffset = (alignType.contains("net") || alignType.contains("human")) ? 0 : 0.37; // 0.5m in front
+        double forwardOffset = (alignType.contains("net") || alignType.contains("human")) ? 0 : 0.455; // 0.5m in front
                                                                                                        // of the tag for
                                                                                                        // non-human
                                                                                                        // alignments
@@ -114,7 +108,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
         double strafeSpeed = xController.calculate(errorX, 0); // Left/right
         double thetaSpeed = thetaController.calculate(yawError, 0); // rotation
 
-        if(id == 6)
+        if(id != 7 && id != 10 && id != 21 && id != 18)
         {
             strafeSpeed *= 0.7;
         }
@@ -130,14 +124,14 @@ public class AlignToAprilTagOffsetCommand extends Command {
         thetaSpeed = Math.toRadians(thetaSpeed);
         // Use gyro heading for field-relative drive
         Rotation2d robotHeading = DriveSubsystem.getHeading();
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-strafeSpeed, -forwardSpeed, thetaSpeed ,
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-strafeSpeed, -forwardSpeed, thetaSpeed * 1.2,
                 robotHeading);
         swerve.setSpeeds(speeds);
     }
 
     @Override
     public boolean isFinished() {
-        return xController.atSetpoint() && yController.atSetpoint() && VisionSubsystem.getLimelightObjectTarget();
+        return xController.atSetpoint() && yController.atSetpoint() && VisionSubsystem.getLimelightObjectTarget() && !isTeleop;
     }
 
     @Override

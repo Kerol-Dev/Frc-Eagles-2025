@@ -16,6 +16,8 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
@@ -24,6 +26,7 @@ public class ClimbSubsystem extends SubsystemBase {
     // Motor responsible for rotating the arm
     private final SparkMax climbMotor = new SparkMax(ClimbConstants.kClimbMotorCanID, MotorType.kBrushless);
     SparkClosedLoopController climbMotorController = climbMotor.getClosedLoopController();
+    Servo servo = new Servo(0);
     public static boolean climbEngaged = false;
 
     /**
@@ -62,25 +65,32 @@ public class ClimbSubsystem extends SubsystemBase {
         };
     }
 
-    public void setClimbSpeed(double speed)
-    {
+    public void setClimbSpeed(double speed) {
         climbMotor.set(speed);
+
+        if(speed > 0 && DriverStation.isFMSAttached())
+        {
+            servo.setAngle(160);
+        }
+        else if(speed < 0)
+        {
+            servo.setAngle(90);
+        }
     }
 
-    public void stop()
-    {
+    public void stop() {
         climbMotor.stopMotor();
     }
 
     /**
-     * Updates the SmartDashboard with the arm's current and goal positions and temperature.
+     * Updates the SmartDashboard with the arm's current and goal positions and
+     * temperature.
      */
     @Override
     public void periodic() {
         Logger.recordOutput("Climb/Climb Position", climbMotor.getEncoder().getPosition());
         Logger.recordOutput("Climb/Climb Engaged", climbEngaged);
     }
-
 
     /**
      * Sets the arm's position to a predefined ArmPosition.

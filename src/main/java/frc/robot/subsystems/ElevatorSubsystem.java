@@ -21,15 +21,15 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     private double elevatorGoalPosition = 0;
 
-    public static void setElevatorConfiguration(boolean isCoral)
-    {
+    public static void setElevatorConfiguration(boolean isCoral) {
         TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
         // set slot 0 gains
         talonFXConfiguration.Slot0.kP = ElevatorConstants.kElevatorMotorP;
         talonFXConfiguration.Slot0.kI = ElevatorConstants.kElevatorMotorI;
         talonFXConfiguration.Slot0.kD = ElevatorConstants.kElevatorMotorD;
         talonFXConfiguration.MotorOutput.PeakForwardDutyCycle = ElevatorConstants.kElevatorMaxSpeed;
-        talonFXConfiguration.MotorOutput.PeakReverseDutyCycle = -ElevatorConstants.kElevatorMaxSpeedDown  / (isCoral ? 1 : 4);
+        talonFXConfiguration.MotorOutput.PeakReverseDutyCycle = -ElevatorConstants.kElevatorMaxSpeedDown
+                / (isCoral ? 1 : 4);
         talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ElevatorConstants.kElevatorMotorForwardSoftLimit;
         talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
@@ -37,13 +37,14 @@ public class ElevatorSubsystem extends SubsystemBase {
         talonFXConfiguration.Feedback.SensorToMechanismRatio = ElevatorConstants.kElevatorMotorSensorToMechRatio;
         talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        elevatorMotor.getConfigurator().apply(talonFXConfiguration);
-        elevatorMotor2.setControl(new Follower(elevatorMotor.getDeviceID(), false));
+        elevatorMotor2.getConfigurator().apply(talonFXConfiguration);
     }
+
     public ElevatorSubsystem() {
         setElevatorConfiguration(true);
         elevatorMotor.setPosition(0);
         elevatorMotor2.setPosition(0);
+        elevatorMotor.setControl(new Follower(22, false));
     }
 
     public Command setElevatorPositionCommand(ElevatorPosition positionSelection) {
@@ -62,7 +63,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     /**
-     * Updates the SmartDashboard with the elevator's current and goal positions and temperature.
+     * Updates the SmartDashboard with the elevator's current and goal positions and
+     * temperature.
      */
     @Override
     public void periodic() {
@@ -73,7 +75,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double getElevatorPositionValue(ElevatorPosition position) {
         switch (position) {
             case idle:
-                return RobotContainer.coralMode ? 0.05 : 0.4;
+                return RobotContainer.coralMode ? 0.00 : 0.4;
             case grab_algae_reef_1:
                 return 1.6;
             case grab_algae_reef_2:
@@ -91,20 +93,22 @@ public class ElevatorSubsystem extends SubsystemBase {
             case place_coral_l4:
                 return 4.26;
             default:
-                return 0.05;
+                return 0.0;
         }
     }
 
     public void setElevatorPosition(double position) {
         elevatorGoalPosition = position;
         elevatorMotor.setControl(new PositionDutyCycle(position));
+        elevatorMotor2.setControl(new PositionDutyCycle(position));
     }
 
     public void setElevatorPosition(ElevatorPosition position) {
         elevatorMotor.setControl(new PositionDutyCycle(getElevatorPositionValue(position)));
+        elevatorMotor2.setControl(new PositionDutyCycle(getElevatorPositionValue(position)));
     }
 
     public boolean isElevatorAtPosition() {
-        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.15);
+        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.07);
     }
 }

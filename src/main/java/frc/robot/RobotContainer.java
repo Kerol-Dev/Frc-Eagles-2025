@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.ArmSubsystem;
-// import frc.robot.subsystems.ClimbSubsystem;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.LedSubsystem;
+// import frc.robot.subsystems.LedSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.misc.ArmPosition;
@@ -46,8 +46,8 @@ public class RobotContainer {
   public final IntakeSubsystem m_Intake = new IntakeSubsystem();
   public final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
   private final ArmSubsystem m_arm = new ArmSubsystem();
-  // private final ClimbSubsystem m_Climb = new ClimbSubsystem();
-  public final LedSubsystem m_LedSubsystem = new LedSubsystem();
+  private final ClimbSubsystem m_Climb = new ClimbSubsystem();
+  // public final LedSubsystem m_LedSubsystem = new LedSubsystem();
 
   // Autonomous command chooser
   public static SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -57,10 +57,11 @@ public class RobotContainer {
 
   // Object Mode
   public static boolean coralMode = true;
+  private boolean climbMode = false;
 
   // Track button press counts
-  private String lastActivePov = "";
-  private int activePovPressCount = 0;
+  // private String lastActivePov = "";
+  // private int activePovPressCount = 0;
 
   /**
    * Constructor for the RobotContainer.
@@ -108,12 +109,12 @@ public class RobotContainer {
             .andThen(AutoReleaseCoral(ElevatorPosition.place_coral_l3)),
         () -> m_Intake.getCoralIntakeSensor(), true);
 
-    registerNamedCommand("AlignRight",
+    registerNamedCommand("AlignRightL4",
         pathfindToReefL4(true).andThen(PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
             .andThen(AutoReleaseCoral(ElevatorPosition.place_coral_l4))),
         () -> m_Intake.getCoralIntakeSensor(), true);
 
-    registerNamedCommand("AlignLeft",
+    registerNamedCommand("AlignLeftL4",
         pathfindToReefL4(false).andThen(PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
             .andThen(AutoReleaseCoral(ElevatorPosition.place_coral_l4))),
         () -> m_Intake.getCoralIntakeSensor(), true);
@@ -148,26 +149,26 @@ public class RobotContainer {
     driverController.b().onTrue(checkAndSwitchToCoralMode().andThen(m_Intake.grabCommand(false))
         .onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
 
-    // driverController.a().whileTrue(pathfindToHuman().onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
-
     driverController.rightBumper().onTrue(
-        checkAndSwitchToCoralMode().andThen(pathfindToReefL3(true)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
+        checkAndSwitchToCoralMode().andThen(pathfindToReefTeleop(true)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
 
     driverController.leftBumper().onTrue(
-        checkAndSwitchToCoralMode().andThen(pathfindToReefL3(false)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
+        checkAndSwitchToCoralMode().andThen(pathfindToReefTeleop(false)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
 
     driverController.x()
-        .onTrue(m_Intake.releaseCommand(true, ElevatorPosition.grab_algae_reef_1).andThen(IdleSystemsCommand()));
+        .onTrue(m_Intake.releaseCommand(true, ElevatorPosition.grab_algae_reef_1).andThen(IdleSystemsCommand())
+            .onlyIf(() -> !climbMode));
 
-    // driverController.x().whileTrue(new RunCommand(() -> m_Climb.setClimbSpeed(-1), m_Climb)).onFalse(new InstantCommand(() -> m_Climb.stop(), m_Climb));
+    driverController.x().whileTrue(new RunCommand(() -> m_Climb.setClimbSpeed(-1), m_Climb).onlyWhile(() -> climbMode))
+        .onFalse(new InstantCommand(() -> m_Climb.stop(), m_Climb));
 
-    // driverController.a().whileTrue(new RunCommand(() -> m_Climb.setClimbSpeed(1), m_Climb)).onFalse(new InstantCommand(() -> m_Climb.stop(), m_Climb));
-    // driverController.back().onTrue(m_Climb.toggleClimbEngaged());
+    driverController.a().whileTrue(new RunCommand(() -> m_Climb.setClimbSpeed(1), m_Climb).onlyIf(() -> climbMode))
+        .onFalse(new InstantCommand(() -> m_Climb.stop(), m_Climb));
+
+    driverController.back().onTrue(new InstantCommand(() -> climbMode = !climbMode));
 
     driverController.povUp()
-        .onTrue(new ConditionalCommand(
-            PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4, "povUp"),
-            new InstantCommand(), () -> coralMode));
+        .onTrue(PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4, "povUp"));
     driverController.povRight()
         .onTrue(PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3, "povRight"));
     driverController.povDown()
@@ -176,12 +177,12 @@ public class RobotContainer {
         .onTrue(PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l1, ArmPosition.place_coral_l1, "povLeft"));
 
     driverController.leftTrigger()
-        .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae().withTimeout(1.5)
+        .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae()
             .alongWith(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1))))
         .onFalse(IdleSystemsCommand());
 
     driverController.rightTrigger()
-        .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae().withTimeout(1.5)
+        .whileTrue(checkAndSwitchToAlgaeMode().andThen(pathFindToAlgae()
             .alongWith(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_2, ArmPosition.grab_algae_reef_2))))
         .onFalse(IdleSystemsCommand());
 
@@ -195,13 +196,13 @@ public class RobotContainer {
    * 
    * @param activePov The POV button to exclude from reset
    */
-  private void resetPovPressCountsExcept(String activePov) {
-    if (!activePov.equals(lastActivePov)) {
-      lastActivePov = activePov;
-      activePovPressCount = 0;
-    }
-    activePovPressCount++;
-  }
+  // private void resetPovPressCountsExcept(String activePov) {
+  // if (!activePov.equals(lastActivePov)) {
+  // lastActivePov = activePov;
+  // activePovPressCount = 0;
+  // }
+  // activePovPressCount++;
+  // }
 
   private Command checkAndSwitchToCoralMode() {
     return new ConditionalCommand(
@@ -217,12 +218,20 @@ public class RobotContainer {
         () -> coralMode);
   }
 
+  // private Command PlaceAutomaticReefSequence(ElevatorPosition elevatorPosition,
+  // ArmPosition armPosition,
+  // String povName) {
+  // return new InstantCommand(() -> resetPovPressCountsExcept(povName))
+  // .andThen(new ConditionalCommand(PlaceReefInit(elevatorPosition, armPosition),
+  // AutoReleaseCoral(elevatorPosition).andThen(new InstantCommand(() ->
+  // activePovPressCount = 0)),
+  // () -> activePovPressCount < 2))
+  // .onlyIf(() -> m_Intake.getCoralIntakeSensor());
+  // }
+
   private Command PlaceAutomaticReefSequence(ElevatorPosition elevatorPosition, ArmPosition armPosition,
       String povName) {
-    return new InstantCommand(() -> resetPovPressCountsExcept(povName))
-        .andThen(new ConditionalCommand(PlaceReefInit(elevatorPosition, armPosition),
-            AutoReleaseCoral(elevatorPosition).andThen(new InstantCommand(() -> activePovPressCount = 0)),
-            () -> activePovPressCount < 2))
+    return PlaceReefInit(elevatorPosition, armPosition).andThen(AutoReleaseCoral(elevatorPosition))
         .onlyIf(() -> m_Intake.getCoralIntakeSensor());
   }
 
@@ -359,25 +368,21 @@ public class RobotContainer {
     return "None";
   }
 
-  // Pathfinding Commands
-  @SuppressWarnings("unused")
-  private Command pathfindToHuman() {
-    return new AlignToAprilTagOffsetCommand(m_robotDrive, "human");
-  }
-
   private Command pathfindToReefL4(boolean right) {
-    return new InstantCommand(() -> resetPovPressCountsExcept("povRight"))
-        .andThen(PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4))
-        .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left")));
+    return PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
+        .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"), false));
   }
 
   private Command pathfindToReefL3(boolean right) {
-    return new InstantCommand(() -> resetPovPressCountsExcept("povRight"))
-        .andThen(PlaceReefInit(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3))
-        .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left")));
+    return PlaceReefInit(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3)
+        .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"), false));
+  }
+
+  private Command pathfindToReefTeleop(boolean right) {
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"), true).until(() -> !m_Intake.getCoralIntakeSensor());
   }
 
   private Command pathFindToAlgae() {
-    return new AlignToAprilTagOffsetCommand(m_robotDrive, "algae");
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, "algae", true).until(() -> m_Intake.getAlgaeArmIntakeSensor());
   }
 }
