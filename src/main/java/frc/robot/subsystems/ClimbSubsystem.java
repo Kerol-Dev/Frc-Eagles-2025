@@ -26,7 +26,7 @@ public class ClimbSubsystem extends SubsystemBase {
     // Motor responsible for rotating the arm
     private final SparkMax climbMotor = new SparkMax(ClimbConstants.kClimbMotorCanID, MotorType.kBrushless);
     SparkClosedLoopController climbMotorController = climbMotor.getClosedLoopController();
-    Servo servo = new Servo(0);
+    public static Servo servo = new Servo(0);
     public static boolean climbEngaged = false;
 
     /**
@@ -68,14 +68,7 @@ public class ClimbSubsystem extends SubsystemBase {
     public void setClimbSpeed(double speed) {
         climbMotor.set(speed);
 
-        if(speed > 0 && DriverStation.isFMSAttached())
-        {
-            servo.setAngle(160);
-        }
-        else if(speed < 0)
-        {
-            servo.setAngle(90);
-        }
+        servo.setAngle(DriverStation.isFMSAttached() ? 160 : 90);
     }
 
     public void stop() {

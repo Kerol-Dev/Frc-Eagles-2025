@@ -370,9 +370,7 @@ public class RobotContainer {
   }
 
   private Command pathfindToReefTeleop(boolean right) {
-    return PlaceReefInit(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3)
-        .alongWith(new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"), true)
-            .until(() -> !m_Intake.getCoralIntakeSensor()));
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"), true);
   }
 
   private Command pathFindToAlgae() {

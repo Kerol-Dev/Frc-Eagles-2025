@@ -147,8 +147,19 @@ public class DriveSubsystem extends SubsystemBase {
   public void setSpeeds(ChassisSpeeds speeds) {
     robotAngleSim += speeds.omegaRadiansPerSecond * 2;
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
+
+    double maxSpeed = DriveConstants.kMaxSpeedMetersPerSecond;
+    if(ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 2.5)
+    {
+      maxSpeed /= 4;
+    }
+    else if(ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 0.7)
+    {
+      maxSpeed /= 2;
+    }
+
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+        swerveModuleStates, maxSpeed);
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_rearLeft.setDesiredState(swerveModuleStates[2]);

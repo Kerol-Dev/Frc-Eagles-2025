@@ -10,6 +10,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -53,6 +54,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     DriveSubsystem.resetEncoders();
+    ClimbSubsystem.servo.setAngle(160);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null && (VisionSubsystem.getLimelightObjectTarget() || RobotContainer.autoChooser.getSelected().getName().startsWith("M"))) {
@@ -70,6 +72,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    ClimbSubsystem.servo.setAngle(160);
     m_robotContainer.IdleSystemsCommand().schedule();
   }
 
