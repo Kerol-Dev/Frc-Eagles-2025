@@ -3,7 +3,6 @@ package frc.robot.subsystems.pathfind;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
 import org.littletonrobotics.junction.Logger;
@@ -25,7 +24,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
     private final DriveSubsystem swerve;
     private final PIDController xController = new PIDController(7, 0, 0, 0.0067);
     private final PIDController yController = new PIDController(7, 0, 0, 0.0067);
-    private final PIDController thetaController = new PIDController(6, 0, 0, 0.0067);
+    private final PIDController thetaController = new PIDController(4, 0, 0, 0.0067);
     private String alignType;
     int id = 0;
     boolean isTeleop = false;
@@ -36,8 +35,8 @@ public class AlignToAprilTagOffsetCommand extends Command {
         this.isTeleop = isTeleop;
         addRequirements(swerve);
 
-        xController.setTolerance(0.015);
-        yController.setTolerance(0.015);
+        xController.setTolerance(0.0025);
+        yController.setTolerance(0.0025);
         thetaController.enableContinuousInput(0, Math.PI * 2);
     }
 
@@ -125,14 +124,14 @@ public class AlignToAprilTagOffsetCommand extends Command {
         thetaSpeed = Math.toRadians(thetaSpeed);
         // Use gyro heading for field-relative drive
         Rotation2d robotHeading = DriveSubsystem.getHeading();
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-strafeSpeed, -forwardSpeed, thetaSpeed * 1.2,
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(-strafeSpeed, -forwardSpeed, thetaSpeed,
                 robotHeading);
         swerve.setSpeeds(speeds);
     }
 
     @Override
     public boolean isFinished() {
-        return (xController.atSetpoint() && yController.atSetpoint() && VisionSubsystem.getLimelightObjectTarget() && !isTeleop) || (isTeleop && IntakeSubsystem.coralArmIntakeSensor.get());
+        return (xController.atSetpoint() && yController.atSetpoint() && VisionSubsystem.getLimelightObjectTarget());
     }
 
     @Override

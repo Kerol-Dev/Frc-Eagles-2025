@@ -149,11 +149,11 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
 
     double maxSpeed = DriveConstants.kMaxSpeedMetersPerSecond;
-    if(ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 2.5)
+    if(ElevatorSubsystem.elevatorMotor2.getPosition().getValueAsDouble() > 2.5)
     {
       maxSpeed /= 4;
     }
-    else if(ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 0.7)
+    else if(ElevatorSubsystem.elevatorMotor2.getPosition().getValueAsDouble() > 0.7)
     {
       maxSpeed /= 2;
     }

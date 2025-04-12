@@ -68,12 +68,12 @@ public class ClimbSubsystem extends SubsystemBase {
     public void setClimbSpeed(double speed) {
         climbMotor.set(speed);
 
-        servo.setAngle(DriverStation.isFMSAttached() ? 160 : 90);
+        servo.setAngle(speed < 0 ? 120 : DriverStation.isFMSAttached() ? 90 : 0);
     }
 
     public void stop() {
         climbMotor.stopMotor();
-    }
+    }                                                                                                                                                                                                             
 
     /**
      * Updates the SmartDashboard with the arm's current and goal positions and

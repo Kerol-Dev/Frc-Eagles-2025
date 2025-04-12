@@ -3,8 +3,8 @@ package frc.robot.subsystems;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -37,14 +37,15 @@ public class ElevatorSubsystem extends SubsystemBase {
         talonFXConfiguration.Feedback.SensorToMechanismRatio = ElevatorConstants.kElevatorMotorSensorToMechRatio;
         talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        elevatorMotor2.getConfigurator().apply(talonFXConfiguration);
+        // elevatorMotor.getConfigurator().apply(talonFXConfiguration);
+        // elevatorMotor2.getConfigurator().apply(talonFXConfiguration);
     }
 
     public ElevatorSubsystem() {
         setElevatorConfiguration(true);
         elevatorMotor.setPosition(0);
         elevatorMotor2.setPosition(0);
-        elevatorMotor.setControl(new Follower(22, false));
+        elevatorMotor.setControl(new StrictFollower(22));
     }
 
     public Command setElevatorPositionCommand(ElevatorPosition positionSelection) {
@@ -75,7 +76,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double getElevatorPositionValue(ElevatorPosition position) {
         switch (position) {
             case idle:
-                return RobotContainer.coralMode ? 0.02 : 0.4;
+                return RobotContainer.coralMode ? 0.0 : 0.4;
             case grab_algae_reef_1:
                 return 1.6;
             case grab_algae_reef_2:
@@ -93,7 +94,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             case place_coral_l4:
                 return 4.26;
             default:
-                return 0.02;
+                return 0.0;
         }
     }
 
@@ -109,6 +110,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean isElevatorAtPosition() {
-        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.07);
+        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.1);
     }
 }

@@ -100,10 +100,12 @@ public class RobotContainer {
 
     registerNamedCommand("Idle", IdleSystemsCommand(), () -> true, coralMode);
 
-    registerNamedCommand("PlaceNet", pathFindToNet().andThen(PlaceNetCommand()), () -> m_Intake.getAlgaeArmIntakeSensor(), false);
-    
+    registerNamedCommand("PlaceNet", pathFindToNet().andThen(PlaceNetCommand()),
+        () -> m_Intake.getAlgaeArmIntakeSensor(), false);
+
     registerNamedCommand("RemoveAlgae", pathFindToAlgae()
-    .alongWith(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1)), () -> !m_Intake.getCoralIntakeSensor(), false);
+        .alongWith(GrabAlgaeReefCommand(ElevatorPosition.grab_algae_reef_1, ArmPosition.grab_algae_reef_1)),
+        () -> !m_Intake.getCoralIntakeSensor(), false);
 
     registerNamedCommand("PlaceL4",
         PlaceReefInit(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4)
@@ -162,11 +164,10 @@ public class RobotContainer {
         checkAndSwitchToCoralMode().andThen(pathfindToReefTeleop(false)).onlyIf(() -> m_Intake.getCoralIntakeSensor()));
 
     driverController.x()
-        .onTrue(m_Intake.releaseCommand(true, ElevatorPosition.grab_algae_reef_1).andThen(IdleSystemsCommand())
-            .onlyIf(() -> !climbMode));
-
-    driverController.x().whileTrue(new RunCommand(() -> m_Climb.setClimbSpeed(-1), m_Climb).onlyWhile(() -> climbMode))
-        .onFalse(new InstantCommand(() -> m_Climb.stop(), m_Climb));
+        .whileTrue(new ConditionalCommand(
+            m_Intake.releaseCommand(true, ElevatorPosition.grab_algae_reef_1).andThen(IdleSystemsCommand()),
+            new RunCommand(() -> m_Climb.setClimbSpeed(-1), m_Climb), () -> !climbMode))
+        .onFalse(new InstantCommand(() -> m_Climb.stop()));
 
     driverController.a().whileTrue(new RunCommand(() -> m_Climb.setClimbSpeed(1), m_Climb).onlyIf(() -> climbMode))
         .onFalse(new InstantCommand(() -> m_Climb.stop(), m_Climb));
@@ -196,6 +197,7 @@ public class RobotContainer {
 
     driverController.y()
         .onTrue(IdleSystemsCommand().andThen(checkAndSwitchToCoralMode())
+            .andThen(new InstantCommand(() -> activePovPressCount = 0))
             .andThen(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll())));
   }
 
@@ -370,7 +372,8 @@ public class RobotContainer {
   }
 
   private Command pathfindToReefTeleop(boolean right) {
-    return new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"), true);
+    return new AlignToAprilTagOffsetCommand(m_robotDrive, "reef" + (right ? "right" : "left"), true)
+        .until(() -> !m_Intake.getCoralIntakeSensor());
   }
 
   private Command pathFindToAlgae() {

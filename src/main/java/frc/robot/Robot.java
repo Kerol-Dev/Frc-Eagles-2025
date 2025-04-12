@@ -54,7 +54,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     DriveSubsystem.resetEncoders();
-    ClimbSubsystem.servo.setAngle(160);
+    ClimbSubsystem.servo.setAngle(0);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null && (VisionSubsystem.getLimelightObjectTarget() || RobotContainer.autoChooser.getSelected().getName().startsWith("M"))) {
@@ -72,7 +72,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    ClimbSubsystem.servo.setAngle(160);
+    ClimbSubsystem.servo.setAngle(0);
     m_robotContainer.IdleSystemsCommand().schedule();
   }
 
@@ -81,7 +81,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopPeriodic() {
     m_robotContainer.periodic();
-    if (ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 2.5) {
+    if (ElevatorSubsystem.elevatorMotor2.getPosition().getValueAsDouble() > 2.5) {
       slowSpeedEnabledAutomatically = true;
       m_robotContainer.slowSpeedEnabled = true;
     } else if (slowSpeedEnabledAutomatically) {
