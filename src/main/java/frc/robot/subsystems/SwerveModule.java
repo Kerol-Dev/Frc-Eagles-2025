@@ -3,8 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-
-import org.littletonrobotics.junction.Logger;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -139,8 +138,8 @@ public class SwerveModule {
    * Updates the SmartDashboard with encoder information.
    */
   public void updateSmartDashboard() {
-    Logger.recordOutput("Swerve/" + name + "/Cancoder " + m_canEncoder.getDeviceID(), getCanCoder().getDegrees());
-    Logger.recordOutput("Swerve/" + name + "/NeoAngle " + m_canEncoder.getDeviceID(),
+    SmartDashboard.putNumber("Swerve/" + name + "/Cancoder " + m_canEncoder.getDeviceID(), getCanCoder().getDegrees());
+    SmartDashboard.putNumber("Swerve/" + name + "/NeoAngle " + m_canEncoder.getDeviceID(),
         Math.toDegrees((Math.abs(m_turningSparkMax.getEncoder().getPosition()) % (2.0 * Math.PI))));
   } 
 

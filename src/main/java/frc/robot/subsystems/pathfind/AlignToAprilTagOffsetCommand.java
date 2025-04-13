@@ -5,7 +5,6 @@ import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
 
-import org.littletonrobotics.junction.Logger;
 import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.MathUtil;
@@ -16,6 +15,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -94,15 +94,15 @@ public class AlignToAprilTagOffsetCommand extends Command {
         // Yaw correction to face tag
         double yawError = tagRotation.getZ() - DriveSubsystem.getHeading().getRadians();
 
-        Logger.recordOutput("Align/Error_X", errorX);
-        Logger.recordOutput("Align/Error_Y", errorY);
-        Logger.recordOutput("Align/Error_Yaw", yawError);
+        SmartDashboard.putNumber("Align/Error_X", errorX);
+        SmartDashboard.putNumber("Align/Error_Y", errorY);
+        SmartDashboard.putNumber("Align/Error_Yaw", yawError);
 
-        Logger.recordOutput("Align/X_Setpoint", xController.atSetpoint());
-        Logger.recordOutput("Align/Y_Setpoint", yController.atSetpoint());
-        Logger.recordOutput("Align/Yaw_Setpoint", thetaController.atSetpoint());
-        Logger.recordOutput("Align/Get_Target", VisionSubsystem.getLimelightObjectTarget());
-
+        SmartDashboard.putBoolean("Align/X_Setpoint", xController.atSetpoint());
+        SmartDashboard.putBoolean("Align/Y_Setpoint", yController.atSetpoint());
+        SmartDashboard.putBoolean("Align/Yaw_Setpoint", thetaController.atSetpoint());
+        SmartDashboard.putBoolean("Align/Get_Target", VisionSubsystem.getLimelightObjectTarget());
+        
         // PID speed commands
         double forwardSpeed = yController.calculate(errorY, 0); // Forward/backward
         double strafeSpeed = xController.calculate(errorX, 0); // Left/right

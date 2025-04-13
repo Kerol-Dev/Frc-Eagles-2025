@@ -57,7 +57,7 @@ public class RobotContainer {
 
   // Object Mode
   public static boolean coralMode = true;
-  private boolean climbMode = false;
+  public boolean climbMode = false;
 
   // Track button press counts
   private String lastActivePov = "";

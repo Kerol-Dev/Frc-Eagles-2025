@@ -1,12 +1,11 @@
 package frc.robot.subsystems;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -129,6 +128,10 @@ public class DriveSubsystem extends SubsystemBase {
     } catch (Exception e) {
       DriverStation.reportError(e.getMessage(), true);
     }
+
+    PathPlannerLogging.setLogActivePathCallback((pose) -> {
+      m_field.getObject("path").setPoses(pose);
+    });
   }
 
   /**
@@ -149,12 +152,9 @@ public class DriveSubsystem extends SubsystemBase {
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(speeds);
 
     double maxSpeed = DriveConstants.kMaxSpeedMetersPerSecond;
-    if(ElevatorSubsystem.elevatorMotor2.getPosition().getValueAsDouble() > 2.5)
-    {
+    if (ElevatorSubsystem.elevatorMotor2.getPosition().getValueAsDouble() > 2.5) {
       maxSpeed /= 4;
-    }
-    else if(ElevatorSubsystem.elevatorMotor2.getPosition().getValueAsDouble() > 0.7)
-    {
+    } else if (ElevatorSubsystem.elevatorMotor2.getPosition().getValueAsDouble() > 0.7) {
       maxSpeed /= 2;
     }
 
@@ -180,9 +180,6 @@ public class DriveSubsystem extends SubsystemBase {
     // m_frontRight.updateMotorPosition(1.5);
 
     m_field.setRobotPose(getPose());
-
-    Logger.recordOutput("Gyro X Speed", m_gyro.getVelocityX());
-    Logger.recordOutput("Drive/Robot Pose", getPose());
     SmartDashboard.putData(m_field);
     SmartDashboard.putData(m_gyro);
   }
@@ -348,7 +345,7 @@ public class DriveSubsystem extends SubsystemBase {
     if (Robot.isSimulation())
       return Rotation2d.fromDegrees(robotAngleSim)
           .plus(Rotation2d.fromDegrees(isAllianceBlue() ? 180 : 0));
-    
+
     return m_gyro.getRotation2d()
         .plus(Rotation2d.fromDegrees(isAllianceBlue() ? 180 : 0));
   }

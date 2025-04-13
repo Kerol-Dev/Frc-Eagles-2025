@@ -4,8 +4,6 @@
  */
 package frc.robot.subsystems;
 
-import org.littletonrobotics.junction.Logger;
-
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
@@ -16,6 +14,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
@@ -65,8 +64,8 @@ public class ArmSubsystem extends SubsystemBase {
      */
     @Override
     public void periodic() {
-        Logger.recordOutput("Arm/Arm Position", armMotor.getEncoder().getPosition());
-        Logger.recordOutput("Arm/Arm Goal", armGoalPosition);
+        SmartDashboard.putNumber("Arm/Arm Position", armMotor.getEncoder().getPosition());
+        SmartDashboard.putNumber("Arm/Arm Goal", armGoalPosition);
     }
 
     /**
