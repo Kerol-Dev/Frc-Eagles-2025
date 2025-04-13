@@ -87,7 +87,7 @@ public class VisionSubsystem extends SubsystemBase {
             doRejectUpdate = true;
         }
         if (!doRejectUpdate) {
-            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 0));
+            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 0));
             m_poseEstimator.addVisionMeasurement(
                     mt2.pose,
                     mt2.timestampSeconds);
@@ -105,7 +105,7 @@ public class VisionSubsystem extends SubsystemBase {
             doRejectUpdate = true;
         }
         if (!doRejectUpdate) {
-            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 0));
+            m_poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.5, .5, 0));
             m_poseEstimator.addVisionMeasurement(
                     mt2Right.pose,
                     mt2Right.timestampSeconds);

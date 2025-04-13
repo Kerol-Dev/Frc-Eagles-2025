@@ -1,10 +1,8 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,23 +18,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double elevatorGoalPosition = 0;
 
     public static void setElevatorConfiguration(boolean isCoral) {
-        TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
-        // set slot 0 gains
-        talonFXConfiguration.Slot0.kP = ElevatorConstants.kElevatorMotorP;
-        talonFXConfiguration.Slot0.kI = ElevatorConstants.kElevatorMotorI;
-        talonFXConfiguration.Slot0.kD = ElevatorConstants.kElevatorMotorD;
-        talonFXConfiguration.MotorOutput.PeakForwardDutyCycle = ElevatorConstants.kElevatorMaxSpeed;
-        talonFXConfiguration.MotorOutput.PeakReverseDutyCycle = -ElevatorConstants.kElevatorMaxSpeedDown
+        MotorOutputConfigs talonFXConfiguration = new MotorOutputConfigs();
+        talonFXConfiguration.PeakForwardDutyCycle = ElevatorConstants.kElevatorMaxSpeed;
+        talonFXConfiguration.PeakReverseDutyCycle = -ElevatorConstants.kElevatorMaxSpeedDown
                 / (isCoral ? 1 : 4);
-        talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
-        talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ElevatorConstants.kElevatorMotorForwardSoftLimit;
-        talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = ElevatorConstants.kElevatorMotorReverseSoftLimit;
-        talonFXConfiguration.Feedback.SensorToMechanismRatio = ElevatorConstants.kElevatorMotorSensorToMechRatio;
-        talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        // elevatorMotor.getConfigurator().apply(talonFXConfiguration);
-        // elevatorMotor2.getConfigurator().apply(talonFXConfiguration);
+        elevatorMotor.getConfigurator().apply(talonFXConfiguration);
+        elevatorMotor2.getConfigurator().apply(talonFXConfiguration);
     }
 
     public ElevatorSubsystem() {
@@ -73,7 +61,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double getElevatorPositionValue(ElevatorPosition position) {
         switch (position) {
             case idle:
-                return RobotContainer.coralMode ? 0.0 : 0.5;
+                return RobotContainer.coralMode ? 0.0 : 0.45;
             case grab_algae_reef_1:
                 return 1.6;
             case grab_algae_reef_2:

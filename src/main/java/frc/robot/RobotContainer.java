@@ -58,6 +58,7 @@ public class RobotContainer {
   // Object Mode
   public static boolean coralMode = true;
   public boolean climbMode = false;
+  public static boolean joystickUsed = false;
 
   // Track button press counts
   private String lastActivePov = "";
@@ -279,7 +280,7 @@ public class RobotContainer {
       coralMode = !coralMode;
       ElevatorSubsystem.setElevatorConfiguration(coralMode);
       if (coralMode) {
-        m_elevator.setElevatorPosition(0.4);
+        m_elevator.setElevatorPosition(0.45);
       } else {
         m_elevator.setElevatorPosition(1.54);
       }

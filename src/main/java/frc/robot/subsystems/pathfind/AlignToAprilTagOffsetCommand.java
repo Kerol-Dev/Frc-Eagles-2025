@@ -1,6 +1,7 @@
 package frc.robot.subsystems.pathfind;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
@@ -35,8 +36,8 @@ public class AlignToAprilTagOffsetCommand extends Command {
         this.isTeleop = isTeleop;
         addRequirements(swerve);
 
-        xController.setTolerance(0.0025);
-        yController.setTolerance(0.0025);
+        xController.setTolerance(0.005);
+        yController.setTolerance(0.005);
         thetaController.enableContinuousInput(0, Math.PI * 2);
     }
 
@@ -59,7 +60,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
                 tagPose = new Pose3d(FlippingUtil.flipFieldPose(tagPose.toPose2d()));
             }
         } else if (alignType.equals("net")) {
-            tagPose = new Pose3d(new Pose2d(new Translation2d(7.932, 7.520), Rotation2d.fromDegrees(180)));
+            tagPose = new Pose3d(new Pose2d(new Translation2d(8.021, 7.170), Rotation2d.fromDegrees(180)));
             if (DriverStation.getAlliance().get() == Alliance.Red) {
                 tagPose = new Pose3d(FlippingUtil.flipFieldPose(tagPose.toPose2d()));
             }
@@ -131,7 +132,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return (xController.atSetpoint() && yController.atSetpoint() && VisionSubsystem.getLimelightObjectTarget());
+        return (xController.atSetpoint() && yController.atSetpoint() && VisionSubsystem.getLimelightObjectTarget()) || RobotContainer.joystickUsed;
     }
 
     @Override

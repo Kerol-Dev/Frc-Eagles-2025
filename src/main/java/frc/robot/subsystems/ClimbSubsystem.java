@@ -68,7 +68,7 @@ public class ClimbSubsystem extends SubsystemBase {
     public void setClimbSpeed(double speed) {
         climbMotor.set(speed);
 
-        servo.setAngle(speed < 0 ? 120 : DriverStation.isFMSAttached() ? 90 : 0);
+        servo.setAngle(speed > 0 ? 120 : DriverStation.isFMSAttached() ? 60 : 120);
     }
 
     public void stop() {

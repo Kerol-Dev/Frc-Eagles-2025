@@ -34,11 +34,6 @@ public class IntakeSubsystem extends SubsystemBase{
         {
             setIntakeSpeed(-0.85);
         }
-
-        if(getAlgaeArmIntakeSensor() && !RobotContainer.coralMode && !grab)
-        {
-            setIntakeSpeed(0.5);
-        }
     }
 
     public Command grabCommand(boolean isAlgae){

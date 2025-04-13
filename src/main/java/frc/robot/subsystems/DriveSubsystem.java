@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Robot;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.pathfind.FieldPositions;
 import frc.robot.subsystems.pathfind.PathfindType;
@@ -227,6 +228,8 @@ public class DriveSubsystem extends SubsystemBase {
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean slowSpeed,
       boolean isJoystick) {
     double xSpeedDelivered, ySpeedDelivered, rotDelivered;
+
+    RobotContainer.joystickUsed = Math.abs(xSpeed) >= 0.1;
 
     robotAngleSim += rot * 2;
 
