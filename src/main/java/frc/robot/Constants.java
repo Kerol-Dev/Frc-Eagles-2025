@@ -158,7 +158,7 @@ public final class Constants {
 
     public static final double kArmMotorSensorToMechRatio = 500;
 
-    public static final double kArmMotorP = 0.0025;
+    public static final double kArmMotorP = 0.00025;
     public static final double kArmMotorI = 0;
     public static final double kArmMotorD = 0;
     public static final double kArmMotorMaxSpeed = 1;
@@ -169,7 +169,7 @@ public final class Constants {
 
     public static final boolean kClimbMotorInverted = false;
 
-    public static final double kClimbMotorForwardSoftLimit = 500;
+    public static final double kClimbMotorForwardSoftLimit = 225;
     public static final double kClimbMotorReverseSoftLimit = 0;
 
     public static final double kClimbMotorSensorToMechRatio = 1 / 170;

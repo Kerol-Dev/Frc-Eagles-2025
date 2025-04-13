@@ -4,7 +4,6 @@ import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.StrictFollower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -45,7 +44,6 @@ public class ElevatorSubsystem extends SubsystemBase {
         setElevatorConfiguration(true);
         elevatorMotor.setPosition(0);
         elevatorMotor2.setPosition(0);
-        elevatorMotor.setControl(new StrictFollower(22));
     }
 
     public Command setElevatorPositionCommand(ElevatorPosition positionSelection) {
@@ -76,13 +74,13 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double getElevatorPositionValue(ElevatorPosition position) {
         switch (position) {
             case idle:
-                return RobotContainer.coralMode ? 0.0 : 0.4;
+                return RobotContainer.coralMode ? 0.0 : 0.5;
             case grab_algae_reef_1:
                 return 1.6;
             case grab_algae_reef_2:
                 return 2.9;
             case place_algae_net:
-                return 4.24;
+                return 4.18;
             case place_algae_processor:
                 return 0.4;
             case place_coral_l1:
@@ -92,7 +90,7 @@ public class ElevatorSubsystem extends SubsystemBase {
             case place_coral_l3:
                 return 2.31;
             case place_coral_l4:
-                return 4.26;
+                return 4.18;
             default:
                 return 0.0;
         }
@@ -110,6 +108,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean isElevatorAtPosition() {
-        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.1);
+        return MathUtil.isNear(elevatorGoalPosition, elevatorMotor.getPosition().getValueAsDouble(), 0.15);
     }
 }

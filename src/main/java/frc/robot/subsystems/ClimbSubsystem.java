@@ -36,9 +36,9 @@ public class ClimbSubsystem extends SubsystemBase {
         SparkMaxConfig config = new SparkMaxConfig();
         config.idleMode(IdleMode.kBrake);
         config.closedLoop.pid(ClimbConstants.kClimbMotorP, ClimbConstants.kClimbMotorI, ClimbConstants.kClimbMotorD);
-        config.softLimit.forwardSoftLimitEnabled(false);
+        config.softLimit.forwardSoftLimitEnabled(true);
         config.softLimit.forwardSoftLimit(ClimbConstants.kClimbMotorForwardSoftLimit);
-        config.softLimit.reverseSoftLimitEnabled(false);
+        config.softLimit.reverseSoftLimitEnabled(true);
         config.softLimit.reverseSoftLimit(ClimbConstants.kClimbMotorReverseSoftLimit);
         climbMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
         climbMotor.getEncoder().setPosition(0);

@@ -27,7 +27,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -79,7 +78,7 @@ public class RobotContainer {
             slowSpeedEnabled, true),
         m_robotDrive));
 
-    m_Intake.setDefaultCommand(m_Intake.grabCommand(false).onlyIf(() -> !m_Intake.getCoralIntakeSensor()));
+    m_Intake.setDefaultCommand(m_Intake.grabCommand(false).onlyIf(() -> !m_Intake.getCoralIntakeSensor() && coralMode));
 
     // Configure button bindings
     configureButtonBindings();
@@ -177,7 +176,7 @@ public class RobotContainer {
     driverController.povUp()
         .onTrue(new ConditionalCommand(
             PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l4, ArmPosition.place_coral_l4, "povUp"),
-            PlaceAutomaticNetSequence(), () -> coralMode));
+            PlaceNetCommand(), () -> coralMode));
     driverController.povRight()
         .onTrue(PlaceAutomaticReefSequence(ElevatorPosition.place_coral_l3, ArmPosition.place_coral_l3, "povRight"));
     driverController.povDown()
@@ -228,22 +227,25 @@ public class RobotContainer {
         () -> coralMode);
   }
 
-  private Command PlaceAutomaticNetSequence() {
-    return new InstantCommand(() -> resetPovPressCountsExcept("povUp"))
-        .andThen(new ConditionalCommand(pathFindToNet(),
-            PlaceNetCommand().andThen(new InstantCommand(() -> activePovPressCount = 0)),
-            () -> activePovPressCount < 2))
-        .onlyIf(() -> m_Intake.getCoralIntakeSensor());
-  }
+  // private Command PlaceAutomaticNetSequence() {
+  // return new InstantCommand(() -> resetPovPressCountsExcept("povUp"))
+  // .andThen(new ConditionalCommand(pathFindToNet(),
+  // PlaceNetCommand().andThen(new InstantCommand(() -> activePovPressCount = 0)),
+  // () -> activePovPressCount < 2))
+  // .onlyIf(() -> m_Intake.getCoralIntakeSensor());
+  // }
 
   private Command PlaceNetCommand() {
     return m_elevator.setElevatorPositionCommand(ElevatorPosition.place_algae_net)
-        .andThen(m_arm.setArmPositionCommand(ArmPosition.place_algae_net))
-        .andThen(m_arm.setArmPositionCommand(ArmPosition.drop_algae_net)
-            .alongWith(new SequentialCommandGroup(new WaitCommand(0.25),
-                m_Intake.releaseCommand(false, ElevatorPosition.place_algae_net))))
+        .alongWith(m_arm.setArmPositionCommand(ArmPosition.drop_algae_net)
+            .alongWith(
+                m_Intake.releaseCommand(true, ElevatorPosition.place_algae_net)
+                    .beforeStarting(
+                        new WaitUntilCommand(() -> ArmSubsystem.armMotor.getEncoder().getPosition() < -3500)))
+            .beforeStarting(
+                new WaitUntilCommand(() -> ElevatorSubsystem.elevatorMotor.getPosition().getValueAsDouble() > 1.5)))
         .andThen(new InstantCommand(() -> triggerRumble(0.5)))
-        .andThen(new WaitCommand(0.2))
+        .andThen(new WaitCommand(0.35))
         .andThen(IdleSystemsCommand());
   }
 

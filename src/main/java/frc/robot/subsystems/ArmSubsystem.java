@@ -24,7 +24,7 @@ import frc.robot.subsystems.misc.ArmPosition;
 
 public class ArmSubsystem extends SubsystemBase {
     // Motor responsible for rotating the arm
-    private final SparkMax armMotor = new SparkMax(ArmConstants.kArmMotorCanID, MotorType.kBrushless);
+    public static final SparkMax armMotor = new SparkMax(ArmConstants.kArmMotorCanID, MotorType.kBrushless);
     SparkClosedLoopController armMotorController = armMotor.getClosedLoopController();
     private double armGoalPosition = 0;
 
@@ -36,7 +36,6 @@ public class ArmSubsystem extends SubsystemBase {
         config.idleMode(IdleMode.kBrake);
         config.closedLoop.pid(ArmConstants.kArmMotorP, ArmConstants.kArmMotorI, ArmConstants.kArmMotorD);
         armMotor.configure(config, ResetMode.kNoResetSafeParameters, PersistMode.kPersistParameters);
-
         armMotor.getEncoder().setPosition(0);
     }
 
@@ -85,8 +84,8 @@ public class ArmSubsystem extends SubsystemBase {
                 return -7000.0;
             case grab_algae_reef_2:
                 return -7000.0;
-            case place_algae_net:
-                return -2500.0;
+            case drop_algae_net:
+                return -2000.0;
             case place_algae_processor:
                 return -7000.0;
             case place_coral_l1:
@@ -130,6 +129,6 @@ public class ArmSubsystem extends SubsystemBase {
      * @return True if the arm is at the goal position, false otherwise.
      */
     public boolean isArmAtPosition() {
-        return MathUtil.isNear(armGoalPosition, armMotor.getEncoder().getPosition(), 25);
+        return MathUtil.isNear(armGoalPosition, armMotor.getEncoder().getPosition(), 100);
     }
 }
