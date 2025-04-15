@@ -141,7 +141,7 @@ public final class Constants {
     // Conversion factor from motor rotations to elevator rise in cm
     public static final double kElevatorMotorSensorToMechRatio = kElevatorGearRatio;
     public static final double kElevatorMotorP = 0.75;
-    public static final double kElevatorMotorI = 0.0;
+    public static final double kElevatorMotorI = 0.2;
     public static final double kElevatorMotorD = 0.0;
     public static final double kElevatorMaxSpeed = 1;
     public static final double kElevatorMaxSpeedDown = 0.15;
@@ -167,17 +167,8 @@ public final class Constants {
   public static final class ClimbConstants {
     public static final int kClimbMotorCanID = 21;
 
-    public static final boolean kClimbMotorInverted = false;
-
-    public static final double kClimbMotorForwardSoftLimit = 225;
+    public static final double kClimbMotorForwardSoftLimit = 300;
     public static final double kClimbMotorReverseSoftLimit = 0;
-
-    public static final double kClimbMotorSensorToMechRatio = 1 / 170;
-
-    public static final double kClimbMotorP = 0.001;
-    public static final double kClimbMotorI = 0;
-    public static final double kClimbMotorD = 0;
-    public static final double kClimbMotorMaxSpeed = 1;
   }
 
   public static final class ArmIntakeConstants {

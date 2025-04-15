@@ -155,7 +155,7 @@ public class DriveSubsystem extends SubsystemBase {
     double maxSpeed = DriveConstants.kMaxSpeedMetersPerSecond;
     if (ElevatorSubsystem.elevatorMotor2.getPosition().getValueAsDouble() > 2.5) {
       maxSpeed /= 4;
-    } else if (ElevatorSubsystem.elevatorMotor2.getPosition().getValueAsDouble() > 0.7) {
+    } else if (ElevatorSubsystem.elevatorMotor2.getPosition().getValueAsDouble() > 1.25) {
       maxSpeed /= 2;
     }
 

@@ -3,8 +3,8 @@
   "robotLength": 0.84,
   "holonomicMode": true,
   "pathFolders": [
-    "L4-Blue",
-    "L4-Blue-Mirrored",
+    "Algae-Coop",
+    "L4-Mirrored",
     "L4-Middle",
     "L4-New"
   ],

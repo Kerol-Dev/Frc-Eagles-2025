@@ -51,6 +51,18 @@
           "data": {
             "name": "PlaceNet"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L4-Middle-5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CoralMode"
+          }
         }
       ]
     }

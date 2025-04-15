@@ -17,15 +17,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "L4-Blue-M-2"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "GrabFromSource"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "L4-Blue-M-2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Idle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "GrabFromSource"
+                }
+              }
+            ]
           }
         },
         {
@@ -41,15 +54,28 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "L4-Blue-M-4"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "GrabFromSource"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "L4-Blue-M-4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Idle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "GrabFromSource"
+                }
+              }
+            ]
           }
         },
         {

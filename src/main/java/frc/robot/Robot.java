@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,7 +36,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     DriveSubsystem.resetEncoders();
-    ClimbSubsystem.servo.setAngle(60);
+    ClimbSubsystem.servo.setAngle(80);
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null && (VisionSubsystem.getLimelightObjectTarget() || RobotContainer.autoChooser.getSelected().getName().startsWith("M"))) {
@@ -53,7 +54,8 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    ClimbSubsystem.servo.setAngle(60);
+    ClimbSubsystem.setClimbConfiguration(DriverStation.isFMSAttached());
+    ClimbSubsystem.servo.setAngle(80);
     m_robotContainer.IdleSystemsCommand().schedule();
   }
 

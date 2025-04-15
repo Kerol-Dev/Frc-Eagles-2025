@@ -25,7 +25,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
     private final DriveSubsystem swerve;
     private final PIDController xController = new PIDController(7, 0, 0, 0.0067);
     private final PIDController yController = new PIDController(7, 0, 0, 0.0067);
-    private final PIDController thetaController = new PIDController(4, 0, 0, 0.0067);
+    private final PIDController thetaController = new PIDController(5, 0, 0, 0.0067);
     private String alignType;
     int id = 0;
     boolean isTeleop = false;
@@ -71,7 +71,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
 
         // Calculate desired camera position with offset
         // CAMERA DISTANCE: 0.24M
-        double forwardOffset = (alignType.contains("net") || alignType.contains("human")) ? 0 : 0.455; // 0.5m in front
+        double forwardOffset = (alignType.contains("net") || alignType.contains("algae")) ? 0 : 0.455; // 0.5m in front
                                                                                                        // of the tag for
                                                                                                        // non-human
                                                                                                        // alignments
@@ -132,7 +132,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return (xController.atSetpoint() && yController.atSetpoint() && VisionSubsystem.getLimelightObjectTarget()) || RobotContainer.joystickUsed;
+        return (xController.atSetpoint() && yController.atSetpoint() && (MathUtil.isNear(-3.14, thetaController.getError(), 0.004) || MathUtil.isNear(3.14, thetaController.getError(), 0.004)) && VisionSubsystem.getLimelightObjectTarget()) || RobotContainer.joystickUsed;
     }
 
     @Override

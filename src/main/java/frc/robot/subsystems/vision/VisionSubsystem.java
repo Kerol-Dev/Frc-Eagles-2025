@@ -48,7 +48,6 @@ public class VisionSubsystem extends SubsystemBase {
             } else {
                 LimelightHelpers.setLEDMode_ForceOff("");
             }
-
             if (LimelightHelpers.getTV("limelight-right")) {
                 LimelightHelpers.setLEDMode_ForceOn("limelight-right");
             } else {

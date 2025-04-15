@@ -17,7 +17,7 @@ public class IntakeSubsystem extends SubsystemBase{
     private final TalonFX ArmIntakeMotor = new TalonFX(ArmIntakeConstants.kArmIntakeMotorCanID);
     public static final DigitalInput coralArmIntakeSensor = new DigitalInput(ArmIntakeConstants.kCoralArmIntakeSensorPort);
     public static final DigitalInput algaeArmIntakeSensor = new DigitalInput(ArmIntakeConstants.kAlgaeArmIntakeSensorPort);
-    private boolean grab = false;
+    private boolean grab = true;
     
     public IntakeSubsystem(){
         TalonFXConfiguration configuration = new TalonFXConfiguration();
@@ -30,10 +30,12 @@ public class IntakeSubsystem extends SubsystemBase{
         SmartDashboard.putBoolean("Intake/Coral Sensor", getCoralIntakeSensor());
         SmartDashboard.putBoolean("Intake/Algea Sensor", getAlgaeArmIntakeSensor());
 
-        if(getAlgaeArmIntakeSensor() && !RobotContainer.coralMode && grab)
+        if(!RobotContainer.coralMode && grab)
         {
             setIntakeSpeed(-0.85);
         }
+
+        SmartDashboard.putBoolean("Grab", grab);
     }
 
     public Command grabCommand(boolean isAlgae){
@@ -64,12 +66,31 @@ public class IntakeSubsystem extends SubsystemBase{
             @Override
             public void initialize(){
                 grab = false;
-                setIntakeSpeed((position == ElevatorPosition.place_coral_l1 ? 0.2 : 0.55) * (isAlgae ? -1.9 : 1));
+                if(position == ElevatorPosition.place_coral_l1)
+                {
+                    setIntakeSpeed(0.2);
+                }
+                else if(isAlgae)
+                {
+                    if(position == ElevatorPosition.place_algae_processor)
+                    {
+                        setIntakeSpeed(0.2);
+                    }
+                    else
+                    {
+                        setIntakeSpeed(1);
+                    }
+                }
+                else
+                {
+                    setIntakeSpeed(0.55);
+                }
             }
 
             @Override
             public void end(boolean interrupted){
                 setIntakeSpeed(0);
+                grab = true;
             }
 
             @Override

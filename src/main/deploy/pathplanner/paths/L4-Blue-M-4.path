@@ -45,7 +45,7 @@
     "rotation": 55.0
   },
   "reversed": false,
-  "folder": "L4-Blue-Mirrored",
+  "folder": "L4-Mirrored",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 59.99999999999999

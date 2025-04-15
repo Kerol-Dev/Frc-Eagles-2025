@@ -1,0 +1,111 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Coop-0"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RemoveAlgae"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "L4-Middle-3"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Coop-1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Idle"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropAlgae"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Coop-2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "RemoveAlgae"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Coop-3"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Coop-4"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Idle"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "DropAlgae"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Coop-5"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "CoralMode"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": false,
+  "folder": null,
+  "choreoAuto": false
+}

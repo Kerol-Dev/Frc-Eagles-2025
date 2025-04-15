@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,11 +20,22 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double elevatorGoalPosition = 0;
 
     public static void setElevatorConfiguration(boolean isCoral) {
-        MotorOutputConfigs talonFXConfiguration = new MotorOutputConfigs();
-        talonFXConfiguration.PeakForwardDutyCycle = ElevatorConstants.kElevatorMaxSpeed;
-        talonFXConfiguration.PeakReverseDutyCycle = -ElevatorConstants.kElevatorMaxSpeedDown
-                / (isCoral ? 1 : 4);
+        TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
+        talonFXConfiguration.Slot0.kP = ElevatorConstants.kElevatorMotorP;
+        talonFXConfiguration.Slot0.kI = ElevatorConstants.kElevatorMotorI;
+        talonFXConfiguration.Slot0.kD = ElevatorConstants.kElevatorMotorD;
+        talonFXConfiguration.MotorOutput.PeakForwardDutyCycle = ElevatorConstants.kElevatorMaxSpeed;
+        talonFXConfiguration.MotorOutput.PeakReverseDutyCycle = -ElevatorConstants.kElevatorMaxSpeedDown
+                / (isCoral ? 1 : 2);
+        talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        talonFXConfiguration.SoftwareLimitSwitch.ForwardSoftLimitThreshold = ElevatorConstants.kElevatorMotorForwardSoftLimit;
+        talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        talonFXConfiguration.SoftwareLimitSwitch.ReverseSoftLimitThreshold = ElevatorConstants.kElevatorMotorReverseSoftLimit;
+        talonFXConfiguration.Feedback.SensorToMechanismRatio = ElevatorConstants.kElevatorMotorSensorToMechRatio;
+        talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
+        talonFXConfiguration.CurrentLimits.StatorCurrentLimitEnable = false;
+        talonFXConfiguration.CurrentLimits.SupplyCurrentLimitEnable = false;
         elevatorMotor.getConfigurator().apply(talonFXConfiguration);
         elevatorMotor2.getConfigurator().apply(talonFXConfiguration);
     }
