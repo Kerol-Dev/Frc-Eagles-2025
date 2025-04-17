@@ -86,7 +86,7 @@ public class ArmSubsystem extends SubsystemBase {
             case drop_algae_net:
                 return -3000.0;
             case place_algae_processor:
-                return -7000.0;
+                return -9000.0;
             case place_coral_l1:
                 return -20.0;
             case place_coral_l2:
@@ -98,7 +98,7 @@ public class ArmSubsystem extends SubsystemBase {
             case place_coral_l3:
                 return -20.0;
             case place_coral_l4:
-                return -20.0;
+                return -1750.0;
             default:
                 return -20.0;
         }

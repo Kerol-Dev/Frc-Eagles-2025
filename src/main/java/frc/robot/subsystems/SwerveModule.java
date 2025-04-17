@@ -61,10 +61,10 @@ public class SwerveModule {
 
     // Configure the driving motor
     m_drivingMotor = new TalonFX(drivingCANId);
-      TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
+    TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
     talonFXConfiguration.MotorOutput.Inverted = drivingMotorReversed ? InvertedValue.Clockwise_Positive
         : InvertedValue.CounterClockwise_Positive;
-        talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+    talonFXConfiguration.MotorOutput.NeutralMode = NeutralModeValue.Brake;
     m_drivingMotor.getConfigurator().apply(talonFXConfiguration);
 
     // Configure the turning motor
@@ -137,11 +137,11 @@ public class SwerveModule {
   /**
    * Updates the SmartDashboard with encoder information.
    */
-  public void updateSmartDashboard() {
+  public void periodic() {
     SmartDashboard.putNumber("Swerve/" + name + "/Cancoder " + m_canEncoder.getDeviceID(), getCanCoder().getDegrees());
     SmartDashboard.putNumber("Swerve/" + name + "/NeoAngle " + m_canEncoder.getDeviceID(),
         Math.toDegrees((Math.abs(m_turningSparkMax.getEncoder().getPosition()) % (2.0 * Math.PI))));
-  } 
+  }
 
   /**
    * Sets the desired state of the swerve module.

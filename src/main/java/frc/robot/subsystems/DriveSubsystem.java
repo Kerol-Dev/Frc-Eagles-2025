@@ -106,7 +106,7 @@ public class DriveSubsystem extends SubsystemBase {
   static VisionSubsystem visionSubsystem = new VisionSubsystem();
   public static FieldPositions fieldPositions = new FieldPositions();
 
-  private double kP = 5;
+  private double kP = 3;
   private double kI = 0;
   private double kD = 0;
 
@@ -122,7 +122,7 @@ public class DriveSubsystem extends SubsystemBase {
       AutoBuilder.configure(this::getPose, this::resetOdometry, this::getSpeeds, this::setSpeeds,
           new PPHolonomicDriveController(
               new PIDConstants(kP, kI, kD),
-              new PIDConstants(5, 0, 0.0)),
+              new PIDConstants(3, 0, 0.0)),
           RobotConfig.fromGUISettings(), () -> !isAllianceBlue(),
           this);
 
@@ -169,11 +169,10 @@ public class DriveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    m_frontLeft.updateSmartDashboard();
-    m_frontRight.updateSmartDashboard();
-    m_rearLeft.updateSmartDashboard();
-    m_rearRight.updateSmartDashboard();
-    // Simulation only
+    m_frontLeft.periodic();
+    m_frontRight.periodic();
+    m_rearLeft.periodic();
+    m_rearRight.periodic();
 
     // m_rearLeft.updateMotorPosition(1.5);
     // m_rearRight.updateMotorPosition(1.5);

@@ -58,10 +58,10 @@ public final class Constants {
     public static final int kRearLeftcanCoderIDCanId = 21;
 
     // Offset values for CANCoders
-    public static final float kFrontRightcanCoderOffset = 236.5f;
-    public static final float kFrontLeftcanCoderOffset = 177.6f;
-    public static final float kRearRightcanCoderOffset = 2.28f;
-    public static final float kRearLeftcanCoderOffset = 90.3f;
+    public static final float kFrontRightcanCoderOffset = 237.9f;
+    public static final float kFrontLeftcanCoderOffset = 181.1f;
+    public static final float kRearRightcanCoderOffset = 3.6f;
+    public static final float kRearLeftcanCoderOffset = 86.3f;
 
     // Gyro configuration
     public static final boolean kGyroReversed = false;

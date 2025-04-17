@@ -36,8 +36,8 @@ public class AlignToAprilTagOffsetCommand extends Command {
         this.isTeleop = isTeleop;
         addRequirements(swerve);
 
-        xController.setTolerance(0.005);
-        yController.setTolerance(0.005);
+        xController.setTolerance(0.00725);
+        yController.setTolerance(0.00725);
         thetaController.enableContinuousInput(0, Math.PI * 2);
     }
 
@@ -60,7 +60,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
                 tagPose = new Pose3d(FlippingUtil.flipFieldPose(tagPose.toPose2d()));
             }
         } else if (alignType.equals("net")) {
-            tagPose = new Pose3d(new Pose2d(new Translation2d(8.021, 7.170), Rotation2d.fromDegrees(180)));
+            tagPose = new Pose3d(new Pose2d(new Translation2d(7.939, 6.558), Rotation2d.fromDegrees(180)));
             if (DriverStation.getAlliance().get() == Alliance.Red) {
                 tagPose = new Pose3d(FlippingUtil.flipFieldPose(tagPose.toPose2d()));
             }
@@ -132,7 +132,7 @@ public class AlignToAprilTagOffsetCommand extends Command {
 
     @Override
     public boolean isFinished() {
-        return (xController.atSetpoint() && yController.atSetpoint() && (MathUtil.isNear(-3.14, thetaController.getError(), 0.004) || MathUtil.isNear(3.14, thetaController.getError(), 0.004)) && VisionSubsystem.getLimelightObjectTarget()) || RobotContainer.joystickUsed;
+        return (xController.atSetpoint() && yController.atSetpoint() && (MathUtil.isNear(-3.14, thetaController.getError(), 0.004) || MathUtil.isNear(3.14, thetaController.getError(), 0.004) || !isTeleop) && VisionSubsystem.getLimelightObjectTarget()) || RobotContainer.joystickUsed;
     }
 
     @Override

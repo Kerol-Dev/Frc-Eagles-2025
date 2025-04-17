@@ -90,7 +90,6 @@ public class IntakeSubsystem extends SubsystemBase{
             @Override
             public void end(boolean interrupted){
                 setIntakeSpeed(0);
-                grab = true;
             }
 
             @Override
